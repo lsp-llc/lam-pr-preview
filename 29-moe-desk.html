@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoE on a Desk GPU: Total Weights vs Active Params (2026) | Local AI Models</title>
+<meta name="description" content="VRAM is charged on total MoE weights. FLOPs per decode follow active params. A 24 GB card cannot treat 13B active as a 13B model. Dated 20 August 2026, calculated Q4 table, named offload trap.">
+<meta name="keywords" content="mixture of experts vram, mixtral 8x7b 47b, moe active parameters, 24gb gpu moe, deepseek v2 lite, qwen1.5 moe, q4 total weights">
+<link rel="canonical" href="https://local-ai-models.ai/moe-on-a-desk.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MoE on a Desk GPU: Total Weights vs Active Params (2026)">
+<meta property="og:description" content="VRAM for total weights. FLOPs/decode for active. 24 GB cannot treat 13B active as a 13B model.">
+<meta property="og:url" content="https://local-ai-models.ai/moe-on-a-desk.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta property="og:image" content="https://local-ai-models.ai/hero-quantization.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MoE on a Desk GPU: Total Weights vs Active Params (2026)">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "MoE on a Desk GPU: Total Weights vs Active Params (2026)",
+  "description": "A 24 GB operator pays VRAM for total MoE weights and pays FLOPs per decode for active parameters. Calculated Q4_K_M table (Params_B × 0.5 GB) for Mixtral, Qwen1.5-MoE, Qwen2-57B-A14B, and DeepSeek-V2/V3. Dated 2026-08-20.",
+  "datePublished": "2026-08-20",
+  "dateModified": "2026-08-20",
+  "inLanguage": "en",
+  "author": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://local-ai-models.ai/moe-on-a-desk.html"}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://local-ai-models.ai/#destinations"},
+    {"@type": "ListItem", "position": 3, "name": "MoE on a Desk GPU", "item": "https://local-ai-models.ai/moe-on-a-desk.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can a 24 GB GPU treat Mixtral’s 13B active parameters as a 13B model?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The Mixtral paper states 47B total and 13B active, two of eight experts. Memory cost is proportional to the 47B sparse count. Calculated Q4_K_M is 47 × 0.5 ≈ 23.5 GB of weights, with KV still extra."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which verified MoEs fit 24 GB at calculated Q4 of total weights?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Qwen1.5-MoE-A2.7B (14.3/2.7 → ~7.2 GB) and DeepSeek-V2-Lite (15.7/2.4 → ~7.9 GB) fit with KV headroom. Mixtral 47/13 is ~23.5 GB and tight. Qwen2-57B-A14B, DeepSeek-V2, and DeepSeek-V3 do not fit."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the MoE offload trap on a desk GPU?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Parking experts in system RAM so the card looks like it holds a 13B or 21B model turns the decode path into host-memory traffic. VRAM is still owed on total weights. Do not quantize only the active experts and call that the VRAM bill."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you estimate Q4 weight size for an MoE?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use total parameters. This page calculates Q4_K_M ≈ Params_B × 0.5 GB and labels the result a calculation, not a measured file. KV cache is extra."
+      }
+    }
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('https://local-ai-models.ai/hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 600px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+</style>
+
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul, .article-body ol.plain { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body ul li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 780px; font-size: 0.9rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.vram-table caption { caption-side: bottom; text-align: left; padding: 12px 16px 16px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+.vram-table .fit-yes { color: var(--green); font-weight: 600; }
+.vram-table .fit-no { color: #f87171; font-weight: 600; }
+.vram-table .fit-squeeze { color: var(--orange); font-weight: 600; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.plate-block {
+  max-width: 820px;
+  margin: 0 0 56px;
+  padding: 36px 32px 32px;
+  background: linear-gradient(180deg, rgba(167,139,250,0.06) 0%, rgba(6,7,10,0.2) 100%);
+  border: 1px solid rgba(167,139,250,0.22);
+  border-radius: 18px;
+}
+.plate-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 14px;
+}
+.plate-block p {
+  font-family: var(--font-serif);
+  font-size: 1.18rem;
+  line-height: 1.62;
+  color: var(--text-2);
+  margin-bottom: 18px;
+}
+.plate-block p:last-child { margin-bottom: 0; }
+.plate-block em { color: var(--text); font-style: italic; }
+.bends-block {
+  max-width: 820px;
+  margin: 0 0 64px;
+  padding: 32px 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+.bends-block .article-h2 { margin-top: 0; }
+.formula-box {
+  margin: 0 0 28px;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  color: var(--accent);
+  line-height: 1.7;
+  overflow-x: auto;
+}
+.formula-box .note { display: block; margin-top: 10px; color: var(--text-dim); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; }
+.decision-box {
+  margin: 0 0 28px;
+  padding: 22px 24px;
+  border-left: 3px solid var(--accent);
+  background: rgba(0,212,255,0.05);
+  border-radius: 0 12px 12px 0;
+}
+.decision-box p { margin-bottom: 0; }
+.callout {
+  margin: 0 0 28px;
+  padding: 20px 22px;
+  background: var(--surface);
+  border: 1px dashed var(--border-bright);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: var(--text-2);
+}
+.callout strong { color: var(--text); }
+.ad-slot {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin: 36px 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 820px;
+}
+.ref { font-size: 0.78em; vertical-align: super; margin-left: 1px; border-bottom: none !important; }
+</style>
+
+<!-- Schema: Organization (publisher trust signal for AEO) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<!-- Google Consent Mode v2 -->
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500,'region':['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']});
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
+     crossorigin="anonymous"></script>
+<script src="/consent.js" defer></script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; }
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+</head>
+<body>
+<div style="font:600 0.85rem/1.4 system-ui,sans-serif;background:#132238;color:#e8eef6;padding:10px 16px;border-bottom:1px solid #2a4a6a;">Preview of <a href="https://github.com/lsp-llc/local-ai-models/pull/29" style="color:#7dd3fc">lsp-llc/local-ai-models#29</a> — not production. Site nav and scripts stay on local-ai-models.ai.</div>
+
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="/local-ai-models.html">Models</a>
+      <a href="/builder.html">Stack Builder</a>
+      <a href="/model-builder.html">PC Builder</a>
+      <a href="/recommend.html">Recommender</a>
+      <a href="/token-simulator.html">Token Sim</a>
+      <a href="/claws.html">CLAWS</a>
+      <a href="/sentiment.html">Community</a>
+      <a href="/getting-started.html">Get Started</a>
+      <a href="/quantization.html">Quantization</a>
+      <a href="/stacks.html">Stacks</a>
+      <a href="/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/#destinations">Guides</a><span class="sep">/</span><span>MoE on a Desk</span></div>
+    <div class="hero-eyebrow">MoE sizing · 24 GB decision</div>
+    <h1 class="hero-title">MoE on a <span class="accent">Desk GPU</span></h1>
+    <div class="updated-line">Updated: 20 August 2026</div>
+    <p class="hero-sub">VRAM is charged on total weights. FLOPs per decode follow active params. A 24 GB card cannot treat “13B active” as a 13B model.</p>
+  </div>
+</section>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+  <article class="article-body">
+
+    <section class="plate-block" data-nosnippet>
+      <div class="plate-kicker">Plate VI · the Guild Hall</div>
+      <p>The hall is one roof. Under it sit many specialist benches. The steward wakes two of them, or a short list, and the rest stay seated. Rent is still charged on the whole floor. FLOPs are the work of who stood up. Occupancy is the roof.</p>
+      <p>A desk GPU is that hall with a hard square footage. If the Q4 of every bench still fits, the short list is a job you can finish in the room. If you push leftover benches into the street so the roof looks cheaper, the next token that needs them leaves the hall. The corridor becomes a dirt road.</p>
+    </section>
+
+    <section class="bends-block" data-nosnippet>
+      <h2 class="section-h2 article-h2">Where the Metaphor Bends</h2>
+      <p>Rent is VRAM. The work of who stood up is FLOPs per decode. Those are not the same invoice. Mixtral’s authors say the memory cost of serving is proportional to the sparse parameter count, 47B, even though each token uses 13B. Treating 13B active as a 13B model is how a 24 GB card gets sold a 47B roof.</p>
+      <p>The dirt road is offload, not a second quant. Parking unfitted weights in system RAM does not rewrite the VRAM bill. Neither does pretending you can Q4 only the experts that happen to be active this token. The router is allowed to pick a different pair on the next step. Context is a second rent: every GB in the table below is weights only. KV is extra. A Mac’s unified memory is a different building.</p>
+    </section>
+
+    <p class="lede">On <strong>20 August 2026</strong> this site treats a desk Mixture-of-Experts as two bills. <em>VRAM is charged on total weights.</em> <em>FLOPs per decode follow active parameters.</em> A 24 GB operator cannot treat “13B active” as a 13B model. The table is arithmetic on paper counts. It is not a measured GGUF, not a Hub file size, and not a quality ranking.</p>
+
+    <div class="decision-box">
+      <p><strong>The decision.</strong> Size the card for the Q4 of <em>all</em> experts. Qwen1.5-MoE-A2.7B (14.3 / 2.7) and DeepSeek-V2-Lite (15.7 / 2.4) clear 24 GB with KV headroom. Mixtral 8x7B (47 / 13) is ~23.5 GB of weights — tight; long context loses. Qwen2-57B-A14B (57 / 14), DeepSeek-V2 (236 / 21), and DeepSeek-V3 (671 / 37) do not fit. DeepSeek-V3’s active-Q4 would “fit”; the experts still occupy VRAM. Do not Q4 only the active set. Parking leftovers in RAM is the dirt road.</p>
+    </div>
+
+    <h2 class="section-h2 article-h2">What two bills does an MoE present on a desk GPU?</h2>
+    <p>The Mixtral paper states the split without a lecture: each token has access to 47B parameters and uses 13B active parameters, because a router selects two of eight experts at every layer<a href="#src-mixtral" class="ref">[1]</a>. Two sentences later, in the serving discussion, the authors draw the hardware line this page is here to enforce: the analysis of active count “is directly proportional to the inference compute cost” and “does not consider the memory costs.” Then: <em>“The memory costs for serving Mixtral are proportional to its sparse parameter count, 47B.”</em><a href="#src-mixtral" class="ref">[1]</a> The official Mixtral post repeats the same routing (two of eight) under Apache 2.0<a href="#src-mixblog" class="ref">[2]</a>.</p>
+    <p>That is the thesis, dated. <strong>VRAM follows total weights.</strong> <strong>FLOPs per decode follow active parameters.</strong> A 24 GB card that hears “13B active” and budgets a 13B model has bought the compute story and skipped the memory sentence. The <a href="/vram-guide.html">VRAM guide</a> already warns that a 236B-class MoE still needs the whole file resident. This page writes the 24 GB arithmetic on paper counts only.</p>
+    <p>The same split, verified in the papers opened for this update:</p>
+    <ul>
+      <li><strong>DeepSeek-V2</strong> — 236B total, 21B activated per token. <strong>DeepSeek-V2-Lite</strong> — 15.7B / 2.4B<a href="#src-dsv2" class="ref">[3]</a>.</li>
+      <li><strong>DeepSeek-V3</strong> — 671B total, 37B activated per token<a href="#src-dsv3" class="ref">[4]</a>.</li>
+      <li><strong>Qwen2-57B-A14B</strong> — 57B total, 14B active<a href="#src-qwen2" class="ref">[5]</a>.</li>
+      <li><strong>Qwen1.5-MoE-A2.7B</strong> — 14.3B total, 2.7B activated<a href="#src-qwen15" class="ref">[6]</a>.</li>
+    </ul>
+    <p>The named tradeoff is then a single gate. Sparse larger-total is a desk win only if the calculated Q4 of <em>all</em> experts still fits, and you want the smaller active set for decode FLOPs. Fail the roof and you do not have a 24 GB model. Do not recover the roof by quantizing only the active experts. That file does not exist in the papers above, and the router is not obliged to reuse yesterday’s pair.</p>
+
+    <h2 class="section-h2 article-h2">How is the Q4 column calculated?</h2>
+    <p>Every gigabyte on this page is <code>total_params_B × 0.5</code>. That is the catalog shorthand on <a href="/local-ai-models.html">the model catalog</a> for Q4_K_M weights at 8K-class planning, and it is the only multiplier used here. The result is labeled a <strong>calculation</strong>, not a measured GGUF and not a Hub body size. KV cache is extra.</p>
+    <div class="formula-box">
+      Q4_K_M weight GB  ≈  Params_B × 0.5
+      <span class="note">Calculation · catalog Q4_K_M shorthand · KV cache not included · not a measured file</span>
+    </div>
+    <p>Work Mixtral on that line so “13B active” cannot hide. Total: 47 × 0.5 = <strong>~23.5 GB</strong>. That is already the card, before KV. Active: 13 × 0.5 = <strong>~6.5 GB</strong> — the FLOPs/decode story, not a VRAM invoice. A 13B dense at the same shorthand is also ~6.5 GB. That coincidence is the trap. The paper will not let you pay the 6.5 and store the 47.</p>
+    <p>DeepSeek-V3 is the same trap at rack scale. Active-Q4 is 37 × 0.5 = <strong>~18.5 GB</strong>, which would “fit” a 24 GB sticker. Total-Q4 is 671 × 0.5 = <strong>~336 GB</strong>. The experts still occupy VRAM. The 18.5 is FLOPs. The 336 is the roof.</p>
+
+    <div class="ad-slot" id="ad-mid">
+      <div>Ad · Support this free resource</div>
+    </div>
+
+    <h2 class="section-h2 article-h2">What did the papers actually publish?</h2>
+    <p>Only counts that sit in the opened sources. Mixtral: 47B / 13B, two of eight experts, memory proportional to 47B<a href="#src-mixtral" class="ref">[1]</a>. DeepSeek-V2: 236B / 21B; V2-Lite: 15.7B / 2.4B<a href="#src-dsv2" class="ref">[3]</a>. DeepSeek-V3: 671B / 37B<a href="#src-dsv3" class="ref">[4]</a>. Qwen2: 57B-A14B means 57B total and 14B active per token<a href="#src-qwen2" class="ref">[5]</a>. Qwen1.5-MoE: 14.3B / 2.7B<a href="#src-qwen15" class="ref">[6]</a>. Official Hub cards for those six ids returned HTTP 200 on 20 August 2026. This page does not quote Hub body sizes or GGUF bytes.</p>
+
+    <h2 class="section-h2 article-h2">What fits a 24 GB card at calculated Q4 of total weights?</h2>
+    <p>Q4_K_M ≈ <code>Params_B × 0.5</code> GB. Labeled calculation. KV extra. Fit is the total-Q4 column against 24 GB, not the active column.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <caption>Calculation only: Q4_K_M ≈ Params_B × 0.5 GB on the paper (or Qwen blog) total. Not a measured GGUF. Not a Hub body size. KV cache is extra and is not in the Q4 column. Official cards listed returned HTTP 200 on 20 August 2026.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Total / active</th>
+            <th scope="col">Source</th>
+            <th scope="col">Q4 of total (calc.)</th>
+            <th scope="col">24 GB?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Qwen1.5-MoE-A2.7B<br><span style="font-weight:400;color:var(--text-dim)">Qwen/Qwen1.5-MoE-A2.7B</span></td>
+            <td>14.3B / 2.7B</td>
+            <td>Qwen1.5-MoE blog</td>
+            <td>~7.2 GB</td>
+            <td class="fit-yes">Fits, with KV headroom</td>
+          </tr>
+          <tr>
+            <td>DeepSeek-V2-Lite<br><span style="font-weight:400;color:var(--text-dim)">deepseek-ai/DeepSeek-V2-Lite</span></td>
+            <td>15.7B / 2.4B</td>
+            <td>arXiv 2405.04434</td>
+            <td>~7.9 GB</td>
+            <td class="fit-yes">Fits — desk-sized DeepSeekMoE</td>
+          </tr>
+          <tr>
+            <td>Mixtral 8x7B<br><span style="font-weight:400;color:var(--text-dim)">mistralai/Mixtral-8x7B-v0.1</span></td>
+            <td>47B / 13B</td>
+            <td>arXiv 2401.04088</td>
+            <td>~23.5 GB</td>
+            <td class="fit-squeeze">Tight; long context loses</td>
+          </tr>
+          <tr>
+            <td>Qwen2-57B-A14B<br><span style="font-weight:400;color:var(--text-dim)">Qwen/Qwen2-57B-A14B</span></td>
+            <td>57B / 14B</td>
+            <td>arXiv 2407.10671</td>
+            <td>~28.5 GB</td>
+            <td class="fit-no">No at Q4 of total</td>
+          </tr>
+          <tr>
+            <td>DeepSeek-V2<br><span style="font-weight:400;color:var(--text-dim)">deepseek-ai/DeepSeek-V2</span></td>
+            <td>236B / 21B</td>
+            <td>arXiv 2405.04434</td>
+            <td>~118 GB</td>
+            <td class="fit-no">No</td>
+          </tr>
+          <tr>
+            <td>DeepSeek-V3<br><span style="font-weight:400;color:var(--text-dim)">deepseek-ai/DeepSeek-V3</span></td>
+            <td>671B / 37B</td>
+            <td>arXiv 2412.19437</td>
+            <td>~336 GB</td>
+            <td class="fit-no">No. Active-Q4 (~18.5 GB) would “fit”; experts still occupy VRAM</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Read it top to bottom as a gate, not a ranking. The two rows that clear 24 GB on <em>total</em> Q4 are Qwen1.5-MoE-A2.7B (~7.2 GB) and DeepSeek-V2-Lite (~7.9 GB). Both leave room for KV. That is the only sense in which a sparse model is “desk-sized” in this set: the Q4 of every expert still sits on the card.</p>
+    <p>Mixtral is the boundary case the nickname conceals. 47 × 0.5 = 23.5 GB of weights on a 24 GB board. The paper’s own serving sentence says memory tracks 47B, not 13B. Short context may boot. Long context loses: KV is extra, and the <a href="/quantization.html">quantization bands</a> already put tens of gigabytes on a 32K–128K window for ordinary attention. A 24 GB operator who wants Mixtral is choosing a tight roof, not a 13B model.</p>
+    <p>The three “No” rows are the same mistake at three scales. Qwen2-57B-A14B is 14B active and ~28.5 GB of total Q4 — over the card. DeepSeek-V2 is 21B active and ~118 GB of total Q4. DeepSeek-V3 is 37B active and ~336 GB of total Q4. Write the active-Q4 for V3 if you want the illusion: 37 × 0.5 ≈ 18.5 GB. That number would “fit.” The experts still occupy VRAM. Do not download a 671B file because the active column looks like a 24B dense.</p>
+
+    <h3 class="article-h3">The arithmetic, shown once per row</h3>
+    <p>No file sizes. No Hub bodies. Each line is <code>total × 0.5</code>, then the 24 GB call.</p>
+    <ul>
+      <li><strong>Qwen1.5-MoE-A2.7B.</strong> 14.3 × 0.5 = 7.15 ≈ <strong>~7.2 GB</strong>. 24 − 7.2 leaves ~16.8 GB for KV and runtime. Fits with headroom.</li>
+      <li><strong>DeepSeek-V2-Lite.</strong> 15.7 × 0.5 = 7.85 ≈ <strong>~7.9 GB</strong>. Same class of leftover. Desk-sized DeepSeekMoE in this set.</li>
+      <li><strong>Mixtral 8x7B.</strong> 47 × 0.5 = <strong>~23.5 GB</strong>. 24 − 23.5 leaves ~0.5 GB. Display, runtime, and any KV eat that. Tight; long context loses.</li>
+      <li><strong>Qwen2-57B-A14B.</strong> 57 × 0.5 = <strong>~28.5 GB</strong>. Over 24 before KV. No. 14 × 0.5 = 7.0 is the FLOPs column, not the roof.</li>
+      <li><strong>DeepSeek-V2.</strong> 236 × 0.5 = <strong>~118 GB</strong>. No. 21 × 0.5 = 10.5 is FLOPs/decode.</li>
+      <li><strong>DeepSeek-V3.</strong> 671 × 0.5 = 335.5 ≈ <strong>~336 GB</strong>. No. 37 × 0.5 = 18.5 would “fit.” Experts still occupy VRAM.</li>
+    </ul>
+    <p>On 16 GB the gate is stricter and uses the same lines. Qwen1.5-MoE and V2-Lite still fit on weights. Mixtral at 23.5 GB does not. Nothing in the No column becomes a Yes because the sticker shrank.</p>
+    <p>This page will not fill the leftover with a Hub safetensors total or a community GGUF byte count. Those numbers move with a converter flag. The paper counts do not. If a runtime prints a different GB, believe the runtime for that file and keep the table labeled calculation. The decision does not change: VRAM is the total; FLOPs/decode are the active set; 24 GB is not a 13B card because someone said 13B active.</p>
+
+    <h2 class="section-h2 article-h2">What is the offload trap — the dirt road?</h2>
+    <p>The failure mode is specific. You hear 13B or 14B or 21B or 37B active, you see a 24 GB sticker, and you tell the runtime to keep what fits and spill the rest to CPU. The model “runs.” Tokens arrive. You have not purchased a 13B VRAM bill. You have purchased a 47B, 57B, 236B, or 671B roof with a dirt road to the street.</p>
+    <p>Mixtral’s router picks two of eight, per token, and the pair can change on the next step<a href="#src-mixtral" class="ref">[1]</a>. Weights that are “cold” this token are allowed to be hot on the next. If those blocks live in system RAM, decode leaves the GPU bus. The <a href="/quantization.html">quantization notes</a> already name the memory trap: VRAM is total params; the active count is not a storage discount. Offload rewrites the bus, not the invoice.</p>
+    <p>A second false save is worse than offload: Q4 only the experts you think will run. That is not a serving mode in the papers above. It is an attempt to pay the active-Q4 (~6.5 GB on Mixtral, ~18.5 GB on V3) and ignore the rest of the roof. Do not do it. The calculated column in the table is Q4 of <em>total</em> weights.</p>
+    <div class="callout">
+      <p><strong>Name the trap and refuse it as a plan.</strong> If calculated total-Q4 does not fit, do not take that MoE on 24 GB. Take Qwen1.5-MoE-A2.7B or DeepSeek-V2-Lite from this set, or take a dense model that the <a href="/vram-guide.html">VRAM guide</a> already sizes, or move the job off the desk. Offload is a last resort for a file you already own, not a download strategy.</p>
+    </div>
+
+    <h2 class="section-h2 article-h2">How should a 24 GB operator decide, in order?</h2>
+    <p>Write the total bill first. The order is deliberate.</p>
+    <ul>
+      <li><strong>1. Roof.</strong> Compute <code>total_params_B × 0.5</code>. If that number is above 24 GB, stop. Qwen2-57B-A14B (~28.5), DeepSeek-V2 (~118), and DeepSeek-V3 (~336) stop here. Mixtral (~23.5) is already the sticker; treat it as tight.</li>
+      <li><strong>2. KV extra.</strong> The column is weights only. Add context from the <a href="/quantization.html">published KV bands</a>. Mixtral at ~23.5 GB has almost no leftover. Qwen1.5-MoE and V2-Lite at ~7–8 GB do.</li>
+      <li><strong>3. Then FLOPs/decode.</strong> Active params tell you the decode compute, not the VRAM. 2.7B and 2.4B are why the two fitting rows are cheap to step once they reside. 13B, 14B, 21B, and 37B are not 24 GB shopping numbers.</li>
+      <li><strong>4. Refuse both dirt roads.</strong> Do not offload leftover experts as a sizing plan. Do not Q4 only the active set. If step 1 failed, change the model or change the machine. The <a href="/model-builder.html">workstation builder</a> and the <a href="/local-ai-server-guide.html">server guide</a> exist for the 118 GB and 336 GB roofs.</li>
+    </ul>
+    <p>On 20 August 2026, using only the opened papers and HTTP 200 cards above: a 24 GB operator who wants a sparse model takes Qwen1.5-MoE-A2.7B or DeepSeek-V2-Lite. Mixtral is a 47B roof wearing a 13B compute headline. The 57B, 236B, and 671B rows are not desk cards at Q4 of total.</p>
+
+    <h2 class="section-h2 article-h2">What “13B active” conceals</h2>
+    <p>It conceals the serving sentence. Mixtral’s authors split inference compute (active, 13B) from memory cost (sparse count, 47B) in the same paragraph<a href="#src-mixtral" class="ref">[1]</a>. Marketing heard the first number. A 24 GB board is billed the second.</p>
+    <p>The same concealment scales without a new lecture. “14B active” on Qwen2-57B-A14B is a 57B roof (~28.5 GB calculated Q4). “21B active” on DeepSeek-V2 is a 236B roof (~118 GB). “37B active” on DeepSeek-V3 is a 671B roof (~336 GB) whose active-Q4 would “fit.” None of those headlines are 13B-class VRAM. Buy the card for the total. Spend the FLOPs on the active set only after the total is home.</p>
+    <p>Quality claims stay out of this page. Fit is the gate. Task-level picks belong on the <a href="/best-local-coding-llm.html">coding guide</a> and the <a href="/recommend.html">recommender</a> after the roof clears.</p>
+
+    <h2 class="section-h2 article-h2">Frequently asked questions</h2>
+
+    <h3 class="article-h3">Can a 24 GB GPU treat Mixtral’s 13B active parameters as a 13B model?</h3>
+    <p>No. The Mixtral paper states 47B total and 13B active, two of eight experts, and says memory cost is proportional to the 47B sparse count. Calculated Q4_K_M is 47 × 0.5 ≈ 23.5 GB of weights. KV is extra. That is a tight 24 GB roof, not a 13B model.</p>
+
+    <h3 class="article-h3">Which verified MoEs fit 24 GB at Q4 of total weights?</h3>
+    <p>In this set: Qwen1.5-MoE-A2.7B (14.3 / 2.7 → ~7.2 GB) and DeepSeek-V2-Lite (15.7 / 2.4 → ~7.9 GB), both with KV headroom. Mixtral is tight. Qwen2-57B-A14B, DeepSeek-V2, and DeepSeek-V3 do not fit.</p>
+
+    <h3 class="article-h3">Does DeepSeek-V3’s 37B active fit a 24 GB card?</h3>
+    <p>Active-Q4 would “fit”: 37 × 0.5 ≈ 18.5 GB. Total-Q4 is 671 × 0.5 ≈ 336 GB. The experts still occupy VRAM. Do not size the card from the active column.</p>
+
+    <h3 class="article-h3">Can I Q4 only the active experts?</h3>
+    <p>No. The table is Q4 of total weights. The router may pick a different subset on the next token. A file that stores only “this token’s” experts is not the serving mode in the papers cited here.</p>
+
+    <h3 class="article-h3">Can I offload leftover experts to RAM and keep a 13B VRAM bill?</h3>
+    <p>No. That is the dirt road. Offload moves the roof into host memory. It does not change the fact that VRAM — or the slower path that replaced it — is still owed on the total.</p>
+
+    <h2 class="section-h2 article-h2">Sources</h2>
+    <ol class="sources-list">
+      <li id="src-mixtral">Jiang, Sablayrolles, Roux, Mensch et al., “Mixtral of Experts,” <a href="https://arxiv.org/abs/2401.04088">arXiv:2401.04088</a> (abs HTTP 200 on 20 August 2026). Opened. 47B total / 13B active; two of eight experts; “The memory costs for serving Mixtral are proportional to its sparse parameter count, 47B.” Official card <a href="https://huggingface.co/mistralai/Mixtral-8x7B-v0.1">mistralai/Mixtral-8x7B-v0.1</a> HTTP 200; body not quoted.</li>
+      <li id="src-mixblog">Mistral AI, “Mixtral of experts,” <a href="https://mistral.ai/news/mixtral-of-experts/">mistral.ai/news/mixtral-of-experts</a> (HTTP 200 on 20 August 2026). Opened. Two of eight experts; Apache 2.0 stated on the post. Paper 47B / 13B used for the table.</li>
+      <li id="src-dsv2">DeepSeek-AI, “DeepSeek-V2,” <a href="https://arxiv.org/abs/2405.04434">arXiv:2405.04434</a> (abs HTTP 200 on 20 August 2026). Opened. 236B / 21B; V2-Lite 15.7B / 2.4B. Cards <a href="https://huggingface.co/deepseek-ai/DeepSeek-V2">deepseek-ai/DeepSeek-V2</a> and <a href="https://huggingface.co/deepseek-ai/DeepSeek-V2-Lite">deepseek-ai/DeepSeek-V2-Lite</a> HTTP 200; bodies not quoted.</li>
+      <li id="src-dsv3">DeepSeek-AI, “DeepSeek-V3 Technical Report,” <a href="https://arxiv.org/abs/2412.19437">arXiv:2412.19437</a> (abs HTTP 200 on 20 August 2026). Opened. 671B / 37B. Card <a href="https://huggingface.co/deepseek-ai/DeepSeek-V3">deepseek-ai/DeepSeek-V3</a> HTTP 200; body not quoted.</li>
+      <li id="src-qwen2">Yang et al., “Qwen2 Technical Report,” <a href="https://arxiv.org/abs/2407.10671">arXiv:2407.10671</a> (abs HTTP 200 on 20 August 2026). Opened. Qwen2-57B-A14B = 57B total / 14B active. Card <a href="https://huggingface.co/Qwen/Qwen2-57B-A14B">Qwen/Qwen2-57B-A14B</a> HTTP 200; body not quoted.</li>
+      <li id="src-qwen15">Qwen Team, “Qwen1.5-MoE: Matching 7B Model Performance with 1/3 Activated Parameters,” <a href="https://qwenlm.github.io/blog/qwen-moe/">qwenlm.github.io/blog/qwen-moe</a> (HTTP 200 on 20 August 2026). Opened. 14.3B total / 2.7B activated. Card <a href="https://huggingface.co/Qwen/Qwen1.5-MoE-A2.7B">Qwen/Qwen1.5-MoE-A2.7B</a> HTTP 200; body not quoted.</li>
+      <li id="src-quant"><a href="/quantization.html">Quantization Explained</a>, local-ai-models.ai: KV bands and the MoE memory trap (all experts resident). On main as of 20 August 2026.</li>
+      <li id="src-cat"><a href="/local-ai-models.html">Model catalog</a>, local-ai-models.ai: <code>VRAM ≈ (Params_B × 0.5) + KV</code> at Q4_K_M. The 0.5 multiplier in the table is that shorthand, labeled calculation.</li>
+    </ol>
+
+  </article>
+</div>
+
+<section class="related">
+  <div class="related-title reveal">Related</div>
+  <div class="related-grid reveal">
+    <a href="/vram-guide.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">VRAM Guide</div>
+      <div class="related-desc">The capacity cliff: size-by-size Q4 tables, 8 GB and 24 GB answers, Mac unified memory.</div>
+    </a>
+    <a href="/quantization.html" class="related-card">
+      <div class="related-eyebrow">Learn</div>
+      <div class="related-name">Quantization Explained</div>
+      <div class="related-desc">Why Q4_K_M is 4.8-bit, how the GB formula is computed, and the MoE memory trap note.</div>
+    </a>
+    <a href="/local-ai-models.html" class="related-card">
+      <div class="related-eyebrow">Catalog</div>
+      <div class="related-name">Browse the Models</div>
+      <div class="related-desc">Hub-verified cards, licenses, and the live VRAM estimator behind the calculator button.</div>
+    </a>
+    <a href="/stacks.html" class="related-card">
+      <div class="related-eyebrow">Hardware</div>
+      <div class="related-name">Recommended Stacks</div>
+      <div class="related-desc">Pre-vetted 12 GB and 24 GB setups, including the creative stack that has to share a card.</div>
+    </a>
+    <a href="/local-ai-server-guide.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">Build a Local AI Server</div>
+      <div class="related-desc">When the roof is a rack: budget tiers from a first GPU to a dedicated box.</div>
+    </a>
+    <a href="/best-local-coding-llm.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">Best Local Coding LLM</div>
+      <div class="related-desc">Task-level picks on 8, 16, and 24 GB after the model has already cleared the roof.</div>
+    </a>
+  </div>
+</section>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.08.17 &middot; 100 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="/local-ai-models.html">Models</a></li>
+      <li><a href="/sentiment.html">Community Data</a></li>
+      <li><a href="/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="/builder.html">Stack Builder</a></li>
+      <li><a href="/model-builder.html">PC Builder</a></li>
+      <li><a href="/recommend.html">Recommender</a></li>
+      <li><a href="/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="/getting-started.html">Get Started</a></li>
+      <li><a href="/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="/quantization.html">Quantization</a></li>
+      <li><a href="/stacks.html">Stacks</a></li>
+      <li><a href="/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 17, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/cookies.html">Cookies</a> &middot; <a href="/accessibility.html">Accessibility</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+/* TITLE-CLIP-FIX */
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+/* end TITLE-CLIP-FIX */
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script src="/creatures.js" defer></script>
+<script src="/creatures-v2.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Local RAG on 16 GB: The Retrieval Tax (2026) | Local AI Models</title>
+<meta name="description" content="A home RAG stack has a hidden VRAM and context tax. On 16 GB, a 7B/8B plus a mid-size embedder plus five long chunks can lose to a 14B with ripgrep. Worked budget, dated 2026-08-20.">
+<meta name="keywords" content="local RAG, RAG VRAM, embedding model VRAM, KV cache retrieval, 16GB GPU RAG, HNSW index RAM, nomic-embed, Qwen3 embedding, home RAG stack">
+<link rel="canonical" href="https://local-ai-models.ai/local-rag-explained.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Local RAG on 16 GB: The Retrieval Tax (2026)">
+<meta property="og:description" content="A home RAG stack has a hidden VRAM and context tax. On 16 GB, a 7B/8B plus a mid-size embedder plus five long chunks can lose to a 14B with ripgrep.">
+<meta property="og:url" content="https://local-ai-models.ai/local-rag-explained.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta property="og:image" content="https://local-ai-models.ai/hero-quantization.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Local RAG on 16 GB: The Retrieval Tax (2026)">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Local RAG on 16 GB: The Retrieval Tax (2026)",
+  "description": "The VRAM and context tax of a home RAG stack: embedding weights, HNSW index RAM, retrieved-token KV, a worked 16 GB budget, and first-class retrieval failure modes. Dated 2026-08-20.",
+  "datePublished": "2026-08-20",
+  "dateModified": "2026-08-20",
+  "inLanguage": "en",
+  "author": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://local-ai-models.ai/local-rag-explained.html"}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://local-ai-models.ai/#destinations"},
+    {"@type": "ListItem", "position": 3, "name": "Local RAG on 16 GB: The Retrieval Tax (2026)", "item": "https://local-ai-models.ai/local-rag-explained.html"}
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('https://local-ai-models.ai/hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 600px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+/* PREMIUM-PATCH-V2 */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+/* end PREMIUM-PATCH-V2 */
+</style>
+
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.vram-table .total-row td { color: var(--text); font-weight: 600; border-top: 1px solid var(--border-bright); }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+.formula-box { font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.7; color: var(--text); background: rgba(0,0,0,0.45); border: 1px solid var(--border-bright); border-radius: 12px; padding: 18px 20px; margin: 0 0 26px; overflow-x: auto; }
+.note { font-size: 0.92rem; color: var(--text-dim); border-left: 2px solid rgba(0,212,255,0.35); padding: 4px 0 4px 16px; margin: 0 0 26px; }
+.colophon { font-size: 0.88rem; color: var(--text-dim); margin-top: 36px; }
+.plate, .bends { margin: 0 0 36px; padding: 28px 26px; background: linear-gradient(180deg, rgba(167,139,250,0.06), rgba(6,7,10,0.4)); border: 1px solid rgba(167,139,250,0.22); border-radius: 18px; }
+.plate-kicker, .bends-kicker { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.6px; color: var(--purple); margin-bottom: 10px; }
+.plate h2, .bends h2 { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(1.7rem, 3.4vw, 2.2rem); letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text); }
+.plate p, .bends p, .plate li, .bends li { color: var(--text-2); }
+.decision { margin: 0 0 36px; padding: 26px 24px; background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.22); border-radius: 18px; }
+.decision-kicker { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.6px; color: var(--accent); margin-bottom: 10px; }
+.decision p { margin-bottom: 0; }
+.fail { margin: 0 0 22px; padding: 20px 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.fail h3 { margin-top: 0; }
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500,'region':['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']});
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
+     crossorigin="anonymous"></script>
+<script src="/consent.js" defer></script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; }
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+</head>
+<body>
+<div style="font:600 0.85rem/1.4 system-ui,sans-serif;background:#132238;color:#e8eef6;padding:10px 16px;border-bottom:1px solid #2a4a6a;">Preview of <a href="https://github.com/lsp-llc/local-ai-models/pull/28" style="color:#7dd3fc">lsp-llc/local-ai-models#28</a> — not production. Site nav and scripts stay on local-ai-models.ai.</div>
+
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="/local-ai-models.html">Models</a>
+      <a href="/builder.html">Stack Builder</a>
+      <a href="/model-builder.html">PC Builder</a>
+      <a href="/recommend.html">Recommender</a>
+      <a href="/token-simulator.html">Token Sim</a>
+      <a href="/claws.html">CLAWS</a>
+      <a href="/sentiment.html">Community</a>
+      <a href="/getting-started.html">Get Started</a>
+      <a href="/quantization.html">Quantization</a>
+      <a href="/stacks.html">Stacks</a>
+      <a href="/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/#destinations">Guides</a><span class="sep">/</span><span>Local RAG</span></div>
+    <div class="hero-eyebrow">Scientific Plate VII · 16 GB decision</div>
+    <h1 class="hero-title">Local RAG on 16 GB: The <span class="accent">Retrieval Tax</span></h1>
+    <div class="updated-line">Updated: August 20, 2026</div>
+    <p class="hero-sub">Embedding weights and retrieved chunks are not free context. On a 16 GB card they are a rent you pay in VRAM, and they can cost more than the quality they buy.</p>
+  </div>
+</section>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+  <article class="article-body">
+
+    <p class="lede">A home RAG stack looks cheap until you itemize it. The generator is only the first resident. The embedder wants a seat. The index wants RAM. Every retrieved chunk becomes key/value state in the generator, which is the same rent the <a href="/vram-guide.html">VRAM guide</a> already charges for long chats. On 16 GB, dated <strong>2026-08-20</strong>, that rent is the difference between a 14B that reads three grep hits and an 8B that confidently answers from the wrong page.</p>
+
+    <div class="decision" id="decision">
+      <div class="decision-kicker">Dated decision · 2026-08-20 · 16 GB</div>
+      <p><strong>Spend the card on the generator unless the corpus is unstructured prose that lexical search cannot hit.</strong> If the files have unique tokens — function names, error strings, headings, ticket IDs — run a 14B at Q4_K_M and retrieve with ripgrep or a tight BM25 index. If you do need dense retrieval, pay for a small embedder and short chunks, not a mid-size embedder plus five long pages. The named tradeoff is generator quality versus retrieval machinery. Both stacks fit 16 GB. They do not buy the same answer.</p>
+    </div>
+
+    <section id="scientific-plate" class="plate" data-nosnippet>
+      <div class="plate-kicker">Scientific Plate VII · Reading Room Card · Ad-free</div>
+      <h2>The Reading Room</h2>
+      <p>You do not carry the library to the desk. You request volumes. The desk is the context window. The volumes that arrive still occupy it. That occupancy is not a metaphor for “extra prompt text.” It is KV cache: key and value tensors written once per retrieved token, per layer, and reread on every later decode step.</p>
+      <p>The librarian is the retriever. The reader is the generator. The card in this plate is only the spine: request, occupancy, rent. House rule: the plate header stays ad-free. The arithmetic and the failure modes are the rest of the page, not a dump of the plate.</p>
+    </section>
+
+    <section id="metaphor-bends" class="bends" data-nosnippet>
+      <div class="bends-kicker">Ad-free · Read before the budget</div>
+      <h2>Where the Metaphor Bends</h2>
+      <ul>
+        <li><strong>A reading room assumes a competent librarian.</strong> Dense retrieval returns nearest neighbors in embedding space. Nearest is not “this answers the question.” Semantic near and task-relevant part company on homonyms, boilerplate, and adjacent sections of the same manual.</li>
+        <li><strong>Chunks are not volumes.</strong> A 2,048-token slice is a torn signature. The sentence that names the API can sit in chunk 17; the sentence that lists the breaking change can sit in chunk 18. The desk then holds a confident half.</li>
+        <li><strong>An empty desk still produces a letter.</strong> If top-k comes back empty or near-empty, the generator answers from parametric memory and still sounds grounded. Silence in the index is not an error message in the UI.</li>
+        <li><strong>The stacks live in different rooms.</strong> HNSW graph and dense vectors usually sit in system RAM. Embedder weights and generator KV sit in VRAM. Adding “the index is only 200 MB” does not pay the retrieved-token bill on the GPU.</li>
+        <li><strong>A better librarian does not enlarge the reader.</strong> Swapping a 137M embedder for a 4B embedder can move MTEB points. It does not turn an 8B generator into a 14B generator. On 16 GB that swap is often the reason the 14B no longer fits.</li>
+      </ul>
+    </section>
+
+    <h2 class="section-h2 article-h2">Why retrieval is a <span class="accent">VRAM tax</span>, not a free upgrade</h2>
+    <p>Lewis, Perez, Piktus, and colleagues named the pattern in 2020: a parametric generator plus a non-parametric memory, queried at inference, with retrieved passages concatenated into the conditioning context. Their paper is <a href="https://arxiv.org/abs/2005.11401">arXiv:2005.11401</a>, <em>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</em>. The home-lab translation is narrower than the paper. You are not fine-tuning BART on Wikipedia. You are keeping two models resident, or sequencing them, on one consumer card, and stuffing the winner’s context with whatever the index returned.</p>
+    <p>Fan, Ding, Ning, and colleagues survey that marriage of retrievers and LLMs as RA-LLMs — architectures, training, applications — in <a href="https://arxiv.org/abs/2405.06211">arXiv:2405.06211</a> (KDD 2024). Wang, Wang, Gao, and colleagues, <a href="https://arxiv.org/abs/2407.01219">arXiv:2407.01219</a>, treat the same pipeline as a stack of replaceable modules: chunk, embed, store, retrieve, rerank, pack, generate. Both papers assume the interesting constraint is quality or latency. On a 16 GB box the interesting constraint is occupancy. Every module that is “just another model” is another resident. Every passage that is “just more context” is more KV.</p>
+    <p>The <a href="/local-ai-models.html">catalog</a> already points 16 GB operators at a 14B-class generator — Phi-4 at about 11 GB Q4, Qwen3-14B at about 10.7 GB Q4. Those chips are catalog estimates, not first-party measurements, and they assume the community default <a href="/quantization.html">Q4_K_M</a>. The moment you also load a mid-size embedder and five long chunks, you have spent the headroom that made the 14B comfortable. You did not buy a smarter 8B. You bought an 8B plus a second model plus a longer notebook.</p>
+    <p>That is the tax. It has three invoices, and they do not itemize themselves in the UI:</p>
+    <ul>
+      <li><strong>Embedder weights.</strong> Resident in VRAM if you embed on the GPU, or a load/unload dance that hurts first-token latency. A 137M encoder is a rounding error. A 4B encoder is a second small LLM.</li>
+      <li><strong>Index RAM.</strong> Dense vectors plus an HNSW graph. Usually system memory, not VRAM — until you put FAISS on the GPU and discover the graph bought a GPU seat too.</li>
+      <li><strong>Retrieved-token KV.</strong> Once the generator sees a chunk, that chunk is conversation. It pays the same bytes-per-token as a user message of equal length. Five 2,048-token chunks are 10,240 tokens of cache before the question is interesting.</li>
+    </ul>
+
+    <h2 class="section-h2 article-h2">The pipeline, with a <span class="accent">local cost</span> on each step</h2>
+    <p>Write the pipeline as five verbs. Each verb has a bill. Skip the bill and you will “add RAG” the way people add 128K context: it works in the demo and starves the card in the week that matters.</p>
+
+    <h3 class="article-h3">1. Chunk</h3>
+    <p><strong>Local cost: token count per slice, and the amputation risk at every cut.</strong> A chunker is a scissors. Overlap is a second copy of the same sentences, paid twice at retrieve time if both slices rank. There is no free overlap. Wang et al. (2024) treat chunking as a module you actually have to choose; the home rule is smaller than their lab sweep. Prefer 256 to 512 tokens on technical notes. Treat 2,048 as “I ingested files, not passages.” Five files of 2,048 tokens is a context strategy, not a retrieval strategy.</p>
+    <p>The hidden cost is structural. Markdown headings, function bodies, and definition/value pairs do not respect a fixed window. If the window cuts between “the default is” and “4096,” the embedder indexes a half-sentence and the generator never sees the number. That failure is first-class later on this page. It starts here, at the scissors.</p>
+
+    <h3 class="article-h3">2. Embed</h3>
+    <p><strong>Local cost: embedder VRAM plus encode-time compute.</strong> Two official cards, both HTTP 200 on 2026-08-20, bound the range this page will use:</p>
+    <ul>
+      <li><a href="https://huggingface.co/nomic-ai/nomic-embed-text-v1.5"><code>nomic-ai/nomic-embed-text-v1.5</code></a> — Hub card license <strong>Apache-2.0</strong>. Safetensors parameter count 136,731,648. Card table lists sequence length 8192 and embedding width 768, with Matryoshka widths down to 64. Card requires a task prefix (<code>search_document:</code> / <code>search_query:</code>). FP16 weights calculate to 136,731,648 × 2 bytes = 273,463,296 bytes = <strong>0.255 GiB, calculated</strong>.</li>
+      <li><a href="https://huggingface.co/Qwen/Qwen3-Embedding-4B"><code>Qwen/Qwen3-Embedding-4B</code></a> — Hub card license <strong>Apache-2.0</strong>. Safetensors parameter count 4,021,774,336. Official <code>config.json</code> (HTTP 200): 36 layers, 32 query heads, 8 KV heads, <code>head_dim</code> 128. At the site’s Q4_K_M 4.8-bit convention this is 4,021,774,336 × 4.8 / 8 = 2,413,064,602 bytes = <strong>2.25 GiB weights-only, calculated</strong>. The catalog shorthand <code>Params_B × 0.5</code> would print 2.01 GB. The catalog’s Qwen3-Embedding row spans 0.6B / 4B / 8B at a chip of 0.5–7 GB; that chip is a catalog figure, not a first-party measurement.</li>
+    </ul>
+    <p>The 4B is what this page means by mid-size: large enough that you feel it on 16 GB, small enough that people load it “for quality” without doing the arithmetic. The 8B sibling in that catalog row is a second 8B. Do not run two 8Bs on 16 GB and call it a retrieval upgrade.</p>
+    <p>Encode cost is mostly CPU or GPU time at ingest, then a smaller bill at query time. Ingest is a one-time tax unless the corpus churns. Query encode of a 32-token question is cheap. The resident weights are the part that steals the 14B’s chair.</p>
+
+    <h3 class="article-h3">3. Index (HNSW / ANN)</h3>
+    <p><strong>Local cost: system RAM for vectors plus graph, or VRAM if you force the index onto the GPU.</strong> Malkov and Yashunin’s Hierarchical Navigable Small World graphs are the usual ANN structure in local stacks. Paper: <a href="https://arxiv.org/abs/1603.09320">arXiv:1603.09320</a>, later IEEE Transactions on Pattern Analysis and Machine Intelligence, <a href="https://doi.org/10.1109/TPAMI.2018.2889473">10.1109/TPAMI.2018.2889473</a>. The structure is a layered proximity graph. Search starts at a coarse layer and descends. You pay for every stored vector and for the neighbor lists that make the hop possible.</p>
+    <p>Worked RAM, 50,000 chunks, 768-d float32 (the nomic v1.5 width), calculated:</p>
+    <ul>
+      <li>Vectors: 50,000 × 768 × 4 = 153,600,000 bytes = <strong>0.143 GiB</strong>.</li>
+      <li>Graph sketch: 50,000 nodes × <code>M = 16</code> neighbors × 8-byte ids × 1.5 for the extra layers ≈ 9,600,000 bytes = <strong>0.009 GiB</strong>.</li>
+      <li>Together ≈ <strong>0.15 GiB system RAM, calculated</strong>. At 500,000 chunks the same sketch is about 1.5 GiB. At a million, about 3 GiB. Still usually cheaper than a 4B embedder — and still not free if the box is a 32 GB laptop that already holds the 14B in unified memory.</li>
+    </ul>
+    <p>HNSW is approximate. That is the point of the paper. You traded exact nearest-neighbor for logarithmic hops. The tradeoff you actually feel is recall-at-k versus RAM and build time, not a guarantee that the right passage is in the top five. An exact scan of 50,000 × 768 is also cheap on a modern CPU. Do not deploy HNSW because a tutorial said “vector database.” Deploy it when brute force is the slow part. On a home corpus it often is not.</p>
+
+    <h3 class="article-h3">4. Retrieve</h3>
+    <p><strong>Local cost: top-k × chunk tokens, which become generator tokens.</strong> This is the invoice people miss. Retrieval quality is a ranking problem. Retrieval cost on a local LLM is a length problem. <code>k = 5</code> at 2,048 tokens is 10,240 tokens. <code>k = 3</code> at 384 tokens is 1,152 tokens. Same “I have RAG” checkbox. Nine times less notebook.</p>
+    <p>Rerankers (the catalog’s BGE reranker row) add a cross-encoder pass over the shortlist. They can cut silent-wrong-context if you then <em>drop</em> the losers. If you rerank and still paste all five chunks, you paid the reranker and kept the tax. The only retrieve setting that reduces KV is a smaller k or a shorter chunk, applied after the rerank, not before the story you tell yourself about quality.</p>
+
+    <h3 class="article-h3">5. Generate</h3>
+    <p><strong>Local cost: generator weights plus KV for prompt + retrieved tokens + completion.</strong> This is ordinary local inference, the same arithmetic as the <a href="/vram-guide.html">VRAM guide</a> and the <a href="/quantization.html">quantization notes</a>. RAG does not get a discount. The retrieved tokens are not “metadata.” They are sequence. Grouped-query attention makes the per-token rent smaller than older multi-head designs; it does not make 10k retrieved tokens free.</p>
+    <p><code>kv-cache.html</code> is not on this site’s main tree as of 2026-08-20, so the formula on this page is the standard identity, labeled calculated:</p>
+    <div class="formula-box">bytes_per_token = 2 × n_layers × n_kv_heads × head_dim × bytes_per_element
+KV_bytes       = bytes_per_token × seq_len × batch</div>
+    <p>The leading 2 is K and V. <code>bytes_per_element</code> is 2 for FP16/BF16 KV. Batch is 1 in every worked row below. Use KV heads, not query heads. Official configs opened for this page (all HTTP 200 on 2026-08-20):</p>
+    <ul>
+      <li><strong>Qwen3-8B</strong> (<code>Qwen/Qwen3-8B</code>): 36 layers, 8 KV heads, <code>head_dim</code> 128. 2 × 36 × 8 × 128 × 2 = <strong>147,456 B/token = 144.00 KiB, calculated</strong>.</li>
+      <li><strong>Qwen3-14B</strong> (<code>Qwen/Qwen3-14B</code>): 40 layers, 8 KV heads, <code>head_dim</code> 128. 2 × 40 × 8 × 128 × 2 = <strong>163,840 B/token = 160.00 KiB, calculated</strong>.</li>
+      <li><strong>Phi-4</strong> (<code>microsoft/phi-4</code>): 40 layers, 10 KV heads, hidden 5120 so <code>head_dim</code> 128. 2 × 40 × 10 × 128 × 2 = <strong>204,800 B/token = 200.00 KiB, calculated</strong>.</li>
+    </ul>
+    <p>Five long chunks of 2,048 tokens on Qwen3-8B: 10,240 × 147,456 = 1,509,949,440 bytes = <strong>1.41 GiB of retrieved-token KV, calculated</strong>. The same five chunks on Phi-4 would be 10,240 × 204,800 = 2,097,152,000 bytes = <strong>1.95 GiB, calculated</strong>. Retrieval that “fits the 8B” is more expensive on the 14B you wish you had kept. That is not an argument for the 8B. It is an argument for shorter chunks if you insist on the 14B and RAG together — which, on 16 GB, you usually should not.</p>
+
+    <h2 class="section-h2 article-h2">Worked 16 GB <span class="accent">itemized budget</span></h2>
+    <p>Two stacks. Same advertised card. Same day. Catalog VRAM chips are labeled as catalog figures — Hub cards for these generators do not print a GB occupancy, and this site did not measure them on a bench. KV and embedder-weight lines are calculated from official parameter counts and configs. Runtime reserve is a planning figure, not a measurement: 1.5 GB, in the same spirit as the 1.2× to 1.5× overhead the VRAM guide uses for cache and buffers when a chip is a range.</p>
+    <p>Usable memory is less than the sticker. A desktop compositor, a browser, and the CUDA context eat the edges. Treat 16 GB as about 15 GB of planning room. If a total lands between 14.5 and 16, it is tight, not comfortable.</p>
+
+    <h3 class="article-h3">Stack A — 8B generator, mid-size embedder, five long chunks</h3>
+    <p>The stack a capable operator actually builds after a weekend of tutorials: Qwen3-8B at Q4_K_M, Qwen3-Embedding-4B at Q4_K_M, an HNSW index over tens of thousands of slices, <code>k = 5</code>, chunk length 2,048, plus a 1,024-token system-and-question prefix.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <thead>
+          <tr><th scope="col">Line</th><th scope="col">What you pay</th><th scope="col">GiB</th><th scope="col">Basis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Generator weights</td><td>Qwen3-8B Q4_K_M, resident</td><td>6–7</td><td>Catalog chip, not a first-party measurement</td></tr>
+          <tr><td>Embedder weights</td><td>Qwen3-Embedding-4B at 4.8-bit</td><td>2.25</td><td>Calculated from Hub param count 4,021,774,336</td></tr>
+          <tr><td>HNSW + vectors</td><td>50k × 768-d float32, CPU index</td><td>0.15 RAM</td><td>Calculated; system RAM, 0 VRAM if the index stays on CPU</td></tr>
+          <tr><td>Retrieved-token KV</td><td>5 × 2,048 = 10,240 tokens @ 144 KiB</td><td>1.41</td><td>Calculated, FP16 KV, batch 1, Qwen3-8B config</td></tr>
+          <tr><td>Prompt KV</td><td>1,024-token system + question</td><td>0.14</td><td>Calculated, same bytes/token</td></tr>
+          <tr><td>Completion KV</td><td>512-token answer, still resident at the end</td><td>0.07</td><td>Calculated</td></tr>
+          <tr><td>Runtime reserve</td><td>allocator, activations, display</td><td>1.50</td><td>Planning figure, not measured</td></tr>
+          <tr class="total-row"><td>VRAM total</td><td>Index excluded (CPU)</td><td>11.4–12.4</td><td>Fits 16 GB; spends the 14B’s chair</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="article-h3">Stack B — 14B generator, ripgrep, tight hits</h3>
+    <p>The stack the catalog already recommends for 16 GB, plus a lexical retrieve that returns three 400-token hits — a function, an error stanza, a config block — instead of five pages.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <thead>
+          <tr><th scope="col">Line</th><th scope="col">What you pay</th><th scope="col">GiB</th><th scope="col">Basis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Generator weights</td><td>Phi-4 14B Q4_K_M, resident</td><td>~11</td><td>Catalog chip, not a first-party measurement</td></tr>
+          <tr><td>Embedder weights</td><td>None</td><td>0</td><td>ripgrep / BM25, no dense encoder</td></tr>
+          <tr><td>Index</td><td>Source tree on disk</td><td>0 VRAM</td><td>CPU and SSD; not an ANN graph</td></tr>
+          <tr><td>Retrieved-token KV</td><td>3 × 400 = 1,200 tokens @ 200 KiB</td><td>0.23</td><td>Calculated, FP16 KV, Phi-4 config</td></tr>
+          <tr><td>Prompt KV</td><td>1,024-token system + question</td><td>0.20</td><td>Calculated</td></tr>
+          <tr><td>Completion KV</td><td>512-token answer</td><td>0.10</td><td>Calculated</td></tr>
+          <tr><td>Runtime reserve</td><td>allocator, activations, display</td><td>1.50</td><td>Planning figure, not measured</td></tr>
+          <tr class="total-row"><td>VRAM total</td><td></td><td>~13.0</td><td>Fits 16 GB; leftover is context, not a second model</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Qwen3-14B at the catalog’s ~10.7 GB chip is the other 16 GB generator. Its retrieved-token rent is lower than Phi-4’s because it uses 8 KV heads rather than 10: 1,200 × 163,840 = 196,608,000 bytes = <strong>0.18 GiB, calculated</strong>. The decision does not hinge on that 50 MB. It hinges on not spending 2.25 GiB on a 4B embedder and 1.41 GiB on five long chunks in order to keep an 8B.</p>
+
+    <h3 class="article-h3">The same 16 GB, three ways, one tradeoff</h3>
+    <div class="table-wrap">
+      <table class="vram-table">
+        <thead>
+          <tr><th scope="col">Choice</th><th scope="col">Generator</th><th scope="col">Retrieval</th><th scope="col">What you gave up</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>A. Tutorial RAG</td><td>8B Q4</td><td>4B embedder + 5 × 2,048</td><td>The 14B. Also any claim that the answer was grounded — see failures.</td></tr>
+          <tr><td>A′. Cheap RAG</td><td>8B Q4</td><td>nomic-embed-text-v1.5 + 3 × 384</td><td>Still the 14B. You saved ~3.3 GiB versus A and did not buy a better generator.</td></tr>
+          <tr><td>B. Catalog 16 GB</td><td>14B Q4</td><td>ripgrep / BM25, 3 tight hits</td><td>Semantic recall on paraphrase-only questions. You kept the better reader.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>A′ is the honest RAG-on-16 GB build if the corpus is prose. nomic-embed-text-v1.5 at FP16 is 0.255 GiB. Three 384-token chunks on Qwen3-8B are 1,152 × 147,456 = 169,869,312 bytes = <strong>0.16 GiB KV, calculated</strong>. Total retrieval machinery under half a gigabyte. The remaining mistake would be keeping the 8B when the card can hold Phi-4. Only keep the 8B-plus-cheap-RAG pair when you also need the embedder resident for something else (continuous ingest, agents writing memory) or when the 14B quality gap on your actual tasks is not worth the extra 4 GB. Measure that gap on your files. Do not infer it from a leaderboard.</p>
+    <p>Unified memory on a 16 GB Mac is the same decision with less isolation. The HNSW vectors and the generator weights compete for one pool. A 0.15 GiB index is still small. A 4B embedder plus an 8B generator plus 10k tokens of KV is how a “it loaded” session starts swapping. <a href="/stacks.html">The stacks page</a> already treats 16–24 GB unified as 7B/8B comfortable and 14B workable. Adding RAG does not raise that tier. It lowers it.</p>
+
+    <h2 class="section-h2 article-h2">When the tax is <span class="accent">worth paying</span></h2>
+    <p>The decision is not “RAG is a scam.” The decision is “do not pay 14B prices in machinery to keep an 8B.” Pay the tax when the alternative retrieve cannot see the answer.</p>
+    <ul>
+      <li><strong>Pay it</strong> for unstructured prose: meeting notes, wiki dumps, email archives, scanned-to-text manuals where the query and the passage share meaning and not tokens. ripgrep of “how do we handle refunds” will miss a paragraph that never uses the word refund.</li>
+      <li><strong>Pay it</strong> when the corpus is multilingual and the queries are not. nomic-embed-text-v2-moe’s card (HTTP 200, Apache-2.0, 475M total / 305M active, 512-token max sequence) exists for that job. It is still a small model. It is not a reason to load Qwen3-Embedding-8B beside an 8B chat model on 16 GB.</li>
+      <li><strong>Do not pay it</strong> for a source tree, a log directory, or a notes vault that already has titles and identifiers. Unique strings are a gift. ripgrep of an error code will beat a 4B embedder that ranked the troubleshooting overview because both mention “timeout.”</li>
+      <li><strong>Do not pay it</strong> to “ground” a model that already knows the public fact. RAG on a general encyclopedia, locally, is how you spend VRAM to retrieve a worse copy of Wikipedia than the 14B already compressed into its weights.</li>
+      <li><strong>Hybrid is the adult move.</strong> Lexical first. Dense only on the miss. That is two retrieve paths and one generator. The embedder can stay on CPU. The 14B stays on the GPU. You pay encode latency on the hard queries, not a permanent 2.25 GiB lease.</li>
+    </ul>
+    <p>Wang et al. (2024) spend a paper asking which module combination wins on quality and delay. Their default-looking RAG is already a pipeline, not a single embedding call. The local operator’s version of that result is smaller: most home quality failures are retrieve failures, and most home VRAM failures are “I left k and chunk length at the tutorial defaults.” Fix those before you buy a bigger embedder.</p>
+
+    <h2 class="section-h2 article-h2">Failure modes, <span class="accent">first-class</span></h2>
+    <p>Cloud RAG tutorials treat these as footnotes under “limitations.” On a local card they are the reason the tax did not buy quality. Each one can produce a fluent answer. Fluency is not a test.</p>
+
+    <div class="fail" id="fail-wrong">
+      <h3 class="article-h3">Silent wrong context</h3>
+      <p>The index returns a passage that is about the right topic and the wrong claim. The generator, being an 8B instructed to use the context, repeats the claim with citations to your own files. You have built a machine for confident mis-summary of your own notes.</p>
+      <p>This is the default failure, not the rare one. Embedding space clusters by subject. A question about “the 2024 refund policy” is near “the 2022 refund policy,” “refund fraud,” and a draft you marked obsolete. Cosine does not read the year in the heading unless that year dominates the slice. If your chunker dropped the heading — see amputation — the 2022 policy is a near neighbor of the 2024 question and the reader cannot see the date that would have saved it.</p>
+      <p>What it looks like in the product: a green “grounded” badge, three chunk previews that mention the right nouns, and a number that is off. The operator who only spot-checks nouns will ship it.</p>
+      <p>What to do that is cheaper than a 4B embedder: put dates and titles inside every chunk (the heading belongs in the slice, not only in the filename); retrieve more than you paste, then drop; require a lexical filter when the query contains an identifier; show the operator the exact spans, not a similarity score. If you cannot see the span, you cannot catch the lie.</p>
+    </div>
+
+    <div class="fail" id="fail-amputation">
+      <h3 class="article-h3">Chunk amputation</h3>
+      <p>The scissors cut between the name and the value, the function and the return, the warning and the condition. Each half is a coherent English fragment. Neither half is the fact. The embedder indexes both. Retrieve can return the name-half because it matches the query nouns, and the value-half sits at rank 7, past your <code>k = 5</code>.</p>
+      <p>Long chunks make amputation rarer and KV more expensive. Short chunks make amputation common and KV cheap. That is the named tradeoff. It is not solved by “512 with 64 overlap” as a superstition. Overlap duplicates the cut region so both slices contain it — and duplicates the KV if both retrieve. Use overlap when your documents have definition/value pairs that straddle a fixed window. Do not use it as a default 20 percent tax on every note.</p>
+      <p>Code is the worst case. A 400-line file chunked at 512 tokens will separate a docstring from a body, a test from an assertion, a flag from the branch that reads it. ripgrep of the identifier returns the line and twenty neighbors. That is why Stack B is not a romantic preference for old tools. It is a chunker that respects tokens you already typed.</p>
+      <p>Markdown is the second-worst case. If you split on token count instead of headings, the <code>##</code> line that scoped the section is in the previous slice. The embedder then sees a body that looks like every other body. Heading-aware splitters are not decoration. They are how you stop paying for slices that cannot be retrieved to the question that would have used the heading as a handle.</p>
+    </div>
+
+    <div class="fail" id="fail-empty">
+      <h3 class="article-h3">Empty retrieve</h3>
+      <p>Top-k is never empty in most libraries. You asked for five neighbors; you get five neighbors. “Empty” here means empty of answers: the best cosine in the corpus is still a miss, or the query embedding landed in a hole because the prefix was wrong, the collection was stale, or the question used a name the notes never wrote.</p>
+      <p>nomic-embed-text-v1.5’s card is explicit: documents take <code>search_document:</code>, queries take <code>search_query:</code>. Drop the prefix and you have embedded two different tasks into one space. The neighbors you get are neighbors of a malformed query. That presents as empty retrieve even though <code>k = 5</code> filled the prompt. The generator then does what generators do with irrelevant context: it ignores it, or it weaves it, and in both cases it sounds sure.</p>
+      <p>A true empty — filter by a score floor, get zero chunks — is healthier if the UI says so. Most home UIs do not have a floor. They have a slider for k. Raising k on a miss pastes more wrong context. That is how empty retrieve becomes silent wrong context. The cheap control is a minimum score and a visible “no passage, answering from weights” state. The expensive control is a 4B embedder. Use the cheap one first.</p>
+    </div>
+
+    <div class="fail" id="fail-near">
+      <h3 class="article-h3">Semantic near is not relevant</h3>
+      <p>This is the bends section, written as an operator bug. “Install CUDA” is near “CUDA programming model,” “CUDA samples,” and last year’s install note for a different distro. “Lease” in a contract corpus is near every paragraph that uses the word lease. Embedding models are trained to pull paraphrases together. They are not trained to pull “the passage that would change the answer” together. Those are different jobs. Fan et al. (2024) review architectures that try to close that gap with better retrievers, better training, better fusion. None of that is a 16 GB default. Your default is: if the query has a handle — a path, a symbol, a date, an ID — search the handle. Use cosine for the queries that are only a paraphrase.</p>
+      <p>A practical test: take ten questions you will actually ask. For each, print the retrieved spans before you generate. If you would not paste those spans into a 14B by hand, do not let the 8B see them. That test costs nothing in VRAM and catches more bad RAG than a larger embedder will.</p>
+    </div>
+
+    <h2 class="section-h2 article-h2">An operator checklist for the <span class="accent">16 GB card</span></h2>
+    <p>Work top to bottom. Stop when the answers are good. Each step is a refusal to spend VRAM on a story.</p>
+    <ul>
+      <li><strong>Name the corpus.</strong> Source tree, notes vault, or prose dump. If you cannot name it, you are not ready to chunk it.</li>
+      <li><strong>Try lexical on ten real questions.</strong> If eight hits are usable, you do not have a RAG problem. You have a generator-size problem. Load the 14B.</li>
+      <li><strong>If you still need dense:</strong> <code>nomic-ai/nomic-embed-text-v1.5</code>, Apache-2.0, prefixes on, 256–512 token heading-aware chunks, <code>k = 3</code>, score floor on, spans visible. Keep the embedder on CPU if the 14B is on the GPU.</li>
+      <li><strong>Do not load Qwen3-Embedding-4B or 8B beside an 8B chat model on 16 GB</strong> unless you have measured a retrieve-only gain that the 14B cannot match with better hits. The catalog’s 0.5–7 GB chip is a warning label, not an invitation.</li>
+      <li><strong>Cap retrieved tokens the way you cap chat history.</strong> A budget of 1,200 to 1,500 retrieved tokens is a policy. “Whatever top-5 returns” is not.</li>
+      <li><strong>Re-embed when the files change,</strong> not on a schedule that ignores git. A stale index is empty retrieve with extra confidence.</li>
+      <li><strong>If VRAM is tight, unload the embedder after ingest.</strong> Query encode of a short question is a brief reload or a CPU pass. A 2.25 GiB lease for a 32-token encode is how Stack A happens.</li>
+    </ul>
+    <p>Hardware around the card still matters. <a href="/local-ai-server-guide.html">The server guide</a> is how you decide whether 16 GB is the machine or a waypoint. <a href="/stacks.html">Recommended stacks</a> is how the rest of the box is supposed to look. This page is only the retrieve-versus-generate fork on the card you already have.</p>
+
+    <h2 class="section-h2 article-h2">Frequently asked questions</h2>
+
+    <h3 class="article-h3">Should I spend 16 GB on retrieval or on a bigger generator?</h3>
+    <p>On 2026-08-20, spend it on the generator when the files have unique tokens. Phi-4 at the catalog’s ~11 GB Q4, or Qwen3-14B at ~10.7 GB Q4, plus ripgrep, is the default 16 GB build on this site. Spend a slice on retrieval only when paraphrase is the access pattern. Even then, spend it on a 137M encoder and short chunks, not on a 4B encoder and five long pages.</p>
+
+    <h3 class="article-h3">How much VRAM does a local RAG stack add?</h3>
+    <p>Itemized on this page: a mid-size 4B embedder at Q4_K_M is 2.25 GiB calculated; five 2,048-token chunks in a Qwen3-8B FP16 cache are 1.41 GiB calculated; nomic-embed-text-v1.5 at FP16 is 0.255 GiB calculated; three 384-token chunks in the same 8B cache are 0.16 GiB calculated. The index for 50k 768-d vectors is about 0.15 GiB of system RAM, calculated, if it stays on the CPU. Catalog generator chips (6–7 GB for Qwen3-8B, ~11 GB for Phi-4) are not first-party measurements.</p>
+
+    <h3 class="article-h3">Why do retrieved chunks cost VRAM after I already paid for the embedder?</h3>
+    <p>Because they become sequence in the generator. The embedder’s job ends when the ids are chosen. The generator must attend to every pasted token on every later decode step, which is the KV identity <code>2 × n_layers × n_kv_heads × head_dim × bytes_per_element</code>. Paying for the librarian does not pay the desk rent.</p>
+
+    <h3 class="article-h3">Is HNSW required for a home corpus?</h3>
+    <p>No. Malkov and Yashunin designed it for large approximate search. Fifty thousand 768-d vectors are a few hundred milliseconds of brute force on a desktop CPU. Use HNSW when the corpus is large enough that the hops matter, or when the library you picked made it the default. It is a RAM-and-recall trade, not a quality blessing.</p>
+
+    <h3 class="article-h3">Can I run the 14B and a small embedder together on 16 GB?</h3>
+    <p>On paper: Phi-4 ~11 GB catalog plus nomic-embed-text-v1.5 at 0.255 GiB plus 1.5 GB reserve plus a few hundred megabytes of tight-hit KV. That can fit if the catalog chip is not already a high-end 11. If the chip is already “~11 GB” including some context, add the embedder on CPU instead. Do not add Qwen3-Embedding-4B (2.25 GiB calculated) on the GPU next to Phi-4 and expect 2,048-token chunks. The card will tell you, late, in the form of an OOM that looks like a driver bug.</p>
+
+    <h3 class="article-h3">Does a bigger embedder fix wrong-but-plausible retrieval?</h3>
+    <p>Sometimes it moves the right span from rank 8 to rank 3. It does not make cosine understand “obsolete” or “do not use.” Heading-in-chunk, lexical filters, a score floor, and visible spans fix more silent wrong context than a jump from 137M to 4B. If you have 24 GB, the better spend is still usually a 32B generator, not a larger encoder. See the <a href="/vram-guide.html">VRAM guide</a> for that tier.</p>
+
+    <h2 class="section-h2 article-h2">Sources</h2>
+    <ol class="sources-list">
+      <li>Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman Goyal, Heinrich Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, Sebastian Riedel, Douwe Kiela. <em>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.</em> <a href="https://arxiv.org/abs/2005.11401">arXiv:2005.11401</a>. Opened 2026-08-20. The 2020 formulation: parametric generator, non-parametric index, retrieved passages as conditioning context.</li>
+      <li>Yu. A. Malkov, D. A. Yashunin. <em>Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs.</em> <a href="https://arxiv.org/abs/1603.09320">arXiv:1603.09320</a> (v4, 2018-08-14). IEEE version: <a href="https://doi.org/10.1109/TPAMI.2018.2889473">doi:10.1109/TPAMI.2018.2889473</a> (resolves to IEEE Xplore document 8594636). Opened 2026-08-20. Layered proximity graph; approximate k-NN; the usual local ANN index.</li>
+      <li>Wenqi Fan, Yujuan Ding, Liangbo Ning, Shijie Wang, Hengyun Li, Dawei Yin, Tat-Seng Chua, Qing Li. <em>A Survey on RAG Meeting LLMs: Towards Retrieval-Augmented Large Language Models.</em> <a href="https://arxiv.org/abs/2405.06211">arXiv:2405.06211</a>. Long version of a KDD 2024 survey. Opened 2026-08-20. Architectures, training, applications; the limitation list that home stacks inherit without the cluster.</li>
+      <li>Xiaohua Wang, Zhenghua Wang, Xuan Gao, Feiran Zhang, et al. <em>Searching for Best Practices in Retrieval-Augmented Generation.</em> <a href="https://arxiv.org/abs/2407.01219">arXiv:2407.01219</a>. Opened 2026-08-20. Module-by-module RAG (chunk, embed, retrieve, rerank, pack, generate) under quality and latency, not under a 16 GB occupancy constraint.</li>
+      <li><a href="https://huggingface.co/nomic-ai/nomic-embed-text-v1.5">nomic-ai/nomic-embed-text-v1.5</a> Hugging Face card. HTTP 200 on 2026-08-20. License on the card: Apache-2.0. Safetensors: 136,731,648 parameters. Card table: 8192 sequence length, 768-d (Matryoshka to 64). Task prefixes required. Official <code>config.json</code> opened the same day.</li>
+      <li><a href="https://huggingface.co/nomic-ai/nomic-embed-text-v2-moe">nomic-ai/nomic-embed-text-v2-moe</a> Hugging Face card. HTTP 200 on 2026-08-20. License on the card: Apache-2.0. Card architecture: 475M total, 305M active, 8 experts top-2, 768-d Matryoshka to 256, 512-token maximum sequence.</li>
+      <li><a href="https://huggingface.co/Qwen/Qwen3-Embedding-4B">Qwen/Qwen3-Embedding-4B</a>, <a href="https://huggingface.co/Qwen/Qwen3-8B">Qwen/Qwen3-8B</a>, and <a href="https://huggingface.co/Qwen/Qwen3-14B">Qwen/Qwen3-14B</a> Hugging Face cards and <code>config.json</code> files. All HTTP 200 on 2026-08-20. Embedding-4B license on the card: Apache-2.0; 4,021,774,336 parameters. Generator configs used for the KV identity: Qwen3-8B 36 / 8 / 128; Qwen3-14B 40 / 8 / 128.</li>
+      <li><a href="https://huggingface.co/microsoft/phi-4">microsoft/phi-4</a> Hugging Face card and <code>config.json</code>. HTTP 200 on 2026-08-20. License on the card: MIT. Config: 40 layers, 40 query heads, 10 KV heads, hidden 5120 (head_dim 128). Catalog Q4 chip ~11 GB is not a first-party measurement.</li>
+      <li><a href="/local-ai-models.html">Model catalog</a>, local-ai-models.ai: Qwen3-8B 6–7 GB, Llama 3.1 8B ~6.2 GB, Phi-4 ~11 GB Q4 / ~16 GB Q8, Qwen3-14B ~10.7 GB, Qwen3-Embedding 0.5–7 GB, Nomic Embed Text V2 &lt;1 GB. Catalog and Hub VRAM figures on this page are labeled as such; they are not first-party measurements. Catalog last verified 2026-08-20.</li>
+      <li><a href="/vram-guide.html">VRAM guide</a> and <a href="/quantization.html">Quantization Explained</a>, local-ai-models.ai: Q4_K_M as the default, 4.8-bit effective width, 1.2× to 1.5× overhead, context as the third term. This page does not replace those size tables; it adds the retrieve invoice the size tables do not itemize.</li>
+    </ol>
+
+    <p class="colophon">Scientific Plate VII, Reading Room Card, spine only. Dated 2026-08-20. Companion to <a href="/vram-guide.html">/vram-guide.html</a>. KV lines are calculated from official configs; generator GB chips are catalog figures. House voice for this plate: decide, show the math, name the tradeoff, date it. The 16 GB tables are the decision. The plate is not dumped.</p>
+
+  </article>
+</div>
+
+<section class="related">
+  <div class="related-title reveal">Related</div>
+  <div class="related-grid reveal">
+    <a href="/vram-guide.html" class="related-card">
+      <div class="related-eyebrow">VRAM</div>
+      <div class="related-name">How Much VRAM Do You Need</div>
+      <div class="related-desc">The weight-side arithmetic this page adds a retrieve invoice to. Size-by-size Q4_K_M, GPU and Mac tiers.</div>
+    </a>
+    <a href="/quantization.html" class="related-card">
+      <div class="related-eyebrow">Learn</div>
+      <div class="related-name">Quantization Explained</div>
+      <div class="related-desc">Why Q4_K_M is the default in both stacks, and what 4.8-bit actually means for the embedder line.</div>
+    </a>
+    <a href="/local-ai-models.html" class="related-card">
+      <div class="related-eyebrow">Catalog</div>
+      <div class="related-name">Browse the Models</div>
+      <div class="related-desc">Catalog chips cited above, including the embedding section and the 16 GB 14B picks.</div>
+    </a>
+    <a href="/stacks.html" class="related-card">
+      <div class="related-eyebrow">Hardware</div>
+      <div class="related-name">Recommended Stacks</div>
+      <div class="related-desc">Pre-vetted boxes by tier. 16 GB is a generator tier before it is a retrieval tier.</div>
+    </a>
+    <a href="/local-ai-server-guide.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">Build a Local AI Server</div>
+      <div class="related-desc">When 16 GB is the machine and when it is a waypoint. Budget tiers, not a second RAG lecture.</div>
+    </a>
+    <a href="/getting-started.html" class="related-card">
+      <div class="related-eyebrow">Start Here</div>
+      <div class="related-name">Run AI Locally in 5 Minutes</div>
+      <div class="related-desc">Install, pull a model, add a UI. Do this before you stand up an index.</div>
+    </a>
+  </div>
+</section>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.08.17 &middot; 100 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="/local-ai-models.html">Models</a></li>
+      <li><a href="/sentiment.html">Community Data</a></li>
+      <li><a href="/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="/builder.html">Stack Builder</a></li>
+      <li><a href="/model-builder.html">PC Builder</a></li>
+      <li><a href="/recommend.html">Recommender</a></li>
+      <li><a href="/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="/getting-started.html">Get Started</a></li>
+      <li><a href="/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="/quantization.html">Quantization</a></li>
+      <li><a href="/stacks.html">Stacks</a></li>
+      <li><a href="/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 17, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/cookies.html">Cookies</a> &middot; <a href="/accessibility.html">Accessibility</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+/* TITLE-CLIP-FIX */
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+/* end TITLE-CLIP-FIX */
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script src="/creatures.js" defer></script>
+<script src="/creatures-v2.js" defer></script>
+</body>
+</html>

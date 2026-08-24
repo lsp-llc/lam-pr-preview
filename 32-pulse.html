@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse 20 August 2026: Qwen3.8-27B Is the Local Daily-Driver | Local AI Models</title>
+<meta name="description" content="Local-AI Pulse, 20 August 2026. Named call: Qwen3.8-27B is the local daily-driver. Factory xhigh is what people hate. Composite 71.0 (B−). Critic page, not Hub download theater.">
+<meta name="keywords" content="Qwen3.8-27B, local AI pulse, factory xhigh, Nemotron 3.5 Lightning, gpt-oss-20B, llama.cpp, local LLM critic">
+<link rel="canonical" href="https://local-ai-models.ai/pulse.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pulse 20 August 2026: Qwen3.8-27B Is the Local Daily-Driver">
+<meta property="og:description" content="Named call: Qwen3.8-27B is the local daily-driver. Factory xhigh is what people hate. Composite 71.0 (B−). A critic plate, not Hub likes.">
+<meta property="og:url" content="https://local-ai-models.ai/pulse.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta property="og:image" content="https://local-ai-models.ai/hero-updates.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pulse 20 August 2026: Qwen3.8-27B Is the Local Daily-Driver">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Pulse 20 August 2026: Qwen3.8-27B is the local daily-driver. Factory xhigh is what people hate.",
+  "description": "First Local-AI Pulse editorial. Hard local filter, nine public psych dimensions, Bayesian composite 71.0 (B−) on Qwen3.8-27B. Not Hub likes or downloads.",
+  "datePublished": "2026-08-20",
+  "dateModified": "2026-08-20",
+  "inLanguage": "en",
+  "author": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://local-ai-models.ai/pulse.html"}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://local-ai-models.ai/#destinations"},
+    {"@type": "ListItem", "position": 3, "name": "Local-AI Pulse", "item": "https://local-ai-models.ai/pulse.html"}
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c; --red: #f87171;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-updates.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 640px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+</style>
+
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.plate { margin: 0 0 40px; padding: 22px 24px; border: 1px solid rgba(0,212,255,0.22); border-radius: 16px; background: rgba(0,212,255,0.04); }
+.plate-kicker { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 1.6px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.plate-call { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.03em; color: var(--text); line-height: 1.25; margin-bottom: 10px; }
+.plate-meta { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
+.score-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 28px 0 36px; }
+@media (max-width: 800px) { .score-row { grid-template-columns: 1fr 1fr; } }
+.score-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 16px; }
+.score-card .k { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 6px; }
+.score-card .v { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+.score-card .v.accent { color: var(--accent); }
+.method-box { margin: 0 0 36px; padding: 22px 24px; border: 1px dashed rgba(255,255,255,0.14); border-radius: 16px; background: rgba(255,255,255,0.02); }
+.method-box p { margin-bottom: 12px; }
+.method-box p:last-child { margin-bottom: 0; }
+.tag-pass { color: var(--green); font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; }
+.tag-fail { color: var(--red); font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; }
+.tag-cool { color: var(--orange); font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; }
+.legal-pass { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.4px; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; }
+.hub-note { font-size: 0.92rem; color: var(--text-dim); font-style: italic; }
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500,'region':['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']});
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
+     crossorigin="anonymous"></script>
+<script src="/consent.js" defer></script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+</head>
+<body>
+<div style="font:600 0.85rem/1.4 system-ui,sans-serif;background:#132238;color:#e8eef6;padding:10px 16px;border-bottom:1px solid #2a4a6a;">Preview of <a href="https://github.com/lsp-llc/local-ai-models/pull/32" style="color:#7dd3fc">lsp-llc/local-ai-models#32</a> — not production. Site nav and scripts stay on local-ai-models.ai.</div>
+
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="/local-ai-models.html">Models</a>
+      <a href="/builder.html">Stack Builder</a>
+      <a href="/model-builder.html">PC Builder</a>
+      <a href="/recommend.html">Recommender</a>
+      <a href="/token-simulator.html">Token Sim</a>
+      <a href="/claws.html">CLAWS</a>
+      <a href="/sentiment.html">Community</a>
+      <a href="/getting-started.html">Get Started</a>
+      <a href="/quantization.html">Quantization</a>
+      <a href="/stacks.html">Stacks</a>
+      <a href="/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/#destinations">Guides</a><span class="sep">/</span><span>Pulse</span></div>
+    <div class="hero-eyebrow">Local-AI Pulse · Cycle 1</div>
+    <h1 class="hero-title">Qwen3.8-27B is the local <span class="accent">daily-driver</span>. Factory xhigh is the hate.</h1>
+    <div class="updated-line">20 August 2026 · Window 13–20 August 2026 CT</div>
+    <p class="hero-sub">Composite 71.0 (B−). A critic plate for owners who already run models on a desk. Not Hub download theater. Not the Community Analytics page.</p>
+  </div>
+</section>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+  <article class="article-body">
+
+    <div class="plate" data-nosnippet>
+      <div class="plate-kicker">Plate · 20 August 2026 · ad-free header</div>
+      <div class="plate-call">Qwen3.8-27B is the local daily-driver. Factory <code>xhigh</code> is what people hate.</div>
+      <div class="plate-meta">Window 2026-08-13 → 2026-08-20 CT. 14-day fill only for Nemotron 3.5 Lightning and llama.cpp (both peaked 2026-08-11). Signal-level Bayesian composite 71.0 (B−). Prior 65 / weight 3. Confidence 0.76 math; caveats pull the claim, not the math. Volume tier low. Weight source static. Hub likes and downloads are display-only and are not in the score.</div>
+    </div>
+
+    <div class="score-row" data-nosnippet>
+      <div class="score-card"><div class="k">Composite</div><div class="v accent">71.0</div><div class="k">B−</div></div>
+      <div class="score-card"><div class="k">Prior / weight</div><div class="v">65 / 3</div></div>
+      <div class="score-card"><div class="k">Confidence</div><div class="v">0.76</div></div>
+      <div class="score-card"><div class="k">Volume</div><div class="v">low</div></div>
+    </div>
+
+    <div class="method-box" data-nosnippet>
+      <p><strong>Method, in one breath.</strong> We score local models on nine public psych dimensions (Likert 1–4–7) and a Bayesian composite with prior 65 / weight 3. Per-signal weight = 0.45 quality + 0.35 recency + 0.20 consistency. This is not Hub likes or downloads. This is not hosted-video or X engagement. This plate is not an ad unit.</p>
+      <p>Locked this cycle and not recomputed here: weighted mean of 6 quality-weighted signals 74.6; dimension-weighted (static) mean Likert 5.38 → 72.9 / 100; consensus strong on the split, divided on flow; calibration signal INSUFFICIENT. Cycle 1, X dark, launch week, static weights. Those caveats pull the <em>claim</em> down. They do not rewrite 71.0.</p>
+    </div>
+
+    <p class="lede">The week did not lack spectacle. It lacked affection that survives a consumer card. Pulse is the critic for that filter. <em>Qwen3.8-27B is the local daily-driver. Factory xhigh is what people hate.</em> Everything below is in service of that sentence.</p>
+
+    <h2 class="section-h2 article-h2">What Pulse is, and what it is not</h2>
+    <p>Pulse is a weekly editorial for people who already own the hardware. It does not teach you what VRAM is. It does not rank models by Hub gravity. It does not pretend a 2.8T paper is a laptop event. The live <a href="/sentiment.html">Community Analytics</a> page remains the likes-and-downloads dashboard. Leave that page for what it is. This page is the opposite job: a named call, a hard filter, a scored week.</p>
+    <p>The catalog already chips the giants. Pulse does not repeat that lecture. Attention is cheap this month. Local affection is not. A model can dominate the timeline and still fail the first gate: open weights a practitioner can actually run, on hardware they already have, under a license they can keep.</p>
+    <p>Window: 13 August through 20 August 2026, Central Time. Two names get a 14-day fill because their public peak sat on 11 August, two days before the glass: NVIDIA Nemotron 3.5 Lightning, and llama.cpp. Everything else is judged inside the seven-day pane. That is a product rule, not a courtesy.</p>
+    <p>Attribution on this plate is short and public. Qwen / Alibaba for the 27B and the 2.4T sibling. NVIDIA for Lightning. OpenAI for gpt-oss. Moonshot for Kimi K3. Z.ai for GLM. Licenses are taken from official Hub cards, not from rumor. Quotes stay short and named. Evidence is in our words. Practitioner reports are labeled as practitioner reports.</p>
+
+    <h2 class="section-h2 article-h2">The hard filter, applied first</h2>
+    <p>Pulse does not start with scoreboards. It starts with a local-survival table. Survive means: open weights, a license a shop can live with, and a shape that belongs on consumer 24 GB once Q4 or a hybrid iMatrix recipe is in play. Fail means the week talked about it and local owners did not take it home. Attention is not affection.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Gate</th>
+            <th scope="col">License (card)</th>
+            <th scope="col">Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Qwen3.8-27B</td>
+            <td><span class="tag-pass">Survives</span></td>
+            <td>Apache-2.0</td>
+            <td>27.78B BF16, image-text-to-text, consumer 24 GB at Q4 / hybrid iMatrix. Official card lastModified around 2026-08-14. Official blog exists. No official Qwen3.8 arXiv found; none invented.</td>
+          </tr>
+          <tr>
+            <td>Nemotron 3.5 Lightning 30B-A3B</td>
+            <td><span class="tag-pass">Survives</span></td>
+            <td>OpenMDW 1.1</td>
+            <td>One-GPU shaped. Afterglow from 11 August. Family paper is Nemotron 3. No 3.5 paper found.</td>
+          </tr>
+          <tr>
+            <td>gpt-oss-20B</td>
+            <td><span class="tag-pass">Survives</span></td>
+            <td>Apache-2.0</td>
+            <td>Local-sized. No new 7-day stories. Still in the room because it still fits the gate.</td>
+          </tr>
+          <tr>
+            <td>Qwen3.8-2.4T-A95B</td>
+            <td><span class="tag-fail">Fails</span></td>
+            <td>qwen3.8-max</td>
+            <td>2.4T MoE. Attention, not local affection. The catalog already covers the size story. Pulse will not repeat it.</td>
+          </tr>
+          <tr>
+            <td>Kimi K3</td>
+            <td><span class="tag-fail">Fails</span></td>
+            <td>other / kimi-k3</td>
+            <td>2.8T / ~1.56 TB class. Paper exists. A desk does not.</td>
+          </tr>
+          <tr>
+            <td>DeepSeek V4 Pro</td>
+            <td><span class="tag-fail">Fails</span></td>
+            <td>MIT (card)</td>
+            <td>1.6T. V4 Flash shrunken-to-57 GB Mac still fails a 24 GB filter. License did not buy the gate.</td>
+          </tr>
+          <tr>
+            <td>GLM-5.3</td>
+            <td><span class="tag-fail">Fails</span></td>
+            <td>—</td>
+            <td>Not open-weights this window. Official card not publicly fetchable as open weights on 20 August 2026.</td>
+          </tr>
+          <tr>
+            <td>gpt-oss-120b</td>
+            <td><span class="tag-cool">Cooling</span></td>
+            <td>Apache-2.0</td>
+            <td>Apache did not save it. Official paper exists. The local week moved on.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Three survivors. One afterglow. One cooling. Four fails. That is the week. The rest of this page is about what the survivors did to the people who actually load weights.</p>
+    <p>The filter is applied first because the week’s noise is a category error. A 2.8T paper, a 1.6T Pro, a 2.4T MoE, and a closed GLM can all be “the story” on a scoreboard and still be nothing you serve after dinner. Pulse is not anti-frontier. Pulse is anti-confusion. If the object does not survive the gate, it is listed, licensed from the card, and left. The critic’s energy goes to the 27B that did survive, because that is where owners spent the week arguing about a knob.</p>
+    <p>Two more filter notes, so nobody later claims we hid them. First: Apache is not a participation trophy. gpt-oss-120b is Apache and cooling. The 27B is Apache and the named call. Same license family, different local affection. Second: “one-GPU shaped” is not a marketing synonym for “fits a 4090.” Lightning’s official card quotes Spark and H100. It still survives because it is open, local-sized, and afterglow-alive. It does not take the call because owners did not spend this window rewriting their daily stack around it.</p>
+
+    <h3 class="article-h3">Qwen3.8-27B — the named call</h3>
+    <p>Alibaba’s Qwen lab shipped <a href="https://huggingface.co/Qwen/Qwen3.8-27B">Qwen/Qwen3.8-27B</a> as a dense, vision-capable, Apache-2.0 model. The official card lists a Causal Language Model with Vision Encoder, pipeline tag <code>image-text-to-text</code>, 27B parameters, 64 layers, native 262,144 context extensible toward 1M, thinking on by default, and a <code>reasoning_effort</code> knob. Official wording on that card: “<code>xhigh</code> (default): for complex tasks demanding thorough analysis.” Also on the card: <code>medium</code> for balance, <code>low</code> for speed. The official <a href="https://qwen.ai/blog?id=qwen3.8">Qwen3.8 blog</a> is the lab’s launch post. We opened it. We did not find an official Qwen3.8 arXiv. We are not inventing one.</p>
+    <p>This cycle treats the dense BF16 as 27.78B. That is the local object. The 2.4T sibling is a different product with a different license. Pulse is not confused about which one belongs on a 4090 or an M-series. Owners already know. The interesting fact is that the 27B is good enough, under Apache, with vision and tools, that the week’s local conversation collapsed onto it.</p>
+    <p>Day-one Unsloth GGUFs existed. MTP landed in llama.cpp. A 3090 crash-fix circulated in the same runtime week. Hybrid iMatrix recipes appeared for people who want 24 GB and a long window at the same time. None of that is Hub-card gospel. It is the owner’s week: the model is usable, the default is wrong, and the community patched the default before the lab did.</p>
+
+    <h3 class="article-h3">Nemotron 3.5 Lightning — afterglow, still local</h3>
+    <p>NVIDIA’s <a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4">NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</a> card is OpenMDW 1.1, 30B total / 3B active, Mamba-2 + MoE + Attention hybrid, up to 1M context, single-GPU deployment quoted as 1× DGX Spark (GB10) or 1× H100, release date 11 August 2026. That date is why Lightning gets a 14-day fill. The peak sat outside the seven-day glass. The afterglow did not.</p>
+    <p>The family paper is <a href="https://arxiv.org/abs/2512.20856">Nemotron 3: Efficient and Open Intelligence</a> (arXiv:2512.20856). We opened it. It is a 3-family paper — Nano, Super, Ultra — not a 3.5 Lightning paper. No 3.5 paper was found. Pulse will not dress the family PDF up as a Lightning technical report.</p>
+    <p>Lightning survives because it is one-GPU shaped and openly licensed under <a href="https://openmdw.ai/license/1-1/">OpenMDW 1.1</a>. It does not take the named call. The named call is the dense 27B that owners actually argued about this week. Lightning is the other local-sized open weight that still belongs in the room after the filter.</p>
+
+    <h3 class="article-h3">gpt-oss-20B — still here, no new story</h3>
+    <p>OpenAI’s <a href="https://huggingface.co/openai/gpt-oss-20b">gpt-oss-20b</a> remains Apache-2.0 and local-sized. The official model card paper is <a href="https://arxiv.org/abs/2508.10925">gpt-oss-120b &amp; gpt-oss-20b</a> (arXiv:2508.10925), opened for this plate. There was no new 7-day story that moved the 20B. Survival here is a filter result, not a comeback narrative. The 120B sibling is cooling for the opposite reason: Apache did not make it a daily-driver this window. License is necessary. It is not sufficient.</p>
+
+    <h3 class="article-h3">The fails, without the lecture</h3>
+    <p><strong>Qwen3.8-2.4T-A95B</strong> is a 2.4T MoE under the <code>qwen3.8-max</code> license on the official card. IQ1 sits in the hundreds of gigabytes. That is not a local story. Catalog chips already said so. Pulse stops there.</p>
+    <p><strong>Kimi K3</strong> has a real paper, <a href="https://arxiv.org/abs/2607.24653">Kimi K3: Open Frontier Intelligence</a> (arXiv:2607.24653), opened for this plate: 2.8T total, 104B active, ~1.56 TB class, license <code>other</code> / <code>kimi-k3</code> on the Hub card. Frontier on a poster. Not a 24 GB event.</p>
+    <p><strong>DeepSeek V4 Pro</strong> is 1.6T. The V4 Flash “shrunken to 57 GB on a Mac” story still fails a 24 GB filter. A Mac with a lot of unified memory is not the Pulse gate. The gate is consumer 24 GB.</p>
+    <p><strong>GLM-5.3</strong> was not open-weights in this window. An official public card did not resolve as open weights on 20 August 2026. Pulse fails closed. No invented id. No invented paper.</p>
+
+    <h2 class="section-h2 article-h2">The composite: 71.0, B−</h2>
+    <p>The named call is not a 90. It is a 71. That is the honest number for a launch week with a broken default and a thin evidence stack. We score on nine public psych dimensions, Likert 1–4–7, then a Bayesian composite with prior 65 and weight 3. Per-signal weight is 0.45 quality + 0.35 recency + 0.20 consistency. Six quality-weighted signals went in. The weighted mean of those signals is 74.6. The dimension-weighted static mean is Likert 5.38, which maps to 72.9 / 100. The Bayesian shrink toward 65 produces <strong>71.0 (B−)</strong>.</p>
+    <p>Confidence is <strong>0.76</strong>. That is the math. The claim sits lower than the math because this is cycle 1, X is dark, it is launch week, weights are static, and the calibration signal is INSUFFICIENT. Consensus is strong on the split — the 27B is the local object, the factory default is the injury — and divided on flow. Volume tier is low: six quality signals. Weight source is static.</p>
+    <p>Read that again if you came here for a leaderboard. A B− on a model people already installed is a better critic’s result than an A on a model nobody can load. Pulse is not here to inflate a launch. Pulse is here to say: this is the one you run, and the lab shipped it with the wrong knob at 100.</p>
+    <p>How to hold 71.0 without lying to yourself: it is above the prior because the six signals are better than a blank week, and it is not an 80 because launch-week heat, a scoreboard, and a GGUF magnet are not the same thing as a settled daily-driver. The shrink toward 65 is doing work. If you ignore the prior you will quote 74.6 and feel smarter. Don’t. The plate number is 71.0. The letter is B−. The claim is narrower than both: run the 27B, kill factory xhigh, do not wait for the sibling.</p>
+    <p>Divided on flow is the only consensus crack. Some owners will take Piszczek’s 50 t/s as proof the model is already fast enough to leave APIs. Some will take Willison’s 15–30 t/s on LM Studio as proof it is not. Pulse will not average those into 4.75 and call it science. Flow is 4.0 because the factory path burns context and the fast path is a built stack. Both reports can be true. The default still loses.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <thead>
+          <tr>
+            <th scope="col">Locked figure</th>
+            <th scope="col">Value</th>
+            <th scope="col">Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Signal-level Bayesian composite</td><td>71.0 (B−)</td><td>Do not recompute. This is the plate number.</td></tr>
+          <tr><td>Prior / weight</td><td>65 / 3</td><td>Static this cycle.</td></tr>
+          <tr><td>Quality-weighted mean (6 signals)</td><td>74.6</td><td>Before Bayesian shrink.</td></tr>
+          <tr><td>Dimension-weighted mean</td><td>Likert 5.38 → 72.9 / 100</td><td>Static dimension weights.</td></tr>
+          <tr><td>Confidence</td><td>0.76</td><td>Math. Caveats pull the claim, not this number.</td></tr>
+          <tr><td>Consensus</td><td>Strong on the split, divided on flow</td><td>Owners agree what they like and what they hate. They argue about speed.</td></tr>
+          <tr><td>Volume tier</td><td>Low (6 quality signals)</td><td>Not a Hub-volume score.</td></tr>
+          <tr><td>Weight source</td><td>Static</td><td>Cycle 1. No learned weights.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-h2 article-h2">Nine dimensions</h2>
+    <p>The table is locked. Likert 1–4–7. Weights are static. Contrib is Likert × weight. The read is the critic’s sentence, not a comment dump.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <thead>
+          <tr>
+            <th scope="col">Dim</th>
+            <th scope="col">Likert</th>
+            <th scope="col">w</th>
+            <th scope="col">Contrib</th>
+            <th scope="col">Read</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Immersion</td><td>5.5</td><td>0.15</td><td>0.825</td><td>Vision + tools + a local coding harness. Skeptics: less world-knowledge than Qwen3.6-27B.</td></tr>
+          <tr><td>Flow</td><td>4.0</td><td>0.15</td><td>0.600</td><td>50 t/s @ 256K on 24 GB is flow. Factory xhigh burns 8K context on a trivial ask.</td></tr>
+          <tr><td>Emotional</td><td>6.0</td><td>0.12</td><td>0.720</td><td>Triumph (52 on Artificial Analysis, “laptop-class frontier”). The anger is the default.</td></tr>
+          <tr><td>Motivational</td><td>6.0</td><td>0.12</td><td>0.720</td><td>Autonomy: a real agent on a 4090 / M-series. 16 GB users feel abandoned by size.</td></tr>
+          <tr><td>Value</td><td>6.5</td><td>0.12</td><td>0.780</td><td>Apache-2.0 + hardware they already own. Speed, not quality, is what keeps people on APIs.</td></tr>
+          <tr><td>Technical</td><td>5.0</td><td>0.11</td><td>0.550</td><td>Day-1 Unsloth GGUF, MTP in llama.cpp. 3090 crash-fix. The default is a product bug.</td></tr>
+          <tr><td>Cognitive</td><td>5.0</td><td>0.10</td><td>0.500</td><td>Harness depth is real. xhigh dumps 20k think tokens on nothing.</td></tr>
+          <tr><td>Social</td><td>6.0</td><td>0.08</td><td>0.480</td><td>Quant recipes and “start on medium” as a communal patch. Not a toxic week.</td></tr>
+          <tr><td>Accessibility</td><td>4.0</td><td>0.05</td><td>0.200</td><td>24 GB yes. 16 GB needs UD-IQ3 / ExllamaV3 4.0bpw. The effort knob exists; default is wrong.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Immersion at 5.5 is the vision-plus-tools case. The official card is not shy: native image and video, agent execution, downstream harness compatibility. Owners who already run a local coding loop felt the upgrade. The skepticism that keeps the score from 6.5 is specific: some practitioners still prefer Qwen3.6-27B for world-knowledge. Pulse is not settling that bake-off with a fake table. It is recording the split.</p>
+    <p>Flow at 4.0 is the week’s argument. A practitioner-reported 50 tokens per second at 256K on 24 GB is real flow — and it is a practitioner measurement, not a Hub-card fact and not our bench. Factory <code>xhigh</code> on a trivial ask is the opposite of flow. Simon Willison, writing on 16 August, called the default “a hilarious default” and “absolutely not a good way to run the model, especially on consumer hardware,” after watching an 8,192-token LM Studio cap vanish into thinking, then 22,276 reasoning tokens for a pelican SVG. That is a published, attributed observation. It is also the hate.</p>
+    <p>Emotional 6.0 and Motivational 6.0 sit together. Triumph is public: Artificial Analysis put Qwen3.8 27B at 52 on the Intelligence Index, and the week treated that as laptop-class frontier. The anger is the same object. People wanted the autonomy — a real agent on a 4090 or an M-series — and then watched the factory setting spend a think-budget on “draw a circle.” 16 GB owners are not in the triumph. Size abandoned them. Accessibility at 4.0 is that sentence in a cell.</p>
+    <p>Value at 6.5 is the highest dimension and the least mysterious. Apache-2.0 on hardware they already own is the local value proposition. Quality is not why they stay on APIs. Speed is. That is why Flow at 4.0 and Value at 6.5 can coexist without contradiction. The model is worth running. The default makes it feel rented.</p>
+    <p>Technical 5.0 and Cognitive 5.0 are the adult scores. Day-one Unsloth GGUF and MTP in llama.cpp are competence. A 3090 crash-fix in the same week is competence. A factory default that dumps 20k think tokens on nothing is a product bug. Harness depth is real — Willison’s Pi session on Datasette auth, then a transcript converter the model wrote for itself, is the published example of a local 27B driving an agent loop. The same week’s xhigh traces are the published example of a model that cannot tell a circle from a commission.</p>
+    <p>Social 6.0 is the communal patch. Quant recipes circulated. “Start on medium” became folk advice. The week was argumentative, not toxic. That matters. A local scene that can patch a vendor default in public, in a week, is a scene that still owns the stack.</p>
+
+    <h2 class="section-h2 article-h2">Six quality signals</h2>
+    <p>These are attributed. They are not comment dumps. Titles are paraphrased. Thread IDs are links. Quality / recency / consistency / weight are locked.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <thead>
+          <tr>
+            <th scope="col">Signal</th>
+            <th scope="col">Score</th>
+            <th scope="col">Source</th>
+            <th scope="col">q / r / c / w</th>
+            <th scope="col">Read</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>willison</td>
+            <td>72</td>
+            <td><a href="https://news.ycombinator.com/item?id=49324985">HN 49324985</a> + <a href="https://simonwillison.net/2026/Aug/16/qwen-38-27b/">Willison, 16 Aug 2026</a></td>
+            <td>0.95 / 1.0 / 0.9 / 0.9575</td>
+            <td>Named owner’s review. Excellent model. Default overthinks. Run low or medium first.</td>
+          </tr>
+          <tr>
+            <td>50tps</td>
+            <td>82</td>
+            <td><a href="https://news.ycombinator.com/item?id=49331607">HN 49331607</a> + <a href="https://piszczek.pl/blog/qwen38-27b-256k-50-tps-24gb-gpu">Piszczek, 17 Aug 2026</a></td>
+            <td>0.9 / 1.0 / 0.85 / 0.925</td>
+            <td>Practitioner-reported measurement: ~50 t/s at 256K on 24 GB. Not a Hub-card fact. Not our bench.</td>
+          </tr>
+          <tr>
+            <td>unsloth</td>
+            <td>78</td>
+            <td><a href="https://news.ycombinator.com/item?id=49365443">HN 49365443</a> + <a href="https://unsloth.ai/docs/basics/dynamic-3.0-ggufs">Unsloth Dynamic 3.0</a></td>
+            <td>—</td>
+            <td>Day-one GGUF path. The quant magnet for people who will not wait for official files.</td>
+          </tr>
+          <tr>
+            <td>launch</td>
+            <td>80</td>
+            <td><a href="https://news.ycombinator.com/item?id=49299605">HN 49299605</a> + HF Qwen3.8-27B-FP8</td>
+            <td>downweighted quality: launch-week</td>
+            <td>Flagship thread. ~1435 points / 792 comments, 14 August. Volume is not the composite.</td>
+          </tr>
+          <tr>
+            <td>aa52</td>
+            <td>70</td>
+            <td><a href="https://news.ycombinator.com/item?id=49334544">HN 49334544</a> + <a href="https://artificialanalysis.ai/models/qwen3-8-27b">Artificial Analysis</a></td>
+            <td>scoreboard, weighted down</td>
+            <td>52 on the Intelligence Index. Useful. Not a local-owner score. Weighted down on purpose.</td>
+          </tr>
+          <tr>
+            <td>medium</td>
+            <td>65</td>
+            <td><a href="https://news.ycombinator.com/item?id=49355510">HN 49355510</a></td>
+            <td>—</td>
+            <td>The communal patch: make medium the default instead of xhigh. This is the hate, formalized.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>HN volume for the family in seven days, mostly the 27B: 35 threads / 1,429 comments / 3,189 points. The flagship is <a href="https://news.ycombinator.com/item?id=49299605">HN 49299605</a> (~1435 points / 792 comments, 2026-08-14). Those counts describe heat. They do not enter the Bayesian composite. Pulse does not scrape comment text. Pulse does not quote comment text. If you want the argument, open the thread IDs.</p>
+    <p>Willison at 72 is the highest-quality signal and not the highest score. That is correct. A careful owner’s review that names the default as the injury should not be outvoted by a launch-week pile-on. The 50tps signal at 82 is the flow proof, and it is labeled twice so nobody “upgrades” it into a catalog fact: Michał Piszczek’s 17 August writeup is a measured llama.cpp stack on a 24 GB RTX PRO 4000 Blackwell SFF, hybrid 5.01 BPW, occupied 256K, production-series mean 50.44 tok/s. Different gates in that post stay separate. Pulse will not smash them into one heroic number. It is a practitioner-reported measurement.</p>
+    <p>Unsloth at 78 is the distribution fact. The official card is the source of weights. The GGUF magnet is how most local owners will touch them. Launch at 80 is downweighted for being launch-week. aa52 at 70 is a scoreboard. Artificial Analysis is useful and verbose — 160M output tokens on the Index versus a 45M median in their own writeup — which is another way of saying the default thinks too much. medium at 65 is the lowest quality signal and the most important social fact: owners are already shipping jinja that refuses the factory setting.</p>
+
+    <h2 class="section-h2 article-h2">Like / hate</h2>
+    <p>Like: a 27B Apache vision model that can drive a local coding harness, annotate an image, and finish a multi-step agent loop on hardware people already own. Like: MTP as a real speed path, not a slide. Like: Unsloth files on day one. Like: a communal “start on medium” norm that formed in public without a flame war. Like: Lightning still in the afterglow as a one-GPU open-weight alternative, OpenMDW 1.1, not a press-release ghost. Like: gpt-oss-20B still quietly passing the same gate, Apache, no drama required.</p>
+    <p>Hate: factory <code>xhigh</code>. Not as a vibe. As a product decision. The official card tells you <code>xhigh</code> is the default “for complex tasks demanding thorough analysis.” The week demonstrated that the model treats a circle, a pelican, and a bounding-box tool as complex tasks demanding thorough analysis. Willison’s published traces are the exhibit. An 8K context window is not a setting you get to keep at that default. Twenty thousand think tokens on nothing is not reasoning. It is a tax.</p>
+    <p>Hate, second: the 16 GB abandonment. The effort knob exists. UD-IQ3 and ExllamaV3 4.0bpw exist. The factory path does not meet those owners. Accessibility at 4.0 is not a rounding error. It is the part of the market the 27B just told to buy more RAM or stay on APIs.</p>
+    <p>Hate, third, and cooler: speed is still what keeps people on APIs. Willison said it in print — 15–30 tok/s on LM Studio felt slow next to hosted Sol and Luna. Piszczek showed the other half of the truth: 50 t/s is available if you build the stack like an owner, not like a demo. Those two sentences are why Flow is 4.0 and Value is 6.5. The model is the daily-driver. The out-of-box experience is not.</p>
+    <p>The split is the consensus. The 2.4T is not the local story. K3 is not the local story. V4 Pro is not the local story. GLM-5.3 was not even open. Pulse will not spend a section explaining why a trillion-parameter MoE fails a 24 GB filter. The catalog already did that job. The critic’s job this week is smaller and meaner: the one that fits is the one that matters, and the lab shipped it with the knob wrong.</p>
+
+    <h2 class="section-h2 article-h2">Also in the room</h2>
+    <p><strong>llama.cpp</strong> is still the runtime people trust. <a href="https://news.ycombinator.com/item?id=49267928">HN 49267928</a> pointed at llama.app. That thread sits in the 14-day fill because the runtime peak was 11 August. The political-economy paper that landed inside the window is <a href="https://arxiv.org/abs/2608.19001">Open at the Edge, Captured at the Center</a> (arXiv:2608.19001, 19 August 2026). We opened it: HTTP 200. Lee, Li, and Widder argue that local inference broadens participation at execution while relocating capture into the infrastructure that makes execution possible — hardware backends, model-integration labor, Hub absorption of the llama.cpp founding team in February 2026. Pulse is not adopting their policy program. Pulse is noting that the runtime owners trust is also the runtime a paper just described as an obligatory passage point. That is the adult context for “MTP landed in llama.cpp.”</p>
+    <p><strong>Ollama</strong> had a quieter, uglier story. <a href="https://news.ycombinator.com/item?id=49372235">HN 49372235</a> is a silent 4k-on-a-40k-ctx complaint: a 40k-context model served at 4k without a loud failure. That is the kind of bug local owners hate more than a crash. A crash is honest. A silent truncate is a lie. Pulse records the thread ID. Pulse does not dump the comments.</p>
+    <p><strong>On-device research</strong> in the same window: <a href="https://arxiv.org/abs/2608.15241">LOCAL: Enabling Learning On-device Contiguously for Agent LLMs</a> (arXiv:2608.15241). We opened it: HTTP 200. Single-GPU runtime, 7B-class, 24 GB, contiguous on-device learning without shipping traces off-box. It is not a Qwen3.8 paper. It is the research weather around the same hardware gate Pulse uses. No other Qwen3.8 official paper appeared. A search for an official Qwen3.8 arXiv returned nothing we will cite. Fail closed.</p>
+    <p>Cooling: <a href="https://huggingface.co/openai/gpt-oss-120b">openai/gpt-oss-120b</a>. Apache-2.0. Official paper <a href="https://arxiv.org/abs/2508.10925">arXiv:2508.10925</a>. The license did not keep it in the local daily-driver seat this window. Afterglow: Lightning, as above. Those two words — cooling, afterglow — are the whole rest of the field after the filter.</p>
+
+    <h2 class="section-h2 article-h2">Hub display-only</h2>
+    <p class="hub-note">Fetched 2026-08-20. Display-only. Not in the composite. Not a vote. Not a quality signal.</p>
+    <div class="table-wrap">
+      <table class="vram-table">
+        <thead>
+          <tr>
+            <th scope="col">Repo</th>
+            <th scope="col">Likes</th>
+            <th scope="col">Downloads</th>
+            <th scope="col">License</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><a href="https://huggingface.co/Qwen/Qwen3.8-27B">Qwen/Qwen3.8-27B</a></td><td>11,679</td><td>1,373,584</td><td>apache-2.0</td></tr>
+          <tr><td><a href="https://huggingface.co/unsloth/Qwen3.8-27B-GGUF">unsloth/Qwen3.8-27B-GGUF</a></td><td>—</td><td>~5.13M</td><td>quant magnet; not the official card</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The Unsloth file is the magnet. The official card is the source. Pulse will not confuse those two. A download count is a distribution fact. It is not affection, and it is not a score.</p>
+
+    <h2 class="section-h2 article-h2">Caveats, said in the open</h2>
+    <p>Cycle 1. The method is public structure, not a hidden black box, and it is not calibrated. X is dark for this plate: no posts, no screenshots, no embeds, no engagement counts. YouTube was private intake only and is not cited. Volume is low. Weights are static. Launch week inflates launch and scoreboard signals even after we downweight them. The 50 t/s figure is one practitioner’s stack on one 24 GB Blackwell card. Willison’s machines are a 128 GB M5 Max and a DGX Spark, which is not a 16 GB story. Confidence 0.76 is the math. The claim you should carry out of this page is more careful than 71.0 looks: this is the local daily-driver, and the factory default is the thing to disable first.</p>
+    <p>Jeff ships. This plate does not deploy itself. If the next cycle finds an official Qwen3.8 paper, it will be cited. If Lightning publishes a 3.5 paper, it will be cited. Until then, Pulse fails closed.</p>
+
+    <h2 class="section-h2 article-h2">The owner’s close</h2>
+    <p>If you already have 24 GB, the move this week is not “wait for the 2.4T.” The move is: pull the official 27B or the Unsloth GGUF, set <code>reasoning_effort</code> to <code>medium</code> or <code>low</code> before the first prompt, and treat factory <code>xhigh</code> as a lab default you do not owe. If you have 16 GB, the same model is not forbidden — UD-IQ3 and ExllamaV3 4.0bpw exist — but it is extra work the factory path will not do for you. If you have less, this is not your daily-driver week. gpt-oss-20B still passes the gate. Lightning still passes the gate. Neither one is the named call.</p>
+    <p>The 71.0 is a B− because the evidence stack is thin and the default is a product bug. It is not a B− because the 27B is a toy. Owners who already run a harness felt the upgrade. Owners who expected an out-of-box API replacement felt the tax. Those are the same model. Pulse will not average them into a cheerful launch recap.</p>
+    <p>Next cycle, the questions that would move the number are boring and local: does the lab change the default; does llama.cpp keep MTP honest on Ampere as well as Blackwell; does a 16 GB recipe become folk rather than heroic; does Lightning stay in the afterglow or get a 3.5 paper. Until one of those happens, the named call stands.</p>
+
+    <h3 class="article-h3">What we refused to write</h3>
+    <p>We refused a bake-off table that pretends Pulse ran the 27B against 3.6-27B, Lightning, and gpt-oss-20B on one card. We did not. We refused a VRAM explainer for the 2.4T. The catalog already chips that. We refused to treat Artificial Analysis 52 as a local-owner score. We refused to treat 11,679 Hub likes as affection. We refused to invent a Qwen3.8 arXiv id when the official paper was not found. We refused to cite a 3.5 Lightning paper that does not exist. We refused comment-text from HN. We refused any X surface. Those refusals are the difference between a critic and a scrapbook.</p>
+    <p>The Hub card for Qwen3.8-27B is still the source of license, modality, and lastModified. The official blog is still the lab’s launch post. Willison is still the named owner’s review. Piszczek is still the practitioner who published a 256K / 24 GB stack with the gates kept separate. Unsloth is still the GGUF magnet. llama.cpp is still the runtime. That is enough for a first plate. It is not enough for a 90.</p>
+
+    <h2 class="section-h2 article-h2">Sources</h2>
+    <ol class="sources-list">
+      <li><a href="https://huggingface.co/Qwen/Qwen3.8-27B">Qwen/Qwen3.8-27B</a> official Hub card (Apache-2.0, image-text-to-text, lastModified 2026-08-14). Opened 2026-08-20.</li>
+      <li><a href="https://qwen.ai/blog?id=qwen3.8">Qwen3.8 official blog</a>, qwen.ai. Opened 2026-08-20. No official Qwen3.8 arXiv found.</li>
+      <li><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4">NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</a> official card (OpenMDW 1.1, 30B-A3B, release 2026-08-11). Opened 2026-08-20.</li>
+      <li><a href="https://openmdw.ai/license/1-1/">OpenMDW License 1.1</a>. Opened 2026-08-20.</li>
+      <li><a href="https://arxiv.org/abs/2512.20856">arXiv:2512.20856</a> — Nemotron 3 family paper. Opened 2026-08-20. No 3.5 paper found.</li>
+      <li><a href="https://huggingface.co/openai/gpt-oss-20b">openai/gpt-oss-20b</a> and <a href="https://huggingface.co/openai/gpt-oss-120b">openai/gpt-oss-120b</a>, Apache-2.0. Opened 2026-08-20.</li>
+      <li><a href="https://arxiv.org/abs/2508.10925">arXiv:2508.10925</a> — gpt-oss-120b &amp; gpt-oss-20b model card. Opened 2026-08-20.</li>
+      <li><a href="https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B">Qwen/Qwen3.8-2.4T-A95B</a> (license_name qwen3.8-max). Opened 2026-08-20.</li>
+      <li><a href="https://huggingface.co/moonshotai/Kimi-K3">moonshotai/Kimi-K3</a> (license_name kimi-k3) and <a href="https://arxiv.org/abs/2607.24653">arXiv:2607.24653</a>. Opened 2026-08-20.</li>
+      <li><a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro">deepseek-ai/DeepSeek-V4-Pro</a> and <a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash">DeepSeek-V4-Flash</a>. Opened 2026-08-20.</li>
+      <li><a href="https://simonwillison.net/2026/Aug/16/qwen-38-27b/">Simon Willison, “Qwen 3.8 27B is excellent, but it defaults to wildly overthinking things,” 16 August 2026</a>. Opened 2026-08-20. Also <a href="https://news.ycombinator.com/item?id=49324985">HN 49324985</a>.</li>
+      <li><a href="https://piszczek.pl/blog/qwen38-27b-256k-50-tps-24gb-gpu">Michał Piszczek, “Qwen3.8 27B at 256K: 50 TPS on a 24 GB GPU,” 17 August 2026</a>. Practitioner-reported. Opened 2026-08-20. Also <a href="https://news.ycombinator.com/item?id=49331607">HN 49331607</a>.</li>
+      <li><a href="https://unsloth.ai/docs/basics/dynamic-3.0-ggufs">Unsloth Dynamic 3.0 GGUFs</a> and <a href="https://huggingface.co/unsloth/Qwen3.8-27B-GGUF">unsloth/Qwen3.8-27B-GGUF</a>. Opened 2026-08-20. Also <a href="https://news.ycombinator.com/item?id=49365443">HN 49365443</a>.</li>
+      <li><a href="https://news.ycombinator.com/item?id=49299605">HN 49299605</a> (flagship launch thread, 14 August 2026); <a href="https://news.ycombinator.com/item?id=49334544">HN 49334544</a>; <a href="https://artificialanalysis.ai/models/qwen3-8-27b">Artificial Analysis — Qwen3.8 27B</a> (52 Intelligence Index). Opened 2026-08-20.</li>
+      <li><a href="https://news.ycombinator.com/item?id=49355510">HN 49355510</a> (medium, not xhigh); <a href="https://news.ycombinator.com/item?id=49267928">HN 49267928</a> (llama.app); <a href="https://news.ycombinator.com/item?id=49372235">HN 49372235</a> (Ollama silent 4k). Thread IDs only. Opened 2026-08-20.</li>
+      <li><a href="https://arxiv.org/abs/2608.19001">arXiv:2608.19001</a> — llama.cpp political economy, 19 August 2026. HTTP 200. Opened 2026-08-20.</li>
+      <li><a href="https://arxiv.org/abs/2608.15241">arXiv:2608.15241</a> — LOCAL, on-device 7B / 24 GB. HTTP 200. Opened 2026-08-20.</li>
+    </ol>
+    <p class="legal-pass">Legal pass: Hub TOS ok / HN thread IDs only / arXiv ok / X not used / YouTube not used.</p>
+
+  </article>
+</div>
+
+<section class="related">
+  <div class="related-title reveal">Related</div>
+  <div class="related-grid reveal">
+    <a href="/updates.html" class="related-card">
+      <div class="related-eyebrow">Changelog</div>
+      <div class="related-name">What's New</div>
+      <div class="related-desc">Site and catalog timeline. Pulse is the critic; this is the log.</div>
+    </a>
+    <a href="/vram-guide.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">How Much VRAM Do You Need?</div>
+      <div class="related-desc">Sizing arithmetic. Pulse assumes you already know the cliff.</div>
+    </a>
+    <a href="/quantization.html" class="related-card">
+      <div class="related-eyebrow">Learn</div>
+      <div class="related-name">Quantization Explained</div>
+      <div class="related-desc">Why Q4 and hybrid iMatrix recipes are how a 27B lands on 24 GB.</div>
+    </a>
+    <a href="/local-ai-models.html" class="related-card">
+      <div class="related-eyebrow">Catalog</div>
+      <div class="related-name">Browse the Models</div>
+      <div class="related-desc">Official cards, licenses, and VRAM chips. Pulse is the critic sitting on top.</div>
+    </a>
+    <a href="/sentiment.html" class="related-card">
+      <div class="related-eyebrow">Community</div>
+      <div class="related-name">Community Analytics</div>
+      <div class="related-desc">Hub likes and downloads. Display data. Not the Pulse composite.</div>
+    </a>
+    <a href="/best-local-coding-llm.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">Best Local LLM for Coding</div>
+      <div class="related-desc">What actually runs on 8, 16, and 24 GB when the job is code.</div>
+    </a>
+  </div>
+</section>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.08.17 &middot; 100 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="/local-ai-models.html">Models</a></li>
+      <li><a href="/sentiment.html">Community Data</a></li>
+      <li><a href="/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="/builder.html">Stack Builder</a></li>
+      <li><a href="/model-builder.html">PC Builder</a></li>
+      <li><a href="/recommend.html">Recommender</a></li>
+      <li><a href="/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="/getting-started.html">Get Started</a></li>
+      <li><a href="/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="/quantization.html">Quantization</a></li>
+      <li><a href="/stacks.html">Stacks</a></li>
+      <li><a href="/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="/pulse.html">Pulse</a></li>
+      <li><a href="/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 17, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/cookies.html">Cookies</a> &middot; <a href="/accessibility.html">Accessibility</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script src="/creatures.js" defer></script>
+<script src="/creatures-v2.js" defer></script>
+</body>
+</html>
