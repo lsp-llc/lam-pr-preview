@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How to Read an LLM Leaderboard After Goodhart (2026) | Local AI Models</title>
-<meta name="description" content="A dated reading practice for LLM leaderboards: trust tier gaps, treat point gaps as harness until named. SWE-bench is the worked example. Updated August 20, 2026.">
+<meta name="description" content="Do not pick a local coding model on a 70.6 versus 68 SWE-bench Verified gap. Those two figures are already on this site's coding guide as separately sourced scores. A two-point gap can be the test setup. Updated August 24, 2026.">
 <meta name="keywords" content="llm leaderboard, goodhart law, swe-bench, benchmark contamination, harness variance, how to read llm benchmarks, local coding llm scores">
 <link rel="canonical" href="https://local-ai-models.ai/benchmark-goodhart-law.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="How to Read an LLM Leaderboard After Goodhart (2026)">
-<meta property="og:description" content="Leaderboards are useful at the tier level and noisy at the point level. A dated checklist for reading SWE-bench and other coding scores.">
+<meta property="og:description" content="A two-point SWE-bench Verified gap can be the test setup. Use the shape of scores to see which job a model was good at. Real work still decides.">
 <meta property="og:url" content="https://local-ai-models.ai/benchmark-goodhart-law.html">
 <meta property="og:site_name" content="Local AI Models">
 <meta property="og:image" content="https://local-ai-models.ai/hero-quantization.png">
@@ -22,9 +22,9 @@
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "How to Read an LLM Leaderboard After Goodhart (2026)",
-  "description": "A practitioner reading practice for LLM leaderboards: named harness, training-cutoff versus bench age, contamination note, vendor versus third-party, and this site's evidence labels. SWE-bench is the worked example.",
+  "description": "Do not pick a local coding model on a 70.6 versus 68 SWE-bench Verified gap. Those two figures are already on this site's coding guide as separately sourced scores. A two-point gap can be the test setup. The shape of scores tells you which job a model was good at.",
   "datePublished": "2026-08-20",
-  "dateModified": "2026-08-20",
+  "dateModified": "2026-08-24",
   "inLanguage": "en",
   "author": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
   "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
@@ -76,7 +76,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 @media (max-width: 900px) { .site-nav-links { display: none; } }
 
 .hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
-.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('https://local-ai-models.ai/hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
 .hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
 .breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
@@ -148,10 +148,6 @@ button:focus-visible, a:focus-visible { outline-offset: 3px; }
 @media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
 .section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
 /* end PREMIUM-PATCH-V2 */
-
-    .plate-figure { margin: 0 0 22px; }
-    .plate-figure img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
-    .plate-figure figcaption { font-family: inherit; font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; color: #8a8f99; margin-top: 8px; }
 </style>
 
 <!-- ARTICLE-ONLY: long-form body, tables, sources list -->
@@ -353,8 +349,6 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 <!-- END site-chrome-css -->
 </head>
 <body>
-<div style="font:600 0.85rem/1.4 system-ui,sans-serif;background:#132238;color:#e8eef6;padding:10px 16px;border-bottom:1px solid #2a4a6a;">Preview of <a href="https://github.com/lsp-llc/local-ai-models/pull/27" style="color:#7dd3fc">lsp-llc/local-ai-models#27</a> — not production. Site nav and scripts stay on local-ai-models.ai.</div>
-
 
 <!-- BEGIN site-nav -->
 <nav class="site-nav" aria-label="Site">
@@ -384,8 +378,8 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/#destinations">Guides</a><span class="sep">/</span><span>Leaderboard Reading</span></div>
     <div class="hero-eyebrow">Reading practice · August 2026</div>
     <h1 class="hero-title">How to Read an LLM Leaderboard After <span class="accent">Goodhart</span></h1>
-    <div class="updated-line">Published: 20 August 2026</div>
-    <p class="hero-sub">A score is useful when it sorts models into tiers. It is usually noise when it ranks two close numbers. This page is a dated way to read that difference before you pick a local coding model.</p>
+    <div class="updated-line">Published: 20 August 2026 · Decision restated: 24 August 2026</div>
+    <p class="hero-sub">Do not pick a local coding model because one site says 70.6 and another says 68. Those two SWE-bench Verified figures are already on this site's coding guide as separately sourced scores, not one locked test.</p>
   </div>
 </section>
 
@@ -394,71 +388,80 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 
     <header id="scientific-plate" class="plate-header ad-free" data-nosnippet>
       <div class="plate-kicker">Scientific Plate XII</div>
-      <figure class="plate-figure"><img src="plate-12-painted-target.jpg" alt="Scientific Plate XII: The Painted Target. Commissioned engraving for this site."><figcaption>Commissioned for this site</figcaption></figure>
       <div class="plate-title">Painted Target</div>
-      <p>Paint the rings after the arrow lands and the board will always look like a hit. A leaderboard number can be that board: decorative once the score is the thing being optimized. This page keeps the plate as a spine, not a reprint. Read the score. Then ask what was painted around it.</p>
+      <p>Scientific Plate XII, titled Painted Target. Page mark only.</p>
       <p class="ad-free-note">Plate header is ad-free · data-nosnippet</p>
     </header>
 
-    <p class="lede">You do not need a history of monetary targeting to use a coding benchmark. You need a habit. Write down the harness, the dates, the contamination note, who published the number, and which evidence label this site would put on it. Then decide whether you are looking at a <em>tier</em> or a <em>point</em>.</p>
+    <p class="lede">A two-point gap on separately sourced SWE-bench Verified scores can be the test setup. The useful half of a bench is the job it tested. Real work still decides which model you keep.</p>
 
     <div class="decision-card">
-      <h3 class="article-h3">The decision, dated 2026-08-20</h3>
-      <p><strong>Trust a tier gap. Do not trust a point gap until the harness is named and held fixed.</strong> A model that resolves about two-thirds of a hard issue set versus one that resolves about a quarter is a difference you will feel in a real repository. A 68 versus a 70.6 on the same named bench is, until proven otherwise, a difference in scaffold, split, or self-report. That second pair is already on this site's <a href="/best-local-coding-llm.html">coding guide</a> as two separately sourced SWE-bench Verified figures; they are not a head-to-head on one locked harness.</p>
+      <h3 class="article-h3">The decision</h3>
+      <p><strong>Do not pick a local coding model because one site says 70.6 and another says 68.</strong> Those two SWE-bench Verified figures are already on this site's <a href="/best-local-coding-llm.html">coding guide</a> as separately sourced scores, not one locked test. A two-point gap can be the test setup, not the model.</p>
+      <p>Nate B. Jones, 13 July 2026, episode <em>Pick an AI Model That Fits How You Actually Work</em>: a benchmark is evidence, not the way you pick a model.</p>
+      <p>The useful half: the shape of scores tells you which kind of real work a model is good at. A coding-bug test predicts repo work. A long-context test predicts reading a big project. Speed and VRAM predict whether it is usable on your machine. Real work still decides. The bench only tells you which job it was good at.</p>
     </div>
 
-    <h2 class="section-h2 article-h2">What does Goodhart change about a coding score?</h2>
-    <p>Charles Goodhart's 1975 observation, restated by him later, is that <strong>any observed statistical regularity will tend to collapse once pressure is placed upon it for control purposes</strong>. The line lives in the 1984 collected essays reprint of the 1975 paper, which is the stable academic copy opened for this page. He called it a throw-away remark about monetary aggregates that had been chosen as targets because they had looked stable. Once they were targets, the regularity did not hold.</p>
-    <p>For a person choosing a local model, the useful translation is narrower than the slogan. A benchmark starts as a measure: does this system resolve real GitHub issues? It becomes a target the moment a lab, a vendor, or a blog treats the percentage as the reason to ship, buy, or rank. After that, you should expect the number to move for reasons that are not "the weights got better at software engineering."</p>
-    <p>That is not an argument against benches. It is an argument against reading a leaderboard the way a product page wants you to read it. The rest of this page is the practice: five fields to fill in, a worked example on SWE-bench, and a checklist you can keep next to the <a href="/local-ai-models.html">catalog</a>.</p>
+    <h2 class="section-h2 article-h2">The two figures already on the coding guide</h2>
+    <p>The <a href="/best-local-coding-llm.html">coding guide</a> already carries Devstral Small 2 at <strong>68.0 percent</strong> on SWE-bench Verified from Mistral's own announcement, and Qwen3-Coder-Next at <strong>70.6 percent</strong> on the same named bench under a SWE-Agent harness from that model's technical report. Both figures are already on the site. They come from two write-ups. They were never one locked test.</p>
+    <p>Zhang, Wang, Ge, Xu, Hamm, and Reddy (opened for this page) record a same-model Terminal-Bench 2 pass@1 move from <strong>69.7 percent to 77.0 percent</strong> when only the harness changes. They cite independent monitoring of up to <strong>15 percentage points</strong> of scaffold-only variation on SWE-bench Verified. They note that papers often treat a <strong>2 to 4 point</strong> shift as a meaningful model advance. The 68.0 versus 70.6 pair sits inside that 2 to 4 point window. A two-point gap can be the test setup.</p>
 
-    <h2 class="section-h2 article-h2">Tier versus point: the only ranking rule that survives</h2>
-    <p>Sort scores into two piles before you argue about rank.</p>
+    <h2 class="section-h2 article-h2">What the shape of a score is good for</h2>
+    <p>Keep the number. Read the job next to it.</p>
     <ul>
-      <li><strong>Tier.</strong> Wide bands. Think sixties versus twenties, or a 2023 paper result in the low single digits versus a 2026 agent result in the thirties on a filtered subset. Those gaps usually survive a change of prompt, a change of tools, and a change of reviewer. They tell you which class of system you are buying.</li>
-      <li><strong>Point.</strong> Adjacent published percentages. Think 68 versus 70.6, or any gap of a few points presented as a winner. Those gaps routinely reverse when the same model is wrapped in a different agent loop. Treat them as incomplete until the reports name the same harness, the same split, and the same scoring rule.</li>
+      <li>A coding-bug test such as SWE-bench predicts repo work: localize an issue, edit files, pass the project's tests.</li>
+      <li>A long-context test predicts reading a big project without losing the thread.</li>
+      <li>Speed and VRAM predict whether the model is usable on your machine.</li>
     </ul>
-    <p>This site already prints both kinds of number. The <a href="/best-local-coding-llm.html">coding guide</a> carries Devstral Small 2 at <strong>68.0 percent</strong> on SWE-bench Verified from Mistral's own announcement, and Qwen3-Coder-Next at <strong>70.6 percent</strong> on the same named bench under a SWE-Agent harness from that model's technical report. Both figures are already on the site. They are not a locked-harness bake-off. The 2.6-point spread is exactly the kind of gap this page tells you not to spend a GPU decision on.</p>
-    <p>A 2026 position paper that we opened for this guide, Zhang, Wang, Ge, Xu, Hamm, and Reddy, states the same rule in measurement language: on long-horizon agent tasks, harness-induced variance can exceed model-induced variance, including rank reversals. They record a same-model Terminal-Bench 2 pass@1 move from <strong>69.7 percent to 77.0 percent</strong> when only the harness changes, and they cite independent monitoring of up to <strong>15 percentage points</strong> of scaffold-only variation on SWE-bench Verified. Against that, they note that papers often treat a <strong>2 to 4 point</strong> shift as a meaningful model advance. If your two candidates differ by a couple of points and the write-ups do not name the loop, you are not looking at a model ranking. You are looking at two incomplete experimental conditions.</p>
+    <p>Real work still decides. The bench only tells you which job it was good at.</p>
 
-    <h2 class="section-h2 article-h2">Five fields to write down before you trust the number</h2>
+    <h2 class="section-h2 article-h2">The same habit at Artificial Analysis</h2>
+    <p><a href="https://artificialanalysis.ai/" rel="nofollow">Artificial Analysis</a> publishes more than one winner number. Their Intelligence Index is split across agents, coding, science, and general. They also publish speed, cost per task, and time per task. Their <a href="https://artificialanalysis.ai/methodology" rel="nofollow">methodology</a> notes that a given evaluation is more relevant for a given use.</p>
+    <p>This page copies no Artificial Analysis model scores and reprints no leaderboard. The habit is the split: name the job, then read the number that belongs to that job.</p>
+    <p>Artificial Analysis is mostly API and frontier models. This page applies the same habit to local models. Add VRAM, license, and the local harness you actually run.</p>
+
+    <h2 class="section-h2 article-h2">What Goodhart named</h2>
+    <p>Charles Goodhart's 1975 observation, restated by him later, is that <strong>any observed statistical regularity will tend to collapse once pressure is placed upon it for control purposes</strong>. The line lives in the 1984 collected essays reprint of the 1975 paper, which is the stable academic copy opened for this page. He called it a throw-away remark about monetary aggregates that had been chosen as targets because they had looked stable. Once they were targets, the regularity did not hold.</p>
+    <p>For a local coding pick, the translation is short. Once a percentage is the reason to ship, buy, or rank, expect the number to move for reasons besides "the weights got better at software engineering." The rest of this page is the five fields to write down, a worked example on SWE-bench, and a checklist next to the <a href="/local-ai-models.html">catalog</a>.</p>
+
+    <h2 class="section-h2 article-h2">Five fields to write down next to the number</h2>
     <p>Do this on paper, in a note, or in the checklist at the bottom. If a field is blank, the score is not ready to settle a close call.</p>
 
     <h3 class="article-h3">1. Named harness</h3>
-    <p>A coding-agent score is a joint product. The model proposes edits. The harness chooses context, tools, retries, tests, and when to stop. Jimenez, Yang, Wettig, Yao, Pei, Press, and Narasimhan already showed the joint product in the original SWE-bench paper: the same Claude 2 checkpoint resolves <strong>1.96 percent</strong> of the 2,294 issues with a BM25 file retriever, <strong>4.8 percent</strong> when the "oracle" files from the gold patch are provided, and <strong>5.9 percent</strong> when those files are further collapsed to the edited lines plus a 15-line buffer. Those three numbers sit next to three settings in one paper. They are not three models.</p>
-    <p>In 2024, Xia, Deng, Dunn, and Zhang made the scaffold the object of study. Their Agentless system is a fixed three-phase pipeline — localization, repair, patch validation — with no autonomous tool loop. On SWE-bench Lite it reports <strong>32.00 percent</strong> resolved, <strong>96</strong> correct fixes, at a stated cost of <strong>$0.70</strong>, the highest among the open-source agents they compared on that split. That is a harness result as much as a model result. If a vendor card says "32 percent SWE-bench" and does not say Lite, Agentless, and which base model, you cannot place it.</p>
+    <p>A coding-agent score is a joint product. The model proposes edits. The harness chooses context, tools, retries, tests, and when to stop. Jimenez, Yang, Wettig, Yao, Pei, Press, and Narasimhan already showed the joint product in the original SWE-bench paper: the same Claude 2 checkpoint resolves <strong>1.96 percent</strong> of the 2,294 issues with a BM25 file retriever, <strong>4.8 percent</strong> when the "oracle" files from the gold patch are provided, and <strong>5.9 percent</strong> when those files are further collapsed to the edited lines plus a 15-line buffer. Those three numbers sit next to three settings in one paper.</p>
+    <p>In 2024, Xia, Deng, Dunn, and Zhang made the scaffold the object of study. Their Agentless system is a fixed three-phase pipeline (localization, repair, patch validation) with no autonomous tool loop. On SWE-bench Lite it reports <strong>32.00 percent</strong> resolved, <strong>96</strong> correct fixes, at a stated cost of <strong>$0.70</strong>, the highest among the open-source agents they compared on that split. That score is a harness result and a model result together. If a vendor card says "32 percent SWE-bench" and does not say Lite, Agentless, and which base model, you cannot place it.</p>
     <p>Write the harness the way you would write a compiler flag: SWE-agent, Agentless, OpenHands, a vendor CLI, BM25-plus-oracle, mini-SWE-agent, or "not stated." "Not stated" is a finding.</p>
 
     <h3 class="article-h3">2. Training cutoff versus bench age</h3>
     <p>SWE-bench was built so the issue set can be extended with new GitHub work after a model's training date, with "minimal human intervention," specifically so later issues are less likely to sit in the pretraining mix. That design is in the paper we opened. It only helps you if the report tells you which issues were used and when the weights were frozen.</p>
-    <p>Ask two dates, not one. When were the issues created or frozen? When was the checkpoint trained or released? If the issue dates sit inside the training window and the report is silent about leakage, you are reading a score that may include memory. If the issues are newer than the cutoff, the number is a harder claim even when it is lower. A later, cleaner 25 percent can beat an earlier, dirtier 40 percent for a buying decision. The dates decide which sentence is true. The percentage alone does not.</p>
-    <p>The original paper also checked a crude version of this worry. In the oracle-retrieval setting they split tasks before and after 2023 and reported little difference for most models (GPT-4 was the exception, and that GPT-4 run was on a 25 percent random subset for budget reasons). That is not a clean bill of health for 2026 weights on 2024 issue sets. It is a reminder that "cutoff versus bench age" is a field you fill in, not a vibe.</p>
+    <p>Ask two dates. When were the issues created or frozen? When was the checkpoint trained or released? If the issue dates sit inside the training window and the report is silent about leakage, you are reading a score that may include memory. If the issues are newer than the cutoff, the claim is harder even when the percentage is lower. A later, cleaner 25 percent can beat an earlier, dirtier 40 percent for a buying decision. The dates decide which sentence is true.</p>
+    <p>The original paper also checked a crude version of this worry. In the oracle-retrieval setting they split tasks before and after 2023 and reported little difference for most models (GPT-4 was the exception, and that GPT-4 run was on a 25 percent random subset for budget reasons). Treat that as a 2023 check. It does not clear 2026 weights on 2024 issue sets. "Cutoff versus bench age" is a field you fill in.</p>
 
     <h3 class="article-h3">3. Contamination note</h3>
-    <p>SWE-bench tried to resist the usual coding-bench leak. Instances are real issue–pull-request pairs from 12 popular Python repositories, filtered from about 90,000 pull requests down to 2,294 tasks that resolve an issue, contribute tests, and install. The gold patches edit 1.7 files, 3 functions, and 32.8 lines on average. Evaluation is execution: apply the patch, run the fail-to-pass tests plus a median of 51 additional tests. That is a stronger construction than a short self-contained function prompt. It is not a guarantee that every later subset is clean.</p>
-    <p>Agentless, on the Lite split of 300 instances, is the caution. The authors' manual pass found <strong>4.3 percent</strong> of Lite issues contain the exact ground-truth patch in the issue text, <strong>10.0 percent</strong> miss information needed to solve the issue, and <strong>5.0 percent</strong> include a misleading solution. They built a filtered Lite-S set by removing those problems. If a 2026 card quotes Lite and does not say whether those items were dropped, you are not looking at the same exam as a Lite-S number.</p>
-    <p>A usable contamination note is short. "Issues dated after cutoff." "Lite-S, exact-patch items removed." "Vendor fine-tune on SWE-bench-train" — the original paper released 19,000 non-test issue–PR pairs from 37 repositories disjoint from the eval repos, which is a legitimate training set and also a reason to ask whether a later model was tuned on nearby data. "Not stated" is, again, a finding.</p>
+    <p>SWE-bench tried to resist the usual coding-bench leak. Instances are real issue–pull-request pairs from 12 popular Python repositories, filtered from about 90,000 pull requests down to 2,294 tasks that resolve an issue, contribute tests, and install. The gold patches edit 1.7 files, 3 functions, and 32.8 lines on average. Evaluation is execution: apply the patch, run the fail-to-pass tests plus a median of 51 additional tests. The construction uses real issues and execution. It still does not guarantee that every later subset is clean.</p>
+    <p>Agentless, on the Lite split of 300 instances, is the caution. The authors' manual pass found <strong>4.3 percent</strong> of Lite issues contain the exact ground-truth patch in the issue text, <strong>10.0 percent</strong> miss information needed to solve the issue, and <strong>5.0 percent</strong> include a misleading solution. They built a filtered Lite-S set by removing those problems. If a 2026 card quotes Lite and does not say whether those items were dropped, a Lite number and a Lite-S number are different exams.</p>
+    <p>A usable contamination note is short. "Issues dated after cutoff." "Lite-S, exact-patch items removed." "Vendor fine-tune on SWE-bench-train." The original paper released 19,000 non-test issue–PR pairs from 37 repositories disjoint from the eval repos, which is a legitimate training set and also a reason to ask whether a later model was tuned on nearby data. "Not stated" is, again, a finding.</p>
 
     <h3 class="article-h3">4. Vendor versus third-party</h3>
-    <p>Who ran the loop, and who had a reason to pick the flattering one? A vendor announcement is a primary source for the claim "this lab reported X under some protocol." It is a weak source for the claim "this model is better than that model." A third-party reproduction that names the harness and the split is stronger even when the number is lower.</p>
-    <p>This site already models that distinction on the coding page. Devstral Small 2's 68.0 percent is labeled as Mistral's published figure. Qwen3-Coder-Next's 70.6 percent is labeled as a technical-report figure under SWE-Agent. A Nebius write-up of OpenHands trajectories is cited there as a third-party Pass@1. Those are three different kinds of sentence. Collapsing them into a single ranked table is how a point gap gets laundered into a purchase.</p>
-    <p>The catalog is equally blunt, and already on the site: benchmark figures on the cards are compiled from vendor announcements and public leaderboards at the time each card was written, are being re-cited to named sources, and should be treated as reported, not independently reproduced. If you are using this site as a buyer, that sentence is the rule, not a footnote.</p>
+    <p>Who ran the loop, and who had a reason to pick the flattering one? A vendor announcement is a primary source for the claim "this lab reported X under some protocol." It is a weak source for the claim "this model beats that model." A third-party reproduction that names the harness and the split can still be the number you keep when the vendor figure is higher and silent.</p>
+    <p>This site already models that distinction on the coding page. Devstral Small 2's 68.0 percent is labeled as Mistral's published figure. Qwen3-Coder-Next's 70.6 percent is labeled as a technical-report figure under SWE-Agent. A Nebius write-up of OpenHands trajectories is cited there as a third-party Pass@1. Those are three different kinds of sentence. Collapsing them into a single ranked table is how a two-point spread becomes a purchase.</p>
+    <p>The catalog is equally blunt, and already on the site: benchmark figures on the cards are compiled from vendor announcements and public leaderboards at the time each card was written, are being re-cited to named sources, and should be treated as reported, not independently reproduced. If you are using this site as a buyer, that sentence is the rule.</p>
 
     <h3 class="article-h3">5. This site's evidence labels</h3>
     <p>When a number appears on local-ai-models.ai, it should already carry one of three labels. Use the same labels when you paste a score into a runbook.</p>
     <ul>
       <li><span class="ev-pill ev-primary">Primary</span> A named publisher you can open: a paper, a lab announcement, a third-party eval with a protocol. Example already on the site: Devstral Small 2 at 68.0 percent from Mistral.</li>
-      <li><span class="ev-pill ev-prac">Practitioner-reported</span> A figure that circulated in community or research-brief material without a resolvable publisher. Useful as a rumor with a date. Not a rank.</li>
+      <li><span class="ev-pill ev-prac">Practitioner-reported</span> A figure that circulated in community or research-brief material without a resolvable publisher. Useful as a rumor with a date. Leave it out of a rank.</li>
       <li><span class="ev-pill ev-site">Site assertion</span> A number that appears on a catalog card without a citation. Example already on the site: GLM-4.7-Flash at 59.2 percent SWE-bench on the coding guide, flagged there as a site assertion rather than a cited result.</li>
     </ul>
-    <p>The labels are not moral grades. They are load ratings. A primary 25 percent with a named harness can outweigh a site-assertion 60 percent when you are choosing what to load into 24 GB. The <a href="/about.html">about page</a> is where this site says how the catalog is sourced and what it does not do; this page is the reading rule for the numbers that still leak onto cards.</p>
+    <p>The labels are load ratings. A primary 25 percent with a named harness can outweigh a site-assertion 60 percent when you are choosing what to load into 24 GB. The <a href="/about.html">about page</a> is where this site says how the catalog is sourced and what it does not do. This page is the reading rule for the numbers that still leak onto cards.</p>
 
     <h2 class="section-h2 article-h2">SWE-bench as the worked example</h2>
-    <p>Use SWE-bench when you want to see the whole practice in one bench family. It was designed to be harder to game than HumanEval-style prompts, and it still shows scaffold variance large enough to swamp a point ranking. That combination is the point.</p>
+    <p>Use SWE-bench when you want to see the whole practice in one bench family. It was built from real GitHub issues, and it still shows scaffold variance large enough to cover the 68.0 versus 70.6 window already on the coding guide.</p>
 
     <h3 class="article-h3">What the 2023 paper actually built</h3>
-    <p>The task is not "write a function from a docstring." The model is given a GitHub issue and a codebase snapshot and must emit a patch. Success is fail-to-pass tests plus the rest of the repo's checks. The authors collected from 12 widely used Python packages, kept only merged pull requests that resolve an issue and change tests, then kept only instances that install and show at least one fail-to-pass test. Forty percent of the final 2,294 instances have at least two fail-to-pass tests. Issue text averages 195 words. Codebases average 3,010 non-test files and 438,000 non-test lines. That is a working engineer's unit of work, which is why a 2-point leaderboard delta is such a strange thing to treat as a personality difference between two weights.</p>
-    <p>They also shipped SWE-bench Lite: 300 instances, sampled to be more self-contained and focused on functional bug fixes, covering 11 of the 12 original repositories. Lite is easier to run and easier to overfit in conversation. A Lite percentage and a full-set percentage are not interchangeable. A later "Verified" or "Pro" percentage is a third thing. Write the split next to the number the way you write the quantization next to a VRAM figure.</p>
+    <p>The model is given a GitHub issue and a codebase snapshot and must emit a patch. Success is fail-to-pass tests plus the rest of the repo's checks. The authors collected from 12 widely used Python packages, kept only merged pull requests that resolve an issue and change tests, then kept only instances that install and show at least one fail-to-pass test. Forty percent of the final 2,294 instances have at least two fail-to-pass tests. Issue text averages 195 words. Codebases average 3,010 non-test files and 438,000 non-test lines. That is a working engineer's unit of work. A 2-point leaderboard delta on separately sourced cards is a thin reason to treat two weight files as different tools.</p>
+    <p>They also shipped SWE-bench Lite: 300 instances, sampled for self-contained functional bug fixes, covering 11 of the 12 original repositories. Lite is easier to run and easier to overfit in conversation. A Lite percentage and a full-set percentage are different exams. A later "Verified" or "Pro" percentage is a third exam. Write the split next to the number the way you write the quantization next to a VRAM figure.</p>
 
     <h3 class="article-h3">Numbers from that paper, next to their setting</h3>
     <p>These are the figures printed in the copy of arXiv:2310.06770 opened for this page. They are historical. They are here because they show variance inside one paper, not because they describe 2026 open weights.</p>
@@ -481,65 +484,62 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
       </table>
     </div>
 
-    <p>Read that table as a practitioner, not as a historian. The best proprietary model in the paper clears fewer than two issues in a hundred under the realistic retriever. Give it the files the gold patch edited and the rate more than doubles. Shrink those files to the edited region and it rises again. If a 2023 retrieval choice can move Claude 2 from 1.96 to 5.9, you should not be surprised when a 2026 agent loop moves a modern model by more than the gap between two neighboring vendor cards.</p>
+    <p>Read that table as a practitioner. The best proprietary model in the paper clears fewer than two issues in a hundred under the realistic retriever. Give it the files the gold patch edited and the rate moves from 1.96 to 4.8. Shrink those files to the edited region and it rises to 5.9. If a 2023 retrieval choice can move Claude 2 from 1.96 to 5.9, a 2026 agent loop can move a modern model across the 68.0 to 70.6 window already on the coding guide.</p>
 
     <h3 class="article-h3">What later papers added, without mixing splits</h3>
-    <p>Agentless (arXiv:2407.01489, opened) is the 2024 reminder that a simpler scaffold can beat a more "agentic" one on the same Lite split, and that Lite itself is not a clean exam. Use their 32.00 percent only with the words <em>SWE-bench Lite</em> and <em>Agentless</em> attached. Use their 4.3 / 10.0 / 5.0 percent issue-quality findings when someone treats every Lite solve as proof of repository skill.</p>
-    <p>Zhang et al. (arXiv:2605.23950, opened) is the 2026 reminder that the field still publishes a single number per model–benchmark pair and then attributes it to the model. Their proposed fix is disclosure, not a new bench: locked-harness comparisons, or a factorial grid that reports harness variance and model variance separately. Until a write-up does one of those, they say leaderboard comparisons for long-horizon agents should be treated as incomplete. That sentence is the same decision this page makes for a local buyer.</p>
-    <p>Do not subtract 1.96 from 32.00 and call it two years of progress. Different split, different harness, different models. The comparable move is: same split, named harness, dated cutoff. Everything else is a poster.</p>
+    <p>Agentless (arXiv:2407.01489, opened) is the 2024 reminder that a simpler scaffold can outscore an agent loop on the same Lite split, and that Lite itself is a messy exam. Use their 32.00 percent only with the words <em>SWE-bench Lite</em> and <em>Agentless</em> attached. Use their 4.3 / 10.0 / 5.0 percent issue-quality findings when someone treats every Lite solve as proof of repository skill.</p>
+    <p>Zhang et al. (arXiv:2605.23950, opened) is the 2026 reminder that the field still publishes a single number per model–benchmark pair and then attributes it to the model. Their proposed fix is disclosure: locked-harness comparisons, or a factorial grid that reports harness variance and model variance separately. Until a write-up does one of those, they say leaderboard comparisons for long-horizon agents should be treated as incomplete. That is the same reading this page uses for a local buyer.</p>
+    <p>Do not subtract 1.96 from 32.00 and call it two years of progress. Different split, different harness, different models. The comparable move is same split, named harness, dated cutoff.</p>
 
     <h2 class="section-h2 article-h2">How to use this on the catalog you already have</h2>
     <p>This page does not add new model scores. It tells you how to hold the ones that are already here.</p>
     <ul>
       <li>On <a href="/local-ai-models.html">the catalog</a>, treat a SWE-bench badge as a reported figure. The page already says the cards compile vendor and leaderboard numbers and are not independent runs. If two cards differ by a few points, ignore the rank and compare license, VRAM, and context instead.</li>
-      <li>On <a href="/best-local-coding-llm.html">the coding guide</a>, prefer the three named primary citations (Mistral 68.0, Qwen3-Coder-Next 70.6 under SWE-Agent, Nebius 66.5 Pass@1 on a 480B) over any unlabeled percentage. Then remember those three still do not share one harness.</li>
-      <li>On <a href="/sentiment.html">community analytics</a>, treat downloads, likes, and discussion as attention. Attention is a useful tie-break after a tier is chosen. It is not a substitute for a named eval.</li>
-      <li>If you need to correct a card, the path is the <a href="/about.html">about</a> page plus the <a href="/updates.html">changelog</a>, not a new invented leaderboard on this URL.</li>
+      <li>On <a href="/best-local-coding-llm.html">the coding guide</a>, prefer the three named primary citations (Mistral 68.0, Qwen3-Coder-Next 70.6 under SWE-Agent, Nebius 66.5 Pass@1 on a 480B) over any unlabeled percentage. Those three still do not share one harness.</li>
+      <li>On <a href="/sentiment.html">community analytics</a>, treat downloads, likes, and discussion as attention. Attention is a useful tie-break after you know the job and the VRAM fit.</li>
+      <li>If you need to correct a card, the path is the <a href="/about.html">about</a> page plus the <a href="/updates.html">changelog</a>.</li>
     </ul>
-    <p>A practical buying translation for a 24 GB box: pick the tier first (8B, 14B–24B, 30B–32B), then pick the license and the VRAM fit, then pick the runner. Use a leaderboard only to avoid a model that still lives in the "almost never resolves a real issue" tier. Do not use it to spend the last 2 GB of headroom on a 2-point badge.</p>
-
-    <section id="metaphor-bends" class="metaphor-bends ad-free" data-nosnippet>
-      <div class="metaphor-kicker">Where the metaphor bends</div>
-      <div class="metaphor-title">A leaderboard is not a monetary aggregate</div>
-      <p>Goodhart was writing about a statistical regularity that had been promoted into a policy instrument. A SWE-bench percentage is already a mixture: model, harness, issue split, and scoring rule. Some of what looks like "the measure became a target" is ordinary measurement error — two labs ran different loops. Some of it is targeting: fine-tunes, prompt packs, and agent stacks that exist to move this one number. The metaphor bends because those two failure modes need different fixes. Disclosure repairs measurement. A living issue set and a contamination note repair targeting. Painting a new bullseye around last week's score repairs neither. House rule: this block is ad-free.</p>
-      <p class="ad-free-note">Ad-free · data-nosnippet</p>
-    </section>
+    <p>A practical buying translation for a 24 GB box: pick the size class first (8B, 14B–24B, 30B–32B), then pick the license and the VRAM fit, then pick the runner. Use a leaderboard to see which job a model was tested on. Do not spend the last 2 GB of headroom on a 2-point badge.</p>
 
     <h2 class="section-h2 article-h2">Reading checklist</h2>
-    <p>HTML on purpose. Not a download, not a poster. Check a box only when the report in front of you actually states the field. Dated with the page: 20 August 2026.</p>
+    <p>HTML on the page. Check a box only when the report in front of you actually states the field. Dated with the page: 20 August 2026.</p>
 
     <div class="checklist-card" id="checklist">
       <h3>Before this score can settle a close call</h3>
       <p class="check-meta">Local AI Models · 2026-08-20 · not a PDF</p>
       <ol>
         <li><label><input type="checkbox"> <strong>Named harness.</strong> SWE-agent, Agentless, OpenHands, BM25, vendor CLI, or an explicit "not stated."</label></li>
-        <li><label><input type="checkbox"> <strong>Named split.</strong> Full 2,294, Lite 300, Lite-S, Verified, Pro, or another frozen set — written next to the percentage.</label></li>
+        <li><label><input type="checkbox"> <strong>Named split.</strong> Full 2,294, Lite 300, Lite-S, Verified, Pro, or another frozen set, written next to the percentage.</label></li>
         <li><label><input type="checkbox"> <strong>Cutoff versus bench age.</strong> Weight date and issue dates both present, or a clear "unknown."</label></li>
         <li><label><input type="checkbox"> <strong>Contamination note.</strong> Later issues, filtered leak items, or an admission that none was checked.</label></li>
         <li><label><input type="checkbox"> <strong>Who ran it.</strong> Vendor self-report or a third-party protocol you can open.</label></li>
-        <li><label><input type="checkbox"> <strong>Evidence label.</strong> Primary, practitioner-reported, or site assertion — the three labels this site already uses.</label></li>
+        <li><label><input type="checkbox"> <strong>Evidence label.</strong> Primary, practitioner-reported, or site assertion. The three labels this site already uses.</label></li>
         <li><label><input type="checkbox"> <strong>Scoring rule.</strong> Resolved versus applied, Pass@1 versus Pass@k, fail-to-pass only versus full suite.</label></li>
-        <li><label><input type="checkbox"> <strong>Tier or point.</strong> If the gap is a few points, I will not pick hardware on it. If the gap is a tier, I will.</label></li>
+        <li><label><input type="checkbox"> <strong>Job the bench tested.</strong> I can name the real work this score predicts: repo bugs, long context, speed, or VRAM fit.</label></li>
+        <li><label><input type="checkbox"> <strong>Close gap.</strong> If the spread is about two points on separately sourced reports, I will not pick hardware on it.</label></li>
       </ol>
-      <p class="checklist-foot">Eight boxes. A score with fewer than six checked is a headline, not a comparison. This card does not store anything; it is a reading aid on the page.</p>
+      <p class="checklist-foot">Nine boxes. A score with fewer than six checked is a headline. This card does not store anything; it is a reading aid on the page.</p>
     </div>
 
     <h2 class="section-h2 article-h2">Frequently asked questions</h2>
 
-    <h3 class="article-h3">Is a 68 percent model better than a 25 percent model?</h3>
-    <p>Usually, if both numbers are about the same task family and neither is an unlabeled site assertion. That is a tier. You will notice it when the weaker model cannot localize a multi-file bug and the stronger one sometimes can. This page does not attach "25 percent" to a catalog model; it is the pedagogical low band. What this page will not do is let a 68.0 and a 70.6, already printed on the coding guide from two different protocols, decide a purchase.</p>
+    <h3 class="article-h3">Why not pick on 68 versus 70.6?</h3>
+    <p>Those two SWE-bench Verified figures are already on the <a href="/best-local-coding-llm.html">coding guide</a> as separately sourced scores. Mistral published 68.0 for Devstral Small 2. The Qwen3-Coder-Next technical report published 70.6 under SWE-Agent. A two-point gap can be the test setup. Zhang et al. record a same-model Terminal-Bench 2 pass@1 move from 69.7 percent to 77.0 percent when only the harness changes.</p>
+
+    <h3 class="article-h3">What is a score good for, then?</h3>
+    <p>The shape of scores tells you which kind of real work a model is good at. A coding-bug test predicts repo work. A long-context test predicts reading a big project. Speed and VRAM predict whether it is usable on your machine. Real work still decides. The bench only tells you which job it was good at.</p>
 
     <h3 class="article-h3">Why is SWE-bench the example instead of HumanEval?</h3>
-    <p>Because it was built from real issues specifically to be harder to memorize, and because the original paper already prints a three-way harness-style spread on one model. HumanEval still has a place as a smoke test. It is a poor place to learn this reading habit, because the unit of work is too small to show scaffold effects clearly.</p>
+    <p>Because it was built from real issues, and because the original paper already prints a three-way harness-style spread on one model. HumanEval still has a place as a smoke test. The unit of work is small, so scaffold effects are harder to see.</p>
 
     <h3 class="article-h3">Did this site run SWE-bench?</h3>
-    <p>No. The <a href="/best-local-coding-llm.html">coding guide</a> already says so. Every percentage mentioned here is either printed in a paper we opened, already labeled on this site, or used as an unlabeled tier band. If a source is wrong, the sentence that restates it is wrong.</p>
+    <p>No. The <a href="/best-local-coding-llm.html">coding guide</a> already says so. Every percentage mentioned here is either printed in a paper we opened, already labeled on this site, or used as an unlabeled band (the 25 and 40 percent cutoff examples). If a source is wrong, the sentence that restates it is wrong.</p>
 
-    <h3 class="article-h3">What should I do when two local models sit in the same tier?</h3>
-    <p>Stop using the leaderboard. Compare VRAM at Q4_K_M, license, context you can actually hold, and whether your runner has a decent tool loop. Then look at <a href="/sentiment.html">community traction</a> as a last tie-break for "will this still be packaged next quarter." That is a worse method than a locked-harness eval, and a better method than a 2-point badge.</p>
+    <h3 class="article-h3">What should I do when two local models sit two points apart?</h3>
+    <p>Stop using the leaderboard as the picker. Compare VRAM at Q4_K_M, license, context you can actually hold, and whether your runner has a decent tool loop. Then look at <a href="/sentiment.html">community traction</a> as a last tie-break for "will this still be packaged next quarter."</p>
 
     <h3 class="article-h3">Does this apply to MMLU and chat benches too?</h3>
-    <p>The targeting half does. Any exam that labs train toward will drift. The harness half is sharper on agent benches, where the loop is a large part of the score. For static multiple-choice, write cutoff, contamination, and vendor-versus-third-party; you can often skip "named SWE-agent." Do not skip the evidence label.</p>
+    <p>Any exam that labs train toward will drift. The harness half is sharper on agent benches, where the loop is a large part of the score. For static multiple-choice, write cutoff, contamination, and vendor-versus-third-party. You can often skip "named SWE-agent." Do not skip the evidence label.</p>
 
     <h2 class="section-h2 article-h2">Sources</h2>
     <ol class="sources-list">
@@ -549,6 +549,8 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
       <li>Chunqiu Steven Xia, Yinlin Deng, Soren Dunn, Lingming Zhang, "Agentless: Demystifying LLM-based Software Engineering Agents," arXiv:2407.01489. Abstract opened 2026-08-20: <a href="https://arxiv.org/abs/2407.01489" rel="nofollow">arxiv.org/abs/2407.01489</a>. Figures used: 32.00% (96 fixes) on SWE-bench Lite; $0.70 stated cost; 4.3% / 10.0% / 5.0% Lite issue-quality rates; three-phase localization, repair, validation.</li>
       <li>Yunbei Zhang, Janet Wang, Yingqiang Ge, Weijie Xu, Jihun Hamm, Chandan K. Reddy, "Stop Comparing LLM Agents Without Disclosing the Harness," arXiv:2605.23950. HTML opened 2026-08-20: <a href="https://arxiv.org/abs/2605.23950" rel="nofollow">arxiv.org/abs/2605.23950</a>, <a href="https://arxiv.org/html/2605.23950v1" rel="nofollow">arxiv.org/html/2605.23950v1</a>. Figures used: Terminal-Bench 2 pass@1 69.7% to 77.0% with harness change; up to 15 percentage points scaffold-only variation on SWE-bench Verified; 2 to 4 points as a typical reported model advance; SWE-bench Pro Claude Opus 4.5 at 45.9% (SEAL) versus 55.4% (Claude Code).</li>
       <li>Already on this site, 2026-08-20: <a href="/best-local-coding-llm.html">best-local-coding-llm.html</a> (Devstral Small 2 68.0% primary / Mistral; Qwen3-Coder-Next 70.6% under SWE-Agent; GLM-4.7-Flash 59.2% labeled site assertion; statement that this site did not run SWE-bench). <a href="/local-ai-models.html">local-ai-models.html</a> catalog note that card benchmarks are compiled from vendor announcements and public leaderboards and are not independently reproduced.</li>
+      <li>Nate B. Jones, episode <em>Pick an AI Model That Fits How You Actually Work</em>, 13 July 2026. Cited by title and date only. No podcast, YouTube, or transcript quotation.</li>
+      <li>Artificial Analysis, language-model methodology and index. Opened for the published habit (Intelligence Index split across agents, coding, science, and general; plus speed, cost per task, and time per task). <a href="https://artificialanalysis.ai/" rel="nofollow">artificialanalysis.ai</a>, <a href="https://artificialanalysis.ai/methodology" rel="nofollow">artificialanalysis.ai/methodology</a>. No Artificial Analysis model scores copied onto this page.</li>
     </ol>
 
   </article>
@@ -560,7 +562,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <a href="/best-local-coding-llm.html" class="related-card">
       <div class="related-eyebrow">Guide</div>
       <div class="related-name">Best Local Coding LLM</div>
-      <div class="related-desc">Where the 68.0 and 70.6 figures already live, with the evidence labels this page teaches.</div>
+      <div class="related-desc">Where the 68.0 and 70.6 SWE-bench Verified figures already live, as separately sourced scores.</div>
     </a>
     <a href="/local-ai-models.html" class="related-card">
       <div class="related-eyebrow">Catalog</div>
@@ -570,7 +572,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <a href="/sentiment.html" class="related-card">
       <div class="related-eyebrow">Signals</div>
       <div class="related-name">Community Analytics</div>
-      <div class="related-desc">Downloads and discussion as attention, not as a substitute for a named harness.</div>
+      <div class="related-desc">Downloads and discussion as attention after you know the job and the VRAM fit.</div>
     </a>
     <a href="/about.html" class="related-card">
       <div class="related-eyebrow">Method</div>
