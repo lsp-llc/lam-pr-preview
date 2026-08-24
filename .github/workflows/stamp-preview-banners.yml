@@ -1,0 +1,49 @@
+name: stamp-preview-banners
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/stamp-preview-banners.yml'
+jobs:
+  stamp:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Insert hero URL and preview banners
+        run: |
+          python3 << 'PY'
+          from pathlib import Path
+          mapping = {
+            '27-goodhart.html': 27,
+            '26-memory-bandwidth.html': 26,
+            '30-joules.html': 30,
+            '29-moe-desk.html': 29,
+            '28-local-rag.html': 28,
+            '31-spark-ops.html': 31,
+            '32-pulse.html': 32,
+          }
+          old = "url('hero-quantization.png')"
+          new = "url('https://local-ai-models.ai/hero-quantization.png')"
+          for name, n in mapping.items():
+              p = Path(name)
+              t = p.read_text(encoding='utf-8')
+              t = t.replace(old, new)
+              marker = f'lsp-llc/local-ai-models#{n}'
+              if marker not in t:
+                  banner = (
+                      '<p class="preview-banner" style="margin:0;padding:8px 16px;'
+                      'background:#1a1a1a;color:#f5c518;font:14px/1.4 Inter,system-ui,sans-serif;'
+                      f'text-align:center;">Preview of {marker} \u2014 not production.</p>\n'
+                  )
+                  t = t.replace('<body>', '<body>\n' + banner, 1)
+              p.write_text(t, encoding='utf-8')
+          PY
+      - name: Commit stamped HTML
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 27-goodhart.html 26-memory-bandwidth.html 30-joules.html 29-moe-desk.html 28-local-rag.html 31-spark-ops.html 32-pulse.html
+          git diff --cached --quiet || git commit -m "Stamp preview banners on PR draft HTML"
+          git push
