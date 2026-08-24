@@ -185,6 +185,10 @@ button:focus-visible, a:focus-visible { outline-offset: 3px; }
 .related { padding-top: 96px !important; padding-bottom: 96px !important; }
 @media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
 .section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+
+    .plate-figure { margin: 0 0 22px; }
+    .plate-figure img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+    .plate-figure figcaption { font-family: inherit; font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; color: #8a8f99; margin-top: 8px; }
 </style>
 
 <style>
@@ -405,7 +409,8 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 
     <section class="plate-block" data-nosnippet>
       <div class="plate-kicker">Plate · the librarian and the corridor</div>
-      <p>Picture the GPU as a librarian and the memory bus as the only corridor between the stacks and the reading room. Every time a visitor asks for the next word, the librarian must walk the <em>entire</em> collection down that corridor: every shelf of weights, plus the growing cart of notes already taken. The reading room is vast. The corridor is not.</p>
+            <figure class="plate-figure"><img src="plate-02-librarian-corridor.jpg" alt="Scientific Plate II: The Librarian and the Corridor. Commissioned engraving for this site."><figcaption>Commissioned for this site</figcaption></figure>
+<p>Picture the GPU as a librarian and the memory bus as the only corridor between the stacks and the reading room. Every time a visitor asks for the next word, the librarian must walk the <em>entire</em> collection down that corridor: every shelf of weights, plus the growing cart of notes already taken. The reading room is vast. The corridor is not.</p>
       <p>A faster reader at the far end of the same corridor still waits on the cart. That is batch-1 decode. The advertised teraflops are the reading room. The published gigabytes per second are the corridor. Chat speed is the trip, repeated once per token, and the trip is what you buy.</p>
       <p>The stacks do not get shorter because the reader is quicker. They get shorter when you compress the books, skip a wing, or send several visitors down the hall on one pass. Those are different decisions. They are not “buy a faster GPU” in the marketing sense.</p>
     </section>
