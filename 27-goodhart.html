@@ -3,25 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to Read an LLM Leaderboard After Goodhart (2026) | Local AI Models</title>
+<title>How to Read a Coding-Model Leaderboard | Local AI Models</title>
 <meta name="description" content="Do not pick a local coding model on a 70.6 versus 68 SWE-bench Verified gap. Those two figures are already on this site's coding guide as separately sourced scores. A two-point gap can be the test setup. Updated August 24, 2026.">
 <meta name="keywords" content="llm leaderboard, goodhart law, swe-bench, benchmark contamination, harness variance, how to read llm benchmarks, local coding llm scores">
 <link rel="canonical" href="https://local-ai-models.ai/benchmark-goodhart-law.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="How to Read an LLM Leaderboard After Goodhart (2026)">
+<meta property="og:title" content="How to Read a Coding-Model Leaderboard">
 <meta property="og:description" content="A two-point SWE-bench Verified gap can be the test setup. Use the shape of scores to see which job a model was good at. Real work still decides.">
 <meta property="og:url" content="https://local-ai-models.ai/benchmark-goodhart-law.html">
 <meta property="og:site_name" content="Local AI Models">
 <meta property="og:image" content="https://local-ai-models.ai/hero-quantization.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="How to Read an LLM Leaderboard After Goodhart (2026)">
+<meta name="twitter:title" content="How to Read a Coding-Model Leaderboard">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "How to Read an LLM Leaderboard After Goodhart (2026)",
+  "headline": "How to Read a Coding-Model Leaderboard",
   "description": "Do not pick a local coding model on a 70.6 versus 68 SWE-bench Verified gap. Those two figures are already on this site's coding guide as separately sourced scores. A two-point gap can be the test setup. The shape of scores tells you which job a model was good at.",
   "datePublished": "2026-08-20",
   "dateModified": "2026-08-24",
@@ -39,7 +39,7 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"},
     {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://local-ai-models.ai/#destinations"},
-    {"@type": "ListItem", "position": 3, "name": "How to Read an LLM Leaderboard After Goodhart (2026)", "item": "https://local-ai-models.ai/benchmark-goodhart-law.html"}
+    {"@type": "ListItem", "position": 3, "name": "How to Read a Coding-Model Leaderboard", "item": "https://local-ai-models.ai/benchmark-goodhart-law.html"}
   ]
 }
 </script>
@@ -200,6 +200,24 @@ button:focus-visible, a:focus-visible { outline-offset: 3px; }
   letter-spacing: -0.02em;
 }
 .plate-header p, .metaphor-bends p { color: var(--text-2); margin: 0; font-size: 0.98rem; }
+.plate-block {
+  max-width: 820px;
+  margin: 0 0 48px;
+}
+.plate-block img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.plate-block figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
 .ad-free-note {
   font-family: var(--font-mono);
   font-size: 0.66rem;
@@ -377,7 +395,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
   <div class="hero-inner">
     <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/#destinations">Guides</a><span class="sep">/</span><span>Leaderboard Reading</span></div>
     <div class="hero-eyebrow">Reading practice · August 2026</div>
-    <h1 class="hero-title">How to Read an LLM Leaderboard After <span class="accent">Goodhart</span></h1>
+    <h1 class="hero-title">How to Read a Coding-Model Leaderboard</h1>
     <div class="updated-line">Published: 20 August 2026 · Decision restated: 24 August 2026</div>
     <p class="hero-sub">Do not pick a local coding model because one site says 70.6 and another says 68. Those two SWE-bench Verified figures are already on this site's coding guide as separately sourced scores, not one locked test.</p>
   </div>
@@ -389,9 +407,13 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <header id="scientific-plate" class="plate-header ad-free" data-nosnippet>
       <div class="plate-kicker">Scientific Plate XII</div>
       <div class="plate-title">Painted Target</div>
-      <p>Scientific Plate XII, titled Painted Target. Page mark only.</p>
       <p class="ad-free-note">Plate header is ad-free · data-nosnippet</p>
     </header>
+
+    <figure class="plate-block">
+      <img src="plate-12-painted-target.jpg" alt="Scientific Plate XII, Painted Target: an engraving of an arrow in a board with rings painted after the shot.">
+      <figcaption>Scientific Plate XII · Painted Target. Commissioned for this site.</figcaption>
+    </figure>
 
     <p class="lede">A two-point gap on separately sourced SWE-bench Verified scores can be the test setup. The useful half of a bench is the job it tested. Real work still decides which model you keep.</p>
 
@@ -455,6 +477,11 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
       <li><span class="ev-pill ev-site">Site assertion</span> A number that appears on a catalog card without a citation. Example already on the site: GLM-4.7-Flash at 59.2 percent SWE-bench on the coding guide, flagged there as a site assertion rather than a cited result.</li>
     </ul>
     <p>The labels are load ratings. A primary 25 percent with a named harness can outweigh a site-assertion 60 percent when you are choosing what to load into 24 GB. The <a href="/about.html">about page</a> is where this site says how the catalog is sourced and what it does not do. This page is the reading rule for the numbers that still leak onto cards.</p>
+
+    <h2 class="section-h2 article-h2">Keep a frozen set of your own work</h2>
+    <p>A public leaderboard is someone else's exam. Design a small eval around work you already do. Freeze it. A repo bug you have already fixed. A long project you actually read. A tool loop you already run. Write the same fields this page already uses: named harness, dates, and who ran it.</p>
+    <p>When a new model ships, run that same frozen set. That is how you decide whether to switch. Do not invent new SWE-bench numbers. Do not invent Artificial Analysis scores.</p>
+    <p><a href="https://artificialanalysis.ai/" rel="nofollow">Artificial Analysis</a> now has Optima, a custom benchmark you build from your own tasks.</p>
 
     <h2 class="section-h2 article-h2">SWE-bench as the worked example</h2>
     <p>Use SWE-bench when you want to see the whole practice in one bench family. It was built from real GitHub issues, and it still shows scaffold variance large enough to cover the 68.0 versus 70.6 window already on the coding guide.</p>
