@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Local LLM Chat Speed Is Memory Bandwidth, Not TFLOPS (2026) | Local AI Models</title>
+<meta name="description" content="Batch-1 decode tok/s on a desk GPU is a memory-bandwidth ceiling, not a TFLOPS race. Worked formula, vendor-cited bandwidth tables, and the prefill exception. Dated 20 August 2026.">
+<meta name="keywords" content="llm tokens per second, memory bandwidth bound decode, roofline model llm, rtx 4090 bandwidth, local llm speed, prefill vs decode, kv cache bandwidth">
+<link rel="canonical" href="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Why Local LLM Chat Speed Is Memory Bandwidth, Not TFLOPS (2026)">
+<meta property="og:description" content="Batch-1 decode tok/s on a desk GPU is a memory-bandwidth ceiling. Worked formula, vendor-cited bandwidth, and the prefill exception.">
+<meta property="og:url" content="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta property="og:image" content="https://local-ai-models.ai/hero-quantization.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Why Local LLM Chat Speed Is Memory Bandwidth, Not TFLOPS (2026)">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Why Local LLM Chat Speed Is Memory Bandwidth, Not TFLOPS (2026)",
+  "description": "Batch-1 decode on a desk GPU is memory-bandwidth bound. Peak tokens/s is roughly memory bandwidth divided by bytes moved per token. Prefill is the compute-bound exception.",
+  "datePublished": "2026-08-20",
+  "dateModified": "2026-08-20",
+  "inLanguage": "en",
+  "author": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html"}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://local-ai-models.ai/#destinations"},
+    {"@type": "ListItem", "position": 3, "name": "Memory Bandwidth and Tokens per Second", "item": "https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why is local LLM chat speed limited by memory bandwidth?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "At batch-1 decode the GPU streams nearly the whole weight file, plus the KV cache, for every new token. Arithmetic intensity is low, so the roofline ceiling is tokens/s ≈ memory_bandwidth / bytes_moved_per_token. Extra TFLOPS do not raise that ceiling."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will a GPU with more TFLOPS make local chat faster?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Only if it also widens the memory corridor. An RTX 4090 advertises 82.6 FP32 TFLOPS and 1008 GB/s; an RTX 3090 advertises 35.6 FP32 TFLOPS and 936 GB/s. Compute more than doubled; bandwidth moved about 8 percent. Batch-1 decode cannot collect the TFLOPS dividend."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When do TFLOPS matter for local LLMs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "During prefill: a long prompt reuses the same weights across many tokens, so operational intensity rises and the kernel can hit the compute roof. Long RAG dumps, fill-in-the-middle, and first-token latency are the compute-bound cases."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you estimate a theoretical tokens-per-second ceiling?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Divide the vendor-published peak memory bandwidth by the bytes streamed per decode step. For an 8B model at Q4_K_M, weights are about 4.8 GB (5 GB as a planning figure). On a 1008 GB/s RTX 4090 that is a calculated 202 tok/s if only weights move. Real runtimes are a fraction of that ceiling."
+      }
+    }
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('https://local-ai-models.ai/hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 600px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+</style>
+
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul, .article-body ol.plain { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body ul li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+.vram-table caption { caption-side: bottom; text-align: left; padding: 12px 18px 16px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.plate-block {
+  max-width: 820px;
+  margin: 0 0 56px;
+  padding: 36px 32px 32px;
+  background: linear-gradient(180deg, rgba(167,139,250,0.06) 0%, rgba(6,7,10,0.2) 100%);
+  border: 1px solid rgba(167,139,250,0.22);
+  border-radius: 18px;
+}
+.plate-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 14px;
+}
+.plate-block p {
+  font-family: var(--font-serif);
+  font-size: 1.18rem;
+  line-height: 1.62;
+  color: var(--text-2);
+  margin-bottom: 18px;
+}
+.plate-block p:last-child { margin-bottom: 0; }
+.plate-block em { color: var(--text); font-style: italic; }
+.bends-block {
+  max-width: 820px;
+  margin: 0 0 64px;
+  padding: 32px 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+.bends-block .article-h2 { margin-top: 0; }
+.formula-box {
+  margin: 0 0 28px;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  color: var(--accent);
+  line-height: 1.7;
+  overflow-x: auto;
+}
+.formula-box .note { display: block; margin-top: 10px; color: var(--text-dim); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; }
+.decision-box {
+  margin: 0 0 28px;
+  padding: 22px 24px;
+  border-left: 3px solid var(--accent);
+  background: rgba(0,212,255,0.05);
+  border-radius: 0 12px 12px 0;
+}
+.decision-box p { margin-bottom: 0; }
+.callout {
+  margin: 0 0 28px;
+  padding: 20px 22px;
+  background: var(--surface);
+  border: 1px dashed var(--border-bright);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: var(--text-2);
+}
+.callout strong { color: var(--text); }
+.ad-slot {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin: 36px 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 820px;
+}
+.ref { font-size: 0.78em; vertical-align: super; margin-left: 1px; border-bottom: none !important; }
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500,'region':['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']});
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
+     crossorigin="anonymous"></script>
+<script src="/consent.js" defer></script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; }
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+</head>
+<body>
+<div style="font:600 0.85rem/1.4 system-ui,sans-serif;background:#132238;color:#e8eef6;padding:10px 16px;border-bottom:1px solid #2a4a6a;">Preview of <a href="https://github.com/lsp-llc/local-ai-models/pull/26" style="color:#7dd3fc">lsp-llc/local-ai-models#26</a> — not production. Site nav and scripts stay on local-ai-models.ai.</div>
+
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="/local-ai-models.html">Models</a>
+      <a href="/builder.html">Stack Builder</a>
+      <a href="/model-builder.html">PC Builder</a>
+      <a href="/recommend.html">Recommender</a>
+      <a href="/token-simulator.html">Token Sim</a>
+      <a href="/claws.html">CLAWS</a>
+      <a href="/sentiment.html">Community</a>
+      <a href="/getting-started.html">Get Started</a>
+      <a href="/quantization.html">Quantization</a>
+      <a href="/stacks.html">Stacks</a>
+      <a href="/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/#destinations">Guides</a><span class="sep">/</span><span>Memory Bandwidth</span></div>
+    <div class="hero-eyebrow">Decode tok/s · 20 August 2026</div>
+    <h1 class="hero-title">Chat Speed Is a <span class="accent">Corridor</span>, Not a Clock</h1>
+    <div class="updated-line">Updated: August 2026 · Dated decision 2026-08-20</div>
+    <p class="hero-sub">Batch-1 decode on a desk GPU is a memory-bandwidth problem. Shopping more TFLOPS on the same GDDR bus will not fix how fast the tokens arrive.</p>
+  </div>
+</section>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+  <article class="article-body">
+
+    <section class="plate-block" data-nosnippet>
+      <div class="plate-kicker">Plate · the librarian and the corridor</div>
+      <p>Picture the GPU as a librarian and the memory bus as the only corridor between the stacks and the reading room. Every time a visitor asks for the next word, the librarian must walk the <em>entire</em> collection down that corridor: every shelf of weights, plus the growing cart of notes already taken. The reading room is vast. The corridor is not.</p>
+      <p>A faster reader at the far end of the same corridor still waits on the cart. That is batch-1 decode. The advertised teraflops are the reading room. The published gigabytes per second are the corridor. Chat speed is the trip, repeated once per token, and the trip is what you buy.</p>
+      <p>The stacks do not get shorter because the reader is quicker. They get shorter when you compress the books, skip a wing, or send several visitors down the hall on one pass. Those are different decisions. They are not “buy a faster GPU” in the marketing sense.</p>
+    </section>
+
+    <section class="bends-block" data-nosnippet>
+      <h2 class="section-h2 article-h2">Where the Metaphor Bends</h2>
+      <p>A corridor is a single width. Real silicon is not that clean. Peak bandwidth is a datasheet number; kernels, cache hierarchy, and allocator noise mean you never walk it at 100 percent. The cart of notes — the KV cache — grows with context, so the second half of a long reply is a heavier trip than the first word. Unified memory on Apple silicon is a different building: one floor plan shared with the operating system, not a discrete GDDR annex.</p>
+      <p>The metaphor also fails on the first pass through a long prompt. Prefill is not one visitor asking for the next word. It is a class arriving at once. The same shelves are read, but the work is reused across hundreds or thousands of tokens, and the reading room can finally fill. That is the compute-bound exception, and it is why first-token latency and chat tokens-per-second are different shopping questions.</p>
+      <p>Three more bends, named here so they do not sneak in later as magic: a batch of visitors shares one trip (higher intensity); an assistant who guesses the next line lets the librarian check a handful of words in one walk (speculative decoding); a library that only opens two wings per request still stores every wing (mixture of experts). Speed and occupancy part company. The rest of this page is the arithmetic those bends sit on.</p>
+    </section>
+
+    <p class="lede">On <strong>20 August 2026</strong> this site treats desk-GPU <em>chat</em> speed as a bandwidth ceiling. The formula below is calculated from vendor-published memory bandwidth and a stated weight footprint. It is not a measured tokens-per-second figure from a 4090 in this office, and it is not a leaderboard. Use it to refuse a purchase that does not widen the corridor.</p>
+
+    <div class="decision-box">
+      <p><strong>The decision.</strong> Buy memory bandwidth (and the VRAM to keep the weights on that bus) for interactive decode. Buy compute for prefill-heavy work: long prompts, retrieval dumps, fill-in-the-middle. A card that advertises more TFLOPS on a similar GDDR corridor will not raise batch-1 tok/s in proportion to the brochure.</p>
+    </div>
+
+    <h2 class="section-h2 article-h2">What is the tokens-per-second ceiling for batch-1 decode?</h2>
+    <p>Once the weights fit in VRAM, each new token is a memory stream. The GPU must read the parameters (and the KV cache) from device memory into the compute units, do a relatively cheap update, and write a small result. Pope, Douglas, Chowdhery and colleagues put the same split in serving language: at small batch the time to load weights dominates; only at large batch and long sequence does KV traffic take over<a href="#src-pope" class="ref">[2]</a>. A desk chat session is the small-batch case.</p>
+    <p>That produces a hard ceiling you can write on a whiteboard:</p>
+    <div class="formula-box">
+      tokens/s ≲  memory_bandwidth_bytes_per_s  /  bytes_moved_per_token
+      <span class="note">Calculated ceiling · weights streamed each step, plus KV · not a measured 4090 run</span>
+    </div>
+    <p>Bytes moved per token is, to first order, the resident weight file plus the KV bytes you reread at this context length. For a planning 8B at Q4, the site’s <a href="/quantization.html">quantization table</a> prices Q4_K_M at 4.8 effective bits, so 8 × 4.8 / 8 = <strong>4.8 GB of weights</strong>, which we round to <strong>~5 GB</strong> when talking in the same units as a spec sheet<a href="#src-quant" class="ref">[11]</a>. Divide published bandwidth by that number and you have an upper bound. Real llama.cpp or Ollama runs land at a fraction of it: imperfect bus utilization, kernel launch, sampling, and the KV term all eat the gap. The <a href="/builder.html">stack builder</a> already labels its tok/s column as a theoretical upper bound from this model, not a bench.</p>
+    <p>The named tradeoff is now sharp. <strong>Capacity decides whether the model runs on the GPU at all</strong> — that is the <a href="/vram-guide.html">VRAM guide</a>. <strong>Bandwidth decides how fast the tokens arrive once it does.</strong> Confusing the two is how people buy a “faster” SKU and keep the same chat pace.</p>
+
+    <h2 class="section-h2 article-h2">How does the roofline model place decode under the memory roof?</h2>
+    <p>Williams, Waterman and Patterson’s 2009 Roofline paper is the visual: attainable performance is the minimum of peak FLOP/s and bandwidth times operational intensity<a href="#src-roof" class="ref">[1]</a>.</p>
+    <div class="formula-box">
+      peak performance  ≈  min( peak_FLOP/s ,  bandwidth × operational_intensity )
+      <span class="note">Williams, Waterman, Patterson · CACM 2009 · DOI 10.1145/1498765.1498785</span>
+    </div>
+    <p>Operational intensity is FLOPs per byte of DRAM traffic. For a weight matrix applied to a single token, you pay about two FLOPs per parameter (multiply-add) and you read each parameter once. Intensity then collapses to <code>2 / bytes_per_weight</code>. At FP16 that is 1 FLOP/byte. At Q4_K_M (~0.6 bytes/weight) it is about 3.3 FLOP/byte. Those are low-intensity kernels. They hit the slanted roof.</p>
+    <p>Put a number on the ridge so the gap is not hand-waving. NVIDIA’s Ada whitepaper lists the GeForce RTX 4090 at <strong>82.6 FP32 TFLOPS</strong> and <strong>1008 GB/s</strong> of memory bandwidth<a href="#src-ada" class="ref">[3]</a>. The ridge point is 82.6e12 / 1008e9 ≈ <strong>82 FLOP/byte</strong>. Batch-1 decode at 1–4 FLOP/byte sits an order of magnitude to the left. Tensor-core peaks are higher still, which only moves the flat roof up and leaves decode on the slope.</p>
+    <p>Prefill walks the other way. A prompt of length <code>S</code> reuses the same weights across <code>S</code> tokens, so intensity scales with <code>S</code>. At <code>S = 512</code> and Q4, a back-of-envelope 512 × 3.3 ≈ 1,700 FLOP/byte is already past that 82 FLOP/byte ridge. The kernel can saturate the ALUs. That is why a machine that feels merely “fine” in chat can still chew a long system prompt, and why first-token time is the wrong number to use when you are shopping for streaming replies.</p>
+
+    <div class="ad-slot" id="ad-mid">
+      <div>Ad · Support this free resource</div>
+    </div>
+
+    <h2 class="section-h2 article-h2">What is the calculated decode ceiling on published GPU bandwidth?</h2>
+    <p>The table uses vendor-published peak bandwidth, not a probe of this workstation. Weight traffic is the 5.00 GB planning figure for an 8B Q4 (the 4.8 GB k-quant math, rounded). The last column is <code>bandwidth / 5.00e9</code>. It assumes the entire weight file moves every token and that KV is zero. Both assumptions make the number <em>optimistic</em>.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <caption>All tok/s figures in this table are calculated ceilings from published GB/s ÷ 5.00 GB. They are not measured throughput on a 4090 or any other card in this article.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Device</th>
+            <th scope="col">Published bandwidth</th>
+            <th scope="col">Source</th>
+            <th scope="col">Ceiling at 5.00 GB weights</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GeForce RTX 4090</td>
+            <td>1008 GB/s</td>
+            <td>NVIDIA Ada architecture whitepaper<a href="#src-ada" class="ref">[3]</a></td>
+            <td>202 tok/s</td>
+          </tr>
+          <tr>
+            <td>GeForce RTX 4080</td>
+            <td>716.8 GB/s</td>
+            <td>NVIDIA Ada architecture whitepaper<a href="#src-ada" class="ref">[3]</a></td>
+            <td>143 tok/s</td>
+          </tr>
+          <tr>
+            <td>GeForce RTX 3090</td>
+            <td>936 GB/s</td>
+            <td>NVIDIA Ampere GA102 whitepaper<a href="#src-amp" class="ref">[4]</a></td>
+            <td>187 tok/s</td>
+          </tr>
+          <tr>
+            <td>GeForce RTX 3060 12 GB</td>
+            <td>360 GB/s</td>
+            <td>NVIDIA GeForce News Q&amp;A<a href="#src-3060" class="ref">[5]</a></td>
+            <td>72 tok/s</td>
+          </tr>
+          <tr>
+            <td>Apple M1</td>
+            <td>68.25 GB/s</td>
+            <td>AnandTech M1 memory-bus calculation<a href="#src-m1" class="ref">[6]</a></td>
+            <td>14 tok/s</td>
+          </tr>
+          <tr>
+            <td>Apple M1 Pro</td>
+            <td>up to 200 GB/s</td>
+            <td>Apple Newsroom / Support spec<a href="#src-m1pro" class="ref">[7]</a></td>
+            <td>40 tok/s</td>
+          </tr>
+          <tr>
+            <td>Apple M1 Max</td>
+            <td>up to 400 GB/s</td>
+            <td>Apple Newsroom / Support spec<a href="#src-m1pro" class="ref">[7]</a></td>
+            <td>80 tok/s</td>
+          </tr>
+          <tr>
+            <td>Apple M2</td>
+            <td>100 GB/s</td>
+            <td>Apple Newsroom (M2 announcement)<a href="#src-m2" class="ref">[8]</a></td>
+            <td>20 tok/s</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Read the 4090 and 3090 rows together. Ampere lists the 3090 at <strong>35.6 FP32 TFLOPS</strong> and 936 GB/s<a href="#src-amp" class="ref">[4]</a>. Ada lists the 4090 at 82.6 FP32 TFLOPS and 1008 GB/s<a href="#src-ada" class="ref">[3]</a>. Compute more than doubles. The corridor widens by 1008 / 936 ≈ <strong>8 percent</strong>. The calculated weight-only ceilings move from 187 to 202 tok/s. That is the shopping lesson in one pair of SKUs: Ada spent the process node on ALUs and caches, not on a new class of memory bus. If your workload is batch-1 chat, you bought the reading room.</p>
+    <p>The 4080 row is the intra-generation check. Same Ada family, 716.8 GB/s against 1008 GB/s: a 29 percent narrower corridor and a 143 vs 202 calculated ceiling. If two cards share a memory technology and a similar bus width, do not expect chat to follow the CUDA-core count.</p>
+    <p>The 3060 12 GB row is the budget reality. 360 GB/s is a bit over a third of the 4090. The calculated ceiling is 72 tok/s on the same 5 GB file — and only if the 8B actually fits with context, which on 12 GB it can at Q4 with a modest window (<a href="/vram-guide.html">VRAM arithmetic</a>). People who call a 3060 “slow at 7B” and a 4090 “fast at 7B” are mostly naming the bus, not a mysterious software gap.</p>
+    <p>Apple’s published unified-memory figures explain the Mac stacks on this site. M2 at 100 GB/s is a 20 tok/s calculated ceiling on the same 5 GB file; M1 Max at 400 GB/s is 80. The <a href="/stacks.html">recommended stacks</a> already warn that M-series generation is memory-bandwidth-bound and that a 64 GB Mac is a capacity play, not a tok/s play. A 70B at Q4 that finally fits in unified memory still walks a 100–400 GB/s corridor, not a 1008 GB/s GDDR6X annex.</p>
+    <div class="callout">
+      <strong>Do not quote these ceilings as “a 4090 does 202 tok/s.”</strong> They are arithmetic on a datasheet. The stack builder applies an efficiency factor and still calls the result theoretical. Community benches vary with context, backend, and whether the run is decode-only. This page will not invent a 4090 measurement it did not take.
+    </div>
+
+    <h2 class="section-h2 article-h2">How much does the KV cache move the ceiling?</h2>
+    <p>Pope et al. treat weights and KV as the two large HBM residents that must be transferred each forward pass<a href="#src-pope" class="ref">[2]</a>. At short context the weight term wins. At long context the cache can rival it. That is the same third term the VRAM guide charges for occupancy; here it is a bandwidth term.</p>
+    <p>A concrete calculated example, not a bench. Meta’s Llama 3 8B config uses 32 layers, 8 key/value heads, and a 128-wide head<a href="#src-llama3" class="ref">[9]</a>. For FP16 KV, bytes per token of context are:</p>
+    <div class="formula-box">
+      2 × 32 layers × 8 KV heads × 128 dim × 2 bytes  =  131,072 bytes / token of context
+      <span class="note">Calculated from the published 8B config · FP16 cache · not a measured trace</span>
+    </div>
+    <p>At 4,096 tokens that is 512 MiB. Add it to the 5.00 GB weight file and the 4090 weight-only ceiling of 202 tok/s becomes 1008e9 / 5.50e9 ≈ <strong>183 tok/s</strong>, still calculated. At 32,768 tokens the cache is 4.00 GiB and the same formula gives 1008 / 9.00 ≈ <strong>112 tok/s</strong>. The card did not get slower. The cart got heavier. Grouped-query attention is why that cache is 8 heads and not 32; multi-head would have quadrupled the KV term.</p>
+    <p>Two operator consequences. First, a decode-speed complaint that appears only after the context fills is often KV traffic, not a thermal throttle. Second, quantizing the cache (when the runtime offers a real flag for it) shrinks bytes moved the same way Q4 shrinks weights — with the usual quality caveat the <a href="/quantization.html">quantization guide</a> already makes for weights. This page does not invent a cache-quant flag; check the runtime you actually run.</p>
+
+    <h2 class="section-h2 article-h2">When do TFLOPS matter? Prefill, not chat.</h2>
+    <p>Prefill is the exception named in the decision. A long prompt is a batched matrix multiply against the same weights. Intensity rises with prompt length. The roofline can hit the flat roof. That is where 82.6 TFLOPS versus 35.6 TFLOPS is allowed to show up: time-to-first-token on a 4K or 32K paste, not the streaming pace of the reply.</p>
+    <p>The tradeoff, said in one sentence: <strong>a compute-heavy card helps you swallow the prompt; a bandwidth-heavy card helps you talk.</strong> RAG pipelines that dump retrieved chunks into the window are prefill-bound on the first token and bandwidth-bound on every token after. If your day is “paste a repo, wait, then skim a short answer,” shop the ALU. If your day is “small prompt, long streamed answer,” shop the bus. Most interactive local chat is the second day.</p>
+    <p>This is also why offloading is a speed cliff rather than a gentle slope. Once layers spill to host RAM you have left the 360–1008 GB/s device corridor for a CPU memory controller measured in tens of GB/s. The VRAM guide already records the occupancy failure. The bandwidth reading is the same failure in motion: the librarian is now walking to another building.</p>
+
+    <h2 class="section-h2 article-h2">How do batch, speculative decoding, and MoE change intensity?</h2>
+    <p>Three legal ways to climb off the worst part of the slope. None of them is “hope the next SKU has more cores on the same GDDR.”</p>
+
+    <h3 class="article-h3">1. Batch: share the weight trip</h3>
+    <p>If two independent sequences need the next token, you still read the weights once and apply them twice. Intensity roughly doubles. Pope et al. say the obvious serving consequence: at large batch, weight load is amortized and KV can dominate<a href="#src-pope" class="ref">[2]</a>. On a desk this is the difference between one chat window and a small local server with a few concurrent clients. The <a href="/token-simulator.html">token simulator</a> is a single-stream feeler; it will not show you the batch win. The cost is latency isolation. You are no longer optimizing for one person’s next word.</p>
+
+    <h3 class="article-h3">2. Speculative decoding: check several words per walk</h3>
+    <p>Leviathan, Kalman and Matias (2023) show that a cheaper draft model can propose several tokens that the large model then verifies in one forward pass, with 2×–3× wall-clock gains on their T5-XXL measurements and no change to the output distribution<a href="#src-spec" class="ref">[10]</a>. Intensity rises because the large model’s weight stream is reused across the draft prefix. The desk catch: you now hold a draft model as well, and accept-rate depends on how easy the next tokens are. It is a real method with a paper. It is not a free multiply on the 202 tok/s ceiling.</p>
+
+    <h3 class="article-h3">3. Mixture of experts: walk fewer shelves, store every wing</h3>
+    <p>Mixtral 8x7B is the cited open example: 47B total parameters, 13B active per token, because a router picks two of eight feed-forward experts at each layer<a href="#src-mixtral" class="ref">[12]</a>. Compute and, if the runtime actually skips inactive experts, <em>weight traffic</em> follow the active set. Occupancy does not. The VRAM guide already says MoE buys speed, not memory: every expert weight must be resident. The bandwidth reading is the complement. If llama.cpp (or whichever backend you run) streams only the chosen experts, the denominator in the ceiling shrinks and tok/s can rise toward a dense 13B. If a naive path touches every expert tensor, you paid the VRAM tax and kept the 47B walk. Confirm the path you are running; do not assume the brochure.</p>
+    <p>Named tradeoff for MoE: <strong>you buy a larger library to get a shorter trip, provided the librarian is allowed to skip closed wings.</strong> That is the opposite of the 4090-vs-3090 TFLOPS mistake, which buys a larger reading room and keeps the same hallway.</p>
+
+    <div class="ad-slot" id="ad-bottom">
+      <div>Ad · Support this free resource</div>
+    </div>
+
+    <h2 class="section-h2 article-h2">What should you actually buy, given this ceiling?</h2>
+    <p>Start from fit, then from the bus, then from compute.</p>
+    <ul>
+      <li><strong>Fit first.</strong> A model that spills to host RAM is not on the GPU corridor. Size weights, KV, and overhead with the <a href="/vram-guide.html">VRAM guide</a> and the <a href="/model-builder.html">workstation builder</a> before you argue tok/s.</li>
+      <li><strong>Then read the spec sheet’s memory line.</strong> 1008, 716.8, 936, 360, 400, 200, 100, 68.25 — those are the published numbers this page is willing to divide by. A card whose marketing lead is “more CUDA cores” or “more TFLOPS” on a similar GB/s figure is a prefill upgrade, not a chat upgrade.</li>
+      <li><strong>Then decide if your day is prefill.</strong> Long-context coding, agent traces, and retrieval dumps spend real time in the compute-bound region. That is when Ada’s 82.6 TFLOPS versus Ampere’s 35.6 is a reason to pay, not a reason to expect 2.3× streaming tok/s.</li>
+    </ul>
+    <p>Worked refusal: upgrading a 3090 to a 4090 to “double chat speed” on an 8B that already fits is a refusal. The calculated corridor moves 8 percent. Keep the 3090, or spend the money on capacity you do not have (a second card, a 70B that does not fit, unified memory for a model the 24 GB card cannot hold). Worked acceptance: replacing a 3060 12 GB (360 GB/s) with a 4090 (1008 GB/s) on a model both can hold is a calculated 2.8× ceiling move, and the 4090 also buys context headroom. That purchase can be about speed.</p>
+    <p>Mac buyers already live this split. The stack notes prefer MLX and tell you not to expect discrete-GPU tok/s. Unified memory is how a 64 GB M-series holds a 70B; 400 GB/s is why it will not feel like a 4090 while it talks. Capacity and corridor are different invoices.</p>
+
+    <h2 class="section-h2 article-h2">Which llama.cpp flags actually touch this picture?</h2>
+    <p>Only flags that exist in the current llama.cpp server README are worth naming here. <code>-ngl</code> / <code>--n-gpu-layers</code> (also <code>--gpu-layers</code>) sets how many layers live in VRAM — exact count, <code>auto</code>, or <code>all</code><a href="#src-llama" class="ref">[13]</a>. That is a fit flag. It decides whether you are on the device corridor or walking to host memory. It does not widen the bus. <code>-fa</code> / <code>--flash-attn</code> takes <code>on</code>, <code>off</code>, or <code>auto</code> (default <code>auto</code>)<a href="#src-llama" class="ref">[13]</a>. FlashAttention changes how attention traffic is staged; it is not a TFLOPS multiplier for the MLP weight stream. If a blog tells you to pass a flag this README does not list, treat that as a different program.</p>
+    <p>The operator habit this page wants: before you change cards, confirm <code>-ngl</code> has the whole model resident and that you are looking at decode tok/s, not prefill. The <a href="/token-simulator.html">token simulator</a> is there to calibrate what 5, 25, and 80 tok/s feel like. The ceiling table above tells you which of those bands a given bus can even reach on a 5 GB file.</p>
+
+    <h2 class="section-h2 article-h2">How this sits next to the rest of the site</h2>
+    <p>The <a href="/vram-guide.html">VRAM guide</a> answers “does it fit.” The <a href="/quantization.html">quantization guide</a> answers “how many bits per weight,” which is the denominator of intensity and the size of the file you stream. The <a href="/builder.html">stack builder</a> already divides published bandwidth by model size and labels the result a theoretical upper bound. The <a href="/stacks.html">recommended stacks</a> already call M-series generation bandwidth-bound. This page is the missing essay: why those labels exist, which paper the roof comes from, and why the next GPU on the same GDDR generation is the wrong medicine for a slow chat.</p>
+    <p>If you want a feel for the stream rather than a ceiling, use the <a href="/token-simulator.html">token simulator</a>. If you do not own the card yet, the <a href="/model-builder.html">workstation builder</a> turns a VRAM target into parts. Neither tool invents a 4090 bench for this article.</p>
+
+    <h2 class="section-h2 article-h2">Frequently asked questions</h2>
+
+    <h3 class="article-h3">Why is local LLM chat speed limited by memory bandwidth?</h3>
+    <p>At batch-1 decode the GPU streams nearly the whole weight file, plus the KV cache, for every new token. Arithmetic intensity is a few FLOPs per byte. Roofline then says the attainable rate is bandwidth times that intensity, which rewrites as tokens/s ≈ bandwidth / bytes_moved_per_token<a href="#src-roof" class="ref">[1]</a><a href="#src-pope" class="ref">[2]</a>. Extra TFLOPS sit unused on the flat part of the roof.</p>
+
+    <h3 class="article-h3">Will a GPU with more TFLOPS make local chat faster?</h3>
+    <p>Only if it also widens the memory corridor. The 4090 versus 3090 pair is the dated example: 82.6 vs 35.6 FP32 TFLOPS, 1008 vs 936 GB/s<a href="#src-ada" class="ref">[3]</a><a href="#src-amp" class="ref">[4]</a>. Compute more than doubled; the calculated 5 GB ceiling moved from 187 to 202 tok/s. Shop the GB/s line.</p>
+
+    <h3 class="article-h3">When do TFLOPS matter for local LLMs?</h3>
+    <p>Prefill. A long prompt reuses weights across many tokens, intensity rises, and the kernel can hit the compute roof. First-token time on a pasted context is the compute-bound number. Streaming chat is not.</p>
+
+    <h3 class="article-h3">How do you estimate a theoretical tokens-per-second ceiling?</h3>
+    <p>Divide vendor-published peak bandwidth by bytes streamed per decode step. For 8B Q4_K_M, weights are 4.8 GB by the site’s 4.8-bit rule, ~5 GB as a planning figure. On 1008 GB/s that is a calculated 202 tok/s if only weights move. Subtract nothing for software, then remember real runtimes are a fraction. Do not treat the result as a 4090 measurement.</p>
+
+    <h3 class="article-h3">Does a Mac with more unified memory generate faster?</h3>
+    <p>More unified memory lets a larger model fit. Generation speed still tracks the published unified-memory bandwidth: 68.25 GB/s on M1, 100 GB/s on M2, up to 200 / 400 GB/s on M1 Pro / Max<a href="#src-m1" class="ref">[6]</a><a href="#src-m2" class="ref">[8]</a><a href="#src-m1pro" class="ref">[7]</a>. A 64 GB Mac that holds a 70B is not a 4090-class corridor.</p>
+
+    <h3 class="article-h3">Does Mixtral’s 13B active set mean I only need 13B of VRAM?</h3>
+    <p>No. Mixtral 8x7B exposes 47B parameters and uses 13B per token<a href="#src-mixtral" class="ref">[12]</a>. Occupancy follows the full set. Speed follows the active set only if the runtime skips inactive experts. That is the MoE tradeoff: larger library, shorter trip, same floor space.</p>
+
+    <h2 class="section-h2 article-h2">Sources</h2>
+    <ol class="sources-list">
+      <li id="src-roof">Samuel Williams, Andrew Waterman, David Patterson, “Roofline: an insightful visual performance model for multicore architectures,” <em>Communications of the ACM</em> 52(4), April 2009. DOI <a href="https://doi.org/10.1145/1498765.1498785">10.1145/1498765.1498785</a>. Also: <a href="https://dl.acm.org/doi/10.1145/1498765.1498785">ACM Digital Library</a>, <a href="https://cacm.acm.org/research/roofline-an-insightful-visual-performance-model-for-multicore-architectures/">CACM page</a>.</li>
+      <li id="src-pope">Reiner Pope, Sholto Douglas, Aakanksha Chowdhery, Jacob Devlin, James Bradbury, Jonathan Heek, Kefan Xiao, Shivani Agrawal, Jeff Dean, “Efficiently Scaling Transformer Inference,” arXiv:2211.05102, 2022. <a href="https://arxiv.org/abs/2211.05102">https://arxiv.org/abs/2211.05102</a>. Memory-time discussion: weights and KV must be loaded from HBM each step; at small batch, weight load dominates.</li>
+      <li id="src-ada">NVIDIA, “NVIDIA Ada GPU Architecture” whitepaper. RTX 4090 memory bandwidth 1008 GB/s; RTX 4080 716.8 GB/s; RTX 4090 FP32 82.6 TFLOPS. <a href="https://images.nvidia.com/aem-dam/Solutions/geforce/ada/nvidia-ada-gpu-architecture.pdf">https://images.nvidia.com/aem-dam/Solutions/geforce/ada/nvidia-ada-gpu-architecture.pdf</a>. Product page (cores, clocks, 24 GB GDDR6X, 384-bit): <a href="https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/">GeForce RTX 4090</a>.</li>
+      <li id="src-amp">NVIDIA, “NVIDIA Ampere GA102 GPU Architecture” whitepaper v2. GeForce RTX 3090 peak memory bandwidth 936 GB/s; Peak FP32 TFLOPS (non-Tensor) 35.6. <a href="https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf">https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf</a>.</li>
+      <li id="src-3060">NVIDIA GeForce News, “GeForce RTX: Game On Event Announcements! You Asked, We Answered.” States GeForce RTX 3060 is 192-bit GDDR6 at 15 Gbps, “delivering 360GB/s of bandwidth.” <a href="https://www.nvidia.com/en-us/geforce/news/game-on-you-asked-we-answered-qa/">https://www.nvidia.com/en-us/geforce/news/game-on-you-asked-we-answered-qa/</a>.</li>
+      <li id="src-m1">Andrei Frumusanu, “The 2020 Mac Mini Unleashed: Putting Apple Silicon M1 To The Test,” AnandTech, 2020 (archived). M1: 128-bit LPDDR4X-4266, peak 68.25 GB/s. <a href="https://web.archive.org/web/20210123195200/https://www.anandtech.com/show/16252/mac-mini-apple-m1-tested">Archived AnandTech article</a>.</li>
+      <li id="src-m1pro">Apple Newsroom, “Introducing M1 Pro and M1 Max,” 18 October 2021: M1 Pro “up to 200GB/s,” M1 Max “up to 400GB/s.” <a href="https://www.apple.com/newsroom/2021/10/introducing-m1-pro-and-m1-max-the-most-powerful-chips-apple-has-ever-built/">Newsroom</a>. Apple Support, MacBook Pro (16-inch, 2021) technical specifications, same 200GB/s and 400GB/s lines: <a href="https://support.apple.com/en-us/111901">support.apple.com/en-us/111901</a>.</li>
+      <li id="src-m2">Apple Newsroom, “Apple unveils M2,” 6 June 2022: memory controller “delivers 100GB/s of unified memory bandwidth.” <a href="https://www.apple.com/newsroom/2022/06/apple-unveils-m2-with-breakthrough-performance-and-capabilities/">Newsroom</a>. Apple Support, MacBook Air (M2, 2022) tech specs: “100GB/s memory bandwidth,” <a href="https://support.apple.com/en-us/111867">support.apple.com/en-us/111867</a>.</li>
+      <li id="src-llama3">Meta Llama 3 8B published configuration (32 layers, 32 query heads, 8 KV heads, 4096 hidden size / 128 head dim). Hugging Face card: <a href="https://huggingface.co/meta-llama/Meta-Llama-3-8B">meta-llama/Meta-Llama-3-8B</a>. Model family paper: “The Llama 3 Herd of Models,” arXiv:2407.21783, <a href="https://arxiv.org/abs/2407.21783">https://arxiv.org/abs/2407.21783</a>.</li>
+      <li id="src-spec">Yaniv Leviathan, Matan Kalman, Yossi Matias, “Fast Inference from Transformers via Speculative Decoding,” ICML 2023 / arXiv:2211.17192. Reports 2×–3× acceleration on T5-XXL with identical outputs. <a href="https://arxiv.org/abs/2211.17192">https://arxiv.org/abs/2211.17192</a>.</li>
+      <li id="src-quant"><a href="/quantization.html">Quantization Explained</a>, local-ai-models.ai: Q4_K_M at 4.8 effective bits; 8B worked row of 4.8 GB weights. Page on this site.</li>
+      <li id="src-mixtral">Mistral AI, “Mixtral of Experts,” arXiv:2401.04088, 2024. Mixtral 8x7B: 47B total parameters, 13B active per token; two of eight experts per layer. <a href="https://arxiv.org/abs/2401.04088">https://arxiv.org/abs/2401.04088</a>. Company note with 46.7B / 12.9B rounding: <a href="https://mistral.ai/news/mixtral-of-experts/">mistral.ai/news/mixtral-of-experts</a>.</li>
+      <li id="src-llama">llama.cpp server README, flag table. <code>-ngl, --gpu-layers, --n-gpu-layers</code>; <code>-fa, --flash-attn [on|off|auto]</code>. <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md">https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md</a>.</li>
+    </ol>
+
+  </article>
+</div>
+
+<section class="related">
+  <div class="related-title reveal">Related</div>
+  <div class="related-grid reveal">
+    <a href="/vram-guide.html" class="related-card">
+      <div class="related-eyebrow">Fit</div>
+      <div class="related-name">How Much VRAM You Need</div>
+      <div class="related-desc">Capacity is the other axis. Bandwidth only matters after the weights stay on the GPU.</div>
+    </a>
+    <a href="/quantization.html" class="related-card">
+      <div class="related-eyebrow">Learn</div>
+      <div class="related-name">Quantization Explained</div>
+      <div class="related-desc">Bits per weight set both the file you must hold and the file you must stream.</div>
+    </a>
+    <a href="/token-simulator.html" class="related-card">
+      <div class="related-eyebrow">Feel</div>
+      <div class="related-name">Token Simulator</div>
+      <div class="related-desc">What 5, 25, and 80 tok/s feel like, before you argue about a ceiling.</div>
+    </a>
+    <a href="/builder.html" class="related-card">
+      <div class="related-eyebrow">Tool</div>
+      <div class="related-name">Stack Builder</div>
+      <div class="related-desc">Theoretical tok/s from the same bandwidth model, labeled as a ceiling.</div>
+    </a>
+    <a href="/model-builder.html" class="related-card">
+      <div class="related-eyebrow">Tool</div>
+      <div class="related-name">Workstation Builder</div>
+      <div class="related-desc">Turn a VRAM target into a parts list once you know which corridor you need.</div>
+    </a>
+    <a href="/stacks.html" class="related-card">
+      <div class="related-eyebrow">Hardware</div>
+      <div class="related-name">Recommended Stacks</div>
+      <div class="related-desc">Including the Mac unified-memory build, already marked bandwidth-bound.</div>
+    </a>
+  </div>
+</section>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.08.17 &middot; 100 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="/local-ai-models.html">Models</a></li>
+      <li><a href="/sentiment.html">Community Data</a></li>
+      <li><a href="/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="/builder.html">Stack Builder</a></li>
+      <li><a href="/model-builder.html">PC Builder</a></li>
+      <li><a href="/recommend.html">Recommender</a></li>
+      <li><a href="/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="/getting-started.html">Get Started</a></li>
+      <li><a href="/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="/memory-bandwidth-tokens-per-second.html">Memory Bandwidth</a></li>
+      <li><a href="/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="/quantization.html">Quantization</a></li>
+      <li><a href="/stacks.html">Stacks</a></li>
+      <li><a href="/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 17, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/cookies.html">Cookies</a> &middot; <a href="/accessibility.html">Accessibility</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script src="/creatures.js" defer></script>
+<script src="/creatures-v2.js" defer></script>
+</body>
+</html>
