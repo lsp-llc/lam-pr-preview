@@ -51,12 +51,94 @@
   --pink-dim: rgba(244, 114, 182, 0.12);
   --orange-dim: rgba(245, 158, 11, 0.1);
 }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+</style>
+<style>
+.pr-preview-wrap { max-width: 1200px; margin: 0 auto; padding: 20px 24px 40px; }
+.pr-preview-banner { font-family: var(--font-mono, 'JetBrains Mono', monospace); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.04em; color: var(--text-dim, #94a3b8); padding: 8px 0 18px; }
+.models-grid { display: flex; flex-direction: column; gap: 12px; }
+.model-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius); }
+.card-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 20px 24px 16px; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+.card-family { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); }
+.card-name { font-size: 1.2rem; font-weight: 700; }
+.card-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 100px; font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid; }
+.badge-params { color: var(--accent); border-color: rgba(0,212,255,0.3); }
+.badge-vram { color: var(--orange); border-color: rgba(245,158,11,0.3); }
+.badge-ctx { color: var(--green); border-color: rgba(34,197,94,0.3); }
+.badge-vision { color: var(--yellow); border-color: rgba(251,191,36,0.3); }
+.badge-license { color: var(--text-dim); }
+.badge-tools { color: #38bdf8; border-color: rgba(56,189,248,0.3); }
+.badge-active { color: var(--purple); }
+.badge-moe { color: var(--pink); }
+.card-body { padding: 0 24px 16px; }
+.card-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 14px; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.card-section { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+.card-section-title { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; padding-bottom: 6px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.strength-title { color: var(--accent); }
+.weakness-title { color: var(--orange); }
+.usecase-title { color: var(--blue); }
+.install-title { color: var(--purple); }
+.card-section ul { list-style: none; padding: 0; }
+.card-section li { font-size: 0.8rem; color: var(--text-dim); padding: 2px 0 2px 16px; }
+.card-install { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px 16px; margin-top: 12px; font-family: var(--font-mono); }
+.card-install code { color: var(--green); font-size: 0.78rem; }
+.card-install-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-display); line-height: 1.6; min-height: 100vh; }
 </style>
 </head>
 <body>
 <div class="pr-preview-wrap">
   <div class="pr-preview-banner">PR #43 draft preview. Not production. Not Firebase. Vision chips and video filter tags from the Qwen Hub cards (2026-08-25). 9B Hub id added on the 4B/9B/27B row.</div>
   <p class="pr-preview-banner" style="padding-top:0"><a href="#qwen3-5-4b-9b-27b">3.5 4B/9B/27B</a> · <a href="#qwen3-5-397b">3.5 397B</a> · <a href="#qwen3-6-27b">3.6 27B</a> · <a href="#qwen3-6-35b-a3b">3.6 35B</a> · <a href="#qwen3-8-27b">3.8 27B</a></p>
+  <div class="models-grid" id="modelsGrid">
+<div id="qwen3-5-4b-9b-27b" class="model-card family-alibaba" data-size="tiny" data-tags="multimodal vision video multilingual coding reasoning thinking dual-mode" data-family="alibaba" data-hf-id="Qwen/Qwen3.5-4B,Qwen/Qwen3.5-9B,Qwen/Qwen3.5-27B">
+  <div class="card-header"><div class="card-name-area"><div class="card-family">Alibaba — Qwen</div><div class="card-name">Qwen3.5 (4B / 9B / 27B)</div></div>
+    <div class="card-badges"><span class="badge badge-params">4B–27B</span><span class="badge badge-vram">3–18 GB</span><span class="badge badge-ctx">262K ctx</span><span class="badge badge-vision">Vision</span><span class="badge badge-license">Apache 2.0</span><span class="badge badge-tools">Tool Use</span></div></div>
+  <div class="card-body"><div class="card-desc">Next-gen Qwen with hybrid Gated DeltaNet + Attention architecture, native vision-language fusion, and 262K native context (extensible to 1M). Supports 201 languages. Surpasses Qwen3 across reasoning, coding, and visual understanding. HF card last verified 2026-08-20.</div>
+    <div class="card-grid"><div class="card-section"><div class="card-section-title strength-title">Strengths</div><ul><li>262K native context, extensible to 1M tokens</li><li>Native multimodal — vision + text fused</li><li>201 languages supported</li><li>Apache 2.0 — fully commercial</li></ul></div>
+      <div class="card-section"><div class="card-section-title weakness-title">Weaknesses</div><ul><li>Very new — limited community fine-tunes</li><li>Requires newer inference engines for hybrid attention</li></ul></div></div>
+    <div class="card-install"><span class="card-install-label">Ollama</span> <code>ollama pull qwen3.5:4b</code> <code>ollama pull qwen3.5:27b</code></div></div></div>
+<div id="qwen3-5-397b" class="model-card family-alibaba" data-size="xlarge" data-tags="frontier multimodal vision video moe coding reasoning multilingual tool-use" data-family="alibaba" data-hf-id="Qwen/Qwen3.5-397B-A17B">
+  <div class="card-header"><div class="card-name-area"><div class="card-family">Alibaba — Qwen</div><div class="card-name">Qwen3.5 (397B MoE / 17B active)</div></div>
+    <div class="card-badges"><span class="badge badge-params">397B total</span><span class="badge badge-active">17B active</span><span class="badge badge-vram">230+ GB</span><span class="badge badge-ctx">262K ctx</span><span class="badge badge-vision">Vision</span><span class="badge badge-moe">MoE 512 experts</span><span class="badge badge-license">Apache 2.0</span><span class="badge badge-tools">Tool Use</span></div></div>
+  <div class="card-body"><div class="card-desc">Qwen3.5 flagship — hybrid Gated DeltaNet + sparse MoE with 512 experts. Native vision-language fusion, 262K context (extensible to 1M), 201 languages. 3.5M downloads in its first 5 weeks on HuggingFace (mid-2026 figure). MMLU-Pro 87.8%, LiveCodeBench v6 83.6%, MMMU 85.0%. HF card last verified 2026-08-20.</div>
+    <div class="card-grid"><div class="card-section"><div class="card-section-title strength-title">Strengths</div><ul><li>Frontier performance — 87.8% MMLU-Pro, 83.6% LiveCodeBench</li><li>Native multimodal — text + vision fused</li><li>262K–1M context, 201 languages</li><li>Apache 2.0 — fully commercial</li></ul></div>
+      <div class="card-section"><div class="card-section-title weakness-title">Weaknesses</div><ul><li>230+ GB — multi-GPU cluster required (8-way TP)</li><li>Needs SGLang/vLLM — no simple Ollama yet</li></ul></div></div>
+    <div class="card-install"><span class="card-install-label">SGLang / vLLM</span> <code>python -m sglang.launch_server --model-path Qwen/Qwen3.5-397B-A17B --tp-size 8</code></div></div></div>
+<div id="qwen3-6-27b" class="model-card family-alibaba" data-size="medium" data-tags="multimodal vision video coding reasoning thinking dual-mode tool-use" data-family="alibaba" data-hf-id="Qwen/Qwen3.6-27B">
+  <div class="card-header"><div class="card-name-area"><div class="card-family">Alibaba — Qwen</div><div class="card-name">Qwen3.6 (27B)</div></div>
+    <div class="card-badges"><span class="badge badge-params">27B</span><span class="badge badge-vram">~14 GB (Q4)</span><span class="badge badge-ctx">256K ctx</span><span class="badge badge-vision">Vision</span><span class="badge badge-license">Apache 2.0</span><span class="badge badge-tools">Tool Use</span></div></div>
+  <div class="card-body"><div class="card-desc">Official <code>Qwen/Qwen3.6-27B</code> (created 2026-04-21, Apache 2.0). Dense 27B with a vision encoder: 64 layers, Gated Attention 24/4, native 262,144 context extensible to 1,010,000. The card calls this the first open-weight Qwen3.6 after the 3.5 series. Load it when that vision-plus-context job fits one GPU and you will leave room for KV. Occupancy is not on the card. Hub rechecked 2026-08-24.</div>
+    <div class="card-grid"><div class="card-section"><div class="card-section-title strength-title">Strengths</div><ul><li>27B dense + vision encoder (Hub card)</li><li>262,144 native context, extensible to 1,010,000</li><li>Apache 2.0, ungated</li><li>Official vLLM serve id on the card</li></ul></div>
+      <div class="card-section"><div class="card-section-title weakness-title">Weaknesses</div><ul><li>Occupancy is not printed on the Hub card</li><li>Catalog ~14 GB Q4 is Params ×0.5, not a Hub measurement</li><li>lastModified 2026-04-24 (older card than 3.8)</li></ul></div></div>
+    <div class="card-grid" style="margin-top:8px"><div class="card-section"><div class="card-section-title usecase-title">Best For</div><ul><li>One-GPU 27B vision + long context under Apache 2.0</li><li>Operators who already run Qwen3.5-27B and want the 3.6 dense successor</li></ul></div>
+      <div class="card-section"><div class="card-section-title install-title">VRAM Breakdown</div><ul><li>Hub card: none</li><li>Catalog Q4 estimate ~14 GB weights (27B × 0.5). KV cache is extra.</li></ul></div></div>
+    <div class="card-install"><span class="card-install-label">vLLM (from HF card)</span> <code>vllm serve Qwen/Qwen3.6-27B</code></div></div></div>
+<div id="qwen3-6-35b-a3b" class="model-card family-alibaba" data-size="medium" data-tags="multimodal vision video coding reasoning thinking dual-mode moe tool-use" data-family="alibaba" data-hf-id="Qwen/Qwen3.6-35B-A3B">
+  <div class="card-header"><div class="card-name-area"><div class="card-family">Alibaba — Qwen</div><div class="card-name">Qwen3.6 (35B MoE / 3B active)</div></div>
+    <div class="card-badges"><span class="badge badge-params">35B total</span><span class="badge badge-active">3B active</span><span class="badge badge-vram">~18 GB</span><span class="badge badge-ctx">256K ctx</span><span class="badge badge-vision">Vision</span><span class="badge badge-moe">MoE</span><span class="badge badge-license">Apache 2.0</span><span class="badge badge-tools">Tool Use</span></div></div>
+  <div class="card-body"><div class="card-desc">Hugging Face card for official <code>Qwen/Qwen3.6-35B-A3B</code> (repo created 2026-04-15): Causal Language Model with Vision Encoder. Number of Parameters: 35B in total and 3B activated. 40 layers, hidden dimension 2048, layout 10 × (3 × (Gated DeltaNet → MoE) → 1 × (Gated Attention → MoE)). MoE: 256 experts, 8 routed + 1 shared activated. Context: 262,144 natively and extensible up to 1,010,000 tokens. Apache 2.0. VRAM is not stated. HF card last verified 2026-08-20.</div>
+    <div class="card-grid"><div class="card-section"><div class="card-section-title strength-title">Strengths</div><ul><li>35B / 3B MoE + vision encoder (HF card)</li><li>256K native context, extensible to 1.01M (card)</li><li>Apache 2.0</li></ul></div>
+      <div class="card-section"><div class="card-section-title weakness-title">Weaknesses</div><ul><li>VRAM GB is a catalog Q4 estimate (Params × 0.5), not printed on the HF card</li></ul></div></div>
+    <div class="card-grid" style="margin-top:8px"><div class="card-section"><div class="card-section-title install-title">VRAM Breakdown</div><ul><li>Q4 est. ~18 GB weights (35B × 0.5). Not stated on the HF card. KV cache is extra.</li></ul></div></div>
+    <div class="card-install"><span class="card-install-label">vLLM (from HF card)</span> <code>vllm serve Qwen/Qwen3.6-35B-A3B</code></div></div></div>
+<div id="qwen3-8-27b" class="model-card family-alibaba" data-size="medium" data-tags="multimodal vision video coding reasoning thinking dual-mode tool-use" data-family="alibaba" data-hf-id="Qwen/Qwen3.8-27B">
+  <div class="card-header"><div class="card-name-area"><div class="card-family">Alibaba — Qwen</div><div class="card-name">Qwen3.8 (27B)</div></div>
+    <div class="card-badges"><span class="badge badge-params">27B</span><span class="badge badge-vram">~14 GB (Q4)</span><span class="badge badge-ctx">256K ctx</span><span class="badge badge-vision">Vision</span><span class="badge badge-license">Apache 2.0</span><span class="badge badge-tools">Tool Use</span></div></div>
+  <div class="card-body"><div class="card-desc">Official <code>Qwen/Qwen3.8-27B</code> (created 2026-08-05, Apache 2.0). Same 27B dense stack as 3.6, with native image and video. Thinking is on by default; <code>reasoning_effort</code> is xhigh / medium / low; <code>preserve_thinking</code> is on unless you disable it. Native context 262,144, extensible to 1,000,000. Use this 27B when you will set thinking for the job and still leave KV room. Occupancy is not on the card. Hub rechecked 2026-08-24.</div>
+    <div class="card-grid"><div class="card-section"><div class="card-section-title strength-title">Strengths</div><ul><li>27B dense, native image and video (Hub card)</li><li>Thinking on by default, disable per request</li><li><code>reasoning_effort</code> xhigh / medium / low</li><li>Apache 2.0, ungated</li></ul></div>
+      <div class="card-section"><div class="card-section-title weakness-title">Weaknesses</div><ul><li>Default thinking spends tokens and KV you may want for context</li><li>Occupancy is not printed on the Hub card</li><li>Catalog ~14 GB Q4 is Params ×0.5, not a Hub measurement</li></ul></div></div>
+    <div class="card-grid" style="margin-top:8px"><div class="card-section"><div class="card-section-title usecase-title">Best For</div><ul><li>One-GPU daily driver that can see images and video</li><li>Agent loops where you keep thinking on, then drop it for short turns</li></ul></div>
+      <div class="card-section"><div class="card-section-title install-title">VRAM Breakdown</div><ul><li>Hub card: none</li><li>Catalog Q4 estimate ~14 GB weights (27B × 0.5). KV cache is extra.</li></ul></div></div>
+    <div class="card-install"><span class="card-install-label">vLLM (from HF card)</span> <code>vllm serve Qwen/Qwen3.8-27B</code></div></div></div>
+  </div>
 </div>
+<script>
+document.documentElement.style.minHeight = 'auto';
+document.body.style.minHeight = 'auto';
+</script>
 </body>
 </html>
