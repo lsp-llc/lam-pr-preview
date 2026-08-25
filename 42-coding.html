@@ -71,9 +71,61 @@
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: \"cv02\",\"cv03\",\"cv04\",\"cv11\"; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
 ::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 52vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-bg-2.png') center/cover no-repeat; opacity: 0.45; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.55) 0%, rgba(6,7,10,0.94) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 920px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(1.9rem, 4.4vw, 3.1rem); font-weight: 600; line-height: 1.12; letter-spacing: -0.035em; margin-bottom: 14px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.15rem); color: var(--text-2); max-width: 660px; margin: 0 auto; line-height: 1.55; }
+.updated { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin: 0 0 18px; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 88px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 760px; margin-bottom: 44px; }
+
+/* ARTICLE PROSE */
+.article { max-width: 820px; }
+.article section { padding: 0; }
+.article h2 { font-family: var(--font); font-size: clamp(1.45rem, 3.2vw, 2.05rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.18; margin: 68px 0 20px; scroll-margin-top: 84px; }
+.article section:first-of-type h2 { margin-top: 0; }
+.article h3 { font-family: var(--font); font-size: 1.1rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text); margin: 34px 0 8px; }
+.article p { color: var(--text-2); font-size: 1.0rem; line-height: 1.68; margin-bottom: 20px; }
+.article ul { list-style: disc; margin: 0 0 24px 1.15rem; color: var(--text-2); }
+.article li { margin-bottom: 14px; line-height: 1.62; }
+.article strong { color: var(--text); font-weight: 600; }
+.article a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.32); transition: border-color 200ms var(--ease); }
+.article a:hover { border-bottom-color: var(--accent); }
+.article code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; color: var(--accent); }
+.ref { font-size: 0.66em; vertical-align: super; line-height: 0; color: var(--text-dim); border-bottom: none !important; letter-spacing: 0; }
+.ref:hover { color: var(--accent); }
+
 .tbl-wrap { overflow-x: auto; margin: 6px 0 34px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.tbl-wrap table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.92rem; }
+.tbl-wrap caption { caption-side: top; text-align: left; padding: 16px 18px 4px; font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-dim); }
+.tbl-wrap th, .tbl-wrap td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tbl-wrap thead th { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1.2px; color: var(--accent); font-weight: 600; white-space: nowrap; }
+.tbl-wrap tbody th { color: var(--text); font-weight: 600; }
+.tbl-wrap tbody td { color: var(--text-2); }
 .tbl-wrap a,
 .tbl-wrap a:link,
 .tbl-wrap a:visited {
@@ -88,19 +140,453 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
   color: #f6f7f9;
   -webkit-text-fill-color: #f6f7f9;
 }
+.tbl-wrap tbody tr:last-child th, .tbl-wrap tbody tr:last-child td { border-bottom: none; }
+
+.sources-list { list-style: decimal; margin: 0 0 0 1.3rem; color: var(--text-dim); }
+.sources-list li { margin-bottom: 14px; font-size: 0.9rem; line-height: 1.6; }
+.sources-list a { color: var(--accent); }
+
+/* RELATED */
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+/* FOOTER */
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+/* SCROLL REVEAL */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+/* Universal premium fixes (applied via premium-patch.js) */
+/* 1. Display weight refinements, 700 was too heavy */
+h1, h2, .section-heading, .section-title, .hero-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+/* 2. Contrast bumps for muted text, was failing WCAG AA */
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, .updated, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+/* 3. Touch targets at least 44px on nav links and buttons */
+nav a, .nav-links a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+/* 4. Accessible focus rings: never remove the default outline without a custom one */
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+/* 5. Body text minimum on key surfaces */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+/* end PREMIUM-PATCH-V1 */
+
+/* TITLE-CLIP-FIX: italic descenders and gradient-clipped text need padding plus overflow visible */
+.hero-title { line-height: 1.14 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+/* end TITLE-CLIP-FIX */
 </style>
+<!-- Schema: Organization (publisher trust signal for AEO) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<!-- Google Consent Mode v2: EEA/UK/CH default denied until consent (Google CMP completes this post-verification) -->
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500,'region':['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']});
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
+     crossorigin="anonymous"></script>
+<script src="/consent.js" defer></script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
 </head>
 <body>
-<div class=\"tbl-wrap\">
-<table>
-<caption>VRAM-tier picks</caption>
-<thead><tr><th>VRAM tier</th><th>Pick</th></tr></thead>
-<tbody>
-<tr><th>8 GB</th><td><a href=\"/local-ai-models.html#qwen3-5-4b-9b-27b\">Qwen3.5 4B</a></td></tr>
-<tr><th>16 GB</th><td><a href=\"/local-ai-models.html#devstral-small-2-24b\">Devstral Small 2 (24B)</a></td></tr>
-<tr><th>24 GB</th><td><a href=\"/local-ai-models.html#qwen3-8-27b\">Qwen3.8 27B (xhigh)</a></td></tr>
-</tbody>
-</table>
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="/local-ai-models.html">Models</a>
+      <a href="/builder.html">Stack Builder</a>
+      <a href="/model-builder.html">PC Builder</a>
+      <a href="/recommend.html">Recommender</a>
+      <a href="/token-simulator.html">Token Sim</a>
+      <a href="/claws.html">CLAWS</a>
+      <a href="/sentiment.html">Community</a>
+      <a href="/guidance.html">Guidance</a>
+      <a href="/getting-started.html">Get Started</a>
+      <a href="/quantization.html">Quantization</a>
+      <a href="/stacks.html">Stacks</a>
+      <a href="/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/local-ai-models.html">Models</a><span class="sep">/</span><span>Best Local Coding LLM</span></div>
+    <div class="hero-eyebrow">Coding models by VRAM tier</div>
+    <h1 class="hero-title">Best Local LLM for Coding in 2026: <span class="accent">What Runs</span> on 8 GB, 16 GB, and 24 GB of VRAM</h1>
+    <p class="updated">Updated: August 25, 2026</p>
+    <p class="hero-sub">Three answers, one per card class. Quality from Artificial Analysis Intelligence Index v4.1.1. Fit from Hub license and catalog VRAM.</p>
+  </div>
+</section>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+
+  <p class="lede reveal">Fit still decides the shortlist. Quality, on this page, is the Artificial Analysis Intelligence Index v4.1.1, fetched 2026-08-25. That index includes SciCode and Terminal-Bench v2.1 among nine evaluations. License and VRAM come from Hub cards and this site's catalog. The 24 GB pick is the 27B AA lists at 52 on the xhigh setting.</p>
+
+  <div class="tbl-wrap reveal">
+    <table>
+      <caption>VRAM-tier picks mapped to Artificial Analysis Intelligence Index v4.1.1. A starred score is estimated on AA. Every figure is restated below.</caption>
+      <thead>
+        <tr><th scope="col">VRAM tier</th><th scope="col">Pick</th><th scope="col">Intelligence Index</th><th scope="col">At Q4</th><th scope="col">Context</th><th scope="col">License</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">8 GB</th><td><a href="/local-ai-models.html#qwen3-5-4b-9b-27b">Qwen3.5 4B</a></td><td>20*</td><td>about 2.4 GB of weights</td><td>262K</td><td>Apache 2.0</td></tr>
+        <tr><th scope="row">16 GB</th><td><a href="/local-ai-models.html#devstral-small-2-24b">Devstral Small 2 (24B)</a></td><td>18</td><td>about 15 GB</td><td>256K</td><td>Apache 2.0</td></tr>
+        <tr><th scope="row">16 GB</th><td><a href="/local-ai-models.html#phi-4-14b">Phi-4 (14B)</a></td><td>5*</td><td>about 11 GB, 16 GB at Q8</td><td>catalog 128K; AA 16k</td><td>MIT</td></tr>
+        <tr><th scope="row">24 GB</th><td><a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B (xhigh)</a></td><td>52</td><td>about 14 GB of weights</td><td>catalog 262K</td><td>Apache 2.0</td></tr>
+        <tr><th scope="row">24 GB</th><td><a href="/local-ai-models.html#qwen3-6-27b">Qwen3.6 27B</a></td><td>38</td><td>about 14 GB of weights</td><td>catalog 262K</td><td>Apache 2.0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <article class="article">
+
+    <section id="eight-gb" class="reveal">
+      <h2>Which local coding LLM runs on 8 GB of VRAM?</h2>
+
+      <p>On 8 GB, the Artificial Analysis listing that fits is <a href="/local-ai-models.html#qwen3-5-4b-9b-27b">Qwen3.5 4B</a> at Intelligence Index 20*, marked estimated on both the leaderboard and the model page. A second 4B row on the same table is 16*<a href="#src-1" class="ref">[1]</a><a href="#src-2" class="ref">[2]</a>. The same family card also covers the 9B, which this fetch of the leaderboard lists at 22<a href="#src-1" class="ref">[1]</a>.</p>
+
+      <p>This site's <a href="/quantization.html">quantization guide</a> prices Q4_K_M at 4.8 bits per weight, roughly 0.6 GB per billion parameters<a href="#src-5" class="ref">[5]</a>. A 4B is 4 × 0.6 = 2.4 GB of weights: a calculation. The catalog family band is 3 to 18 GB across the 4B / 9B / 27B stack<a href="#src-4" class="ref">[4]</a>. The 4B carries a vision encoder (Hub pipeline tag <code>image-text-to-text</code>), so leave room beyond the weight figure. A 9B at the same rule is 5.4 GB of weights and still an 8 GB-class load at short context.</p>
+
+      <p><strong><a href="/local-ai-models.html#qwen3-5-4b-9b-27b">Qwen3.5 4B</a>.</strong> Alibaba, Apache 2.0, 262K native context on the catalog card and on AA<a href="#src-2" class="ref">[2]</a><a href="#src-4" class="ref">[4]</a>. AA's model page lists reasoning, text / image / video input, 4.7B total parameters, and "20 (estimated)" with independent evaluation forthcoming<a href="#src-2" class="ref">[2]</a>. Hub reported 7,782,618 downloads and 843 likes for <code>Qwen/Qwen3.5-4B</code> on 2026-08-25<a href="#src-6" class="ref">[6]</a>.</p>
+
+      <p><a href="/local-ai-models.html#qwen3-8b">Qwen3 8B</a> and <a href="/local-ai-models.html#starcoder2-3b-7b">StarCoder2 3B / 7B</a> remain catalog rows for this card. This fetch of the Intelligence Index table did not list them, so there is no AA score here<a href="#src-1" class="ref">[1]</a>. Catalog: Qwen3 8B at 6 to 7 GB, Apache 2.0, 128K; StarCoder2 at 3 to 5 GB, 16K, BigCode OpenRAIL-M<a href="#src-4" class="ref">[4]</a>. Hub on 2026-08-25: Qwen3-8B 14,619,976 downloads and 1,319 likes; StarCoder2-3B 142,378 / 221; StarCoder2-7B 39,317 / 222<a href="#src-6" class="ref">[6]</a>.</p>
+    </section>
+
+    <section id="best-2026" class="reveal">
+      <h2>What is the best local LLM for coding in 2026?</h2>
+
+      <p>On a single 24 GB card, the Artificial Analysis map points at <a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B (xhigh)</a>. This fetch of the Intelligence Index table lists it at 52<a href="#src-1" class="ref">[1]</a><a href="#src-2" class="ref">[2]</a>. Catalog Q4 is about 14 GB of weights (27B × 0.5); occupancy is not on the Hub card<a href="#src-4" class="ref">[4]</a>. That leaves KV room on 24 GB. The same table lists the medium setting at 44, low at 43, and the unqualified 27B row at 35<a href="#src-1" class="ref">[1]</a>.</p>
+
+      <p>The useful tradeoff is that 52. Thinking is on by default; <code>reasoning_effort</code> is xhigh / medium / low on the catalog card<a href="#src-4" class="ref">[4]</a>. AA's model page calls the xhigh listing verbose (160M output tokens on the Index run) and slow relative to its size class<a href="#src-2" class="ref">[2]</a>. You buy the 52 by spending thinking tokens and KV that a 24 GB card also needs for context.</p>
+
+      <p><strong><a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B</a>.</strong> Alibaba, Apache 2.0, Hub pipeline tag <code>image-text-to-text</code>. Catalog native context 262,144, extensible to 1,000,000. AA's leaderboard row lists 256k; the model-page FAQ lists 260k<a href="#src-1" class="ref">[1]</a><a href="#src-2" class="ref">[2]</a><a href="#src-4" class="ref">[4]</a>. AA dates the xhigh listing to a 14 August 2026 release and scores the composite across reasoning, knowledge, mathematics, and coding. SciCode and Terminal-Bench v2.1 are named components of Index v4.1.1; this fetch did not return per-eval numeric scores, so none are quoted<a href="#src-1" class="ref">[1]</a><a href="#src-2" class="ref">[2]</a>. Hub reported 2,945,415 downloads and 12,606 likes for <code>Qwen/Qwen3.8-27B</code> on 2026-08-25<a href="#src-6" class="ref">[6]</a>.</p>
+
+      <p><strong><a href="/local-ai-models.html#qwen3-6-27b">Qwen3.6 27B</a>.</strong> Same 27B / ~14 GB Q4 class, Apache 2.0, also <code>image-text-to-text</code><a href="#src-4" class="ref">[4]</a>. AA lists the reasoning row at 38 and a second 27B row at 31<a href="#src-1" class="ref">[1]</a><a href="#src-2" class="ref">[2]</a>. Hub reported 6,270,956 downloads and 2,279 likes on 2026-08-25<a href="#src-6" class="ref">[6]</a>.</p>
+
+      <p><a href="/local-ai-models.html#qwen3-coder-32b-dense">Qwen3-Coder 32B Dense</a> (catalog about 20 GB at Q4, Apache 2.0, 256K) and <a href="/local-ai-models.html#glm-4-7-flash-30b-moe-3b-active">GLM-4.7-Flash</a> (catalog about 20 GB at Q4, MIT, 200K) stay on the catalog as 24 GB dedicated-coder rows<a href="#src-4" class="ref">[4]</a>. This fetch of the Intelligence Index table did not list either, so there is no AA score here<a href="#src-1" class="ref">[1]</a>. The Hub fetch for <code>Qwen/Qwen3-Coder-32B-Instruct</code> returned HTTP 401 on 2026-08-25<a href="#src-6" class="ref">[6]</a>. GLM Hub figures that day: 1,978,831 downloads and 1,820 likes. The catalog's 59.2 percent SWE-bench and 60 to 80 tokens per second for GLM name no source and stay site assertions<a href="#src-4" class="ref">[4]</a>. The Qwen3-Coder launch post drew 765 points and 366 comments on Hacker News on 2025-07-22<a href="#src-7" class="ref">[7]</a>.</p>
+
+      <p>Above this card: <a href="/local-ai-models.html#qwen3-coder-next-80b-moe-3b-active">Qwen3-Coder-Next</a> is on the Intelligence Index at 21. Catalog Q4 is about 40 GB of weights (80B × 0.5); serve examples use 2 to 4 GPUs<a href="#src-1" class="ref">[1]</a><a href="#src-4" class="ref">[4]</a>. The <a href="https://arxiv.org/html/2603.00729v1" rel="nofollow">technical report</a> puts it at 70.6 percent on SWE-bench Verified under SWE-Agent, 71.1 under MiniSWE-Agent, and 71.3 under OpenHands<a href="#src-9" class="ref">[9]</a>. AA lists Devstral 2 at 19; the AA model page gives 125B, and this catalog has no card for it<a href="#src-1" class="ref">[1]</a><a href="#src-2" class="ref">[2]</a>. <a href="/local-ai-models.html#deepseek-v4-pro-1-6t-moe-49b-active">DeepSeek V4 Pro</a> appears on the same table as "DeepSeek V4 Pro 0813 (max)" at 53, with a catalog Q4 estimate of about 800 GB of weights<a href="#src-1" class="ref">[1]</a><a href="#src-4" class="ref">[4]</a>.</p>
+    </section>
+
+    <section id="sixteen-gb-laptop" class="reveal">
+      <h2>Can you run a coding LLM on a 16 GB RAM laptop?</h2>
+
+      <p>Yes, if you keep the model at 8B or below and accept slower generation. A 16 GB laptop with no discrete GPU runs the model in system RAM on the CPU, and this site's quantization guide puts each offloaded layer at roughly 3 to 10 times slower than on a GPU<a href="#src-5" class="ref">[5]</a>. A 16 GB discrete card is a much better situation.</p>
+
+      <p><strong>On 16 GB of system RAM.</strong> Budget for the operating system first. <a href="/local-ai-models.html#qwen3-5-4b-9b-27b">Qwen3.5 4B</a> at about 2.4 GB of Q4 weights is the AA-mapped load for this envelope<a href="#src-1" class="ref">[1]</a><a href="#src-5" class="ref">[5]</a>. A 14B at Q4 is about 8.4 GB, or roughly 10.7 GB as the catalog lists <a href="/local-ai-models.html#qwen3-14b">Qwen3 14B</a><a href="#src-4" class="ref">[4]</a><a href="#src-5" class="ref">[5]</a>: it fits, and leaves little for context or for anything else the laptop is doing. The <a href="/vram-guide.html">VRAM guide</a> covers the system-RAM and offload case in more detail.</p>
+
+      <p><strong>On a 16 GB discrete GPU,</strong> the AA-listed dedicated coder that fits is <a href="/local-ai-models.html#devstral-small-2-24b">Devstral Small 2</a> at Intelligence Index 18<a href="#src-1" class="ref">[1]</a><a href="#src-2" class="ref">[2]</a>. <a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B</a> at ~14 GB of Q4 weights is a 24 GB job once KV and the vision encoder are in; this page keeps it there.</p>
+
+      <ul>
+        <li><strong><a href="/local-ai-models.html#devstral-small-2-24b">Devstral Small 2 (24B)</a>.</strong> Mistral AI, 24B dense, Apache 2.0, about 15 GB at Q4 on the catalog card<a href="#src-4" class="ref">[4]</a>. AA lists Intelligence Index 18, 256k context, text and image input, non-reasoning on the AA model page<a href="#src-2" class="ref">[2]</a>. <a href="https://mistral.ai/news/devstral-2-vibe-cli/" rel="nofollow">Mistral's announcement</a> gives 68.0 percent on SWE-bench Verified and the same 256K window<a href="#src-8" class="ref">[8]</a>. Hub license <code>apache-2.0</code>; the API returned no pipeline tag on 2026-08-25. Hub reported 186,226 downloads and 646 likes that day<a href="#src-6" class="ref">[6]</a>. The 20* on Qwen3.5 4B is estimated and sits on a nine-eval composite; Devstral Small 2 is the AA-listed dedicated coder that fills this card.</li>
+        <li><strong><a href="/local-ai-models.html#phi-4-14b">Phi-4 (14B)</a>.</strong> Microsoft, MIT. AA lists Intelligence Index 5*, estimated, with a 16k context window<a href="#src-1" class="ref">[1]</a>. The catalog card lists 128K and about 11 GB at Q4, 16 GB at Q8, 28 GB at FP16<a href="#src-4" class="ref">[4]</a>. Both figures are shown; the conflict is left unresolved. Hub pipeline tag <code>text-generation</code>. Hub reported 688,541 downloads and 2,290 likes on 2026-08-25<a href="#src-6" class="ref">[6]</a>.</li>
+        <li><strong><a href="/local-ai-models.html#codestral-25-05-25b">Codestral 25.05 (25B)</a>.</strong> Mistral, 256K context, about 16 GB at Q4, licensed non-commercial on the catalog card<a href="#src-4" class="ref">[4]</a>. This fetch of the Intelligence Index table did not list it<a href="#src-1" class="ref">[1]</a>. Hub fetches for <code>mistralai/Codestral-25.01-Instruct</code> and <code>mistralai/Codestral-25.05</code> both returned HTTP 401 on 2026-08-25 (gated)<a href="#src-6" class="ref">[6]</a>.</li>
+      </ul>
+
+      <p><a href="/local-ai-models.html#qwen3-coder-30-5b-moe-3-3b-active">Qwen3-Coder 30.5B MoE / 3.3B active</a> lands in this band by catalog arithmetic: Apache 2.0, 256K native, Q4 estimate about 15 GB (30.5B × 0.5), not printed on the Hub card<a href="#src-4" class="ref">[4]</a>. This fetch of the Intelligence Index table did not list it<a href="#src-1" class="ref">[1]</a>. Hub reported 851,204 downloads and 1,217 likes on 2026-08-25<a href="#src-6" class="ref">[6]</a>.</p>
+    </section>
+
+    <section id="qwen-vs-deepseek" class="reveal">
+      <h2>Qwen Coder or DeepSeek Coder: which should you run locally?</h2>
+
+      <p>For a single consumer GPU, Qwen still has the weights that fit. The AA-mapped 24 GB load is <a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B</a> at 52 (xhigh). The dedicated Qwen coder AA lists is <a href="/local-ai-models.html#qwen3-coder-next-80b-moe-3b-active">Qwen3-Coder-Next</a> at 21, about 40 GB of Q4 weights<a href="#src-1" class="ref">[1]</a><a href="#src-4" class="ref">[4]</a>. DeepSeek's dedicated coder jumps from a 16B to a 236B.</p>
+
+      <p><strong>Qwen Coder.</strong> The catalog also carries <a href="/local-ai-models.html#qwen3-coder-32b-dense">Qwen3-Coder 32B Dense</a> (Apache 2.0, 256K, about 20 GB at Q4; not on this Intelligence Index fetch) and <a href="/local-ai-models.html#qwen3-coder-480b-moe-35b-active">Qwen3-Coder 480B MoE with 35B active</a> (Apache 2.0, 256K, 200 GB or more)<a href="#src-1" class="ref">[1]</a><a href="#src-4" class="ref">[4]</a>. On the 480B, <a href="https://nebius.com/blog/posts/openhands-trajectories-with-qwen3-coder-480b" rel="nofollow">Nebius reports 66.5 percent Pass@1 on SWE-bench Verified</a> from OpenHands v0.54.0 trajectories, max turns 500, on a 484-instance subset<a href="#src-10" class="ref">[10]</a>. Hub reported 35,909 downloads and 1,365 likes for the 480B on 2026-08-25; Coder-Next 503,858 and 1,614<a href="#src-6" class="ref">[6]</a>. Coder-Next's SWE-Agent 70.6 sits two points from Devstral Small 2's 68.0, from two write-ups, which the <a href="/benchmark-goodhart-law.html">leaderboard-reading guide</a> treats as a harness window<a href="#src-8" class="ref">[8]</a><a href="#src-9" class="ref">[9]</a><a href="#src-11" class="ref">[11]</a>.</p>
+
+      <p><strong>DeepSeek Coder.</strong> The catalog carries <a href="/local-ai-models.html#deepseek-coder-v2-16b-236b">DeepSeek Coder V2</a> in 16B and 236B forms, 128K context, 10 GB to more than 50 GB depending on which you take<a href="#src-4" class="ref">[4]</a>. The catalog card still lists MIT. The Hub card for <code>deepseek-ai/DeepSeek-Coder-V2-Instruct</code> lists license <code>other</code> / <code>deepseek-license</code>. Read the Hub license before you ship it. This fetch of the Intelligence Index table did not list Coder V2<a href="#src-1" class="ref">[1]</a>. The 16B Lite at roughly 10 GB is a 16 GB card option. Hub on 2026-08-25: Instruct (236B) 7,027 downloads and 699 likes; Lite Instruct (16B) 616,442 downloads and 642 likes<a href="#src-6" class="ref">[6]</a>.</p>
+
+      <p><a href="/local-ai-models.html#deepseek-v4-pro-1-6t-moe-49b-active">DeepSeek V4 Pro</a> and <a href="/local-ai-models.html#deepseek-v4-flash-0731">V4 Flash (0731)</a> are catalog cards: MIT, Hub pipeline tag <code>text-generation</code>, 1M context on the Pro card. AA lists "DeepSeek V4 Pro 0813 (max)" at 53 and "DeepSeek V4 Flash 0731 (max)" at 52<a href="#src-1" class="ref">[1]</a>. Flash Hub figures on 2026-08-25: 3,528,373 downloads and 3,697 likes; Pro 1,000,788 and 5,479<a href="#src-6" class="ref">[6]</a>. Those Intelligence Index rows are the datacenter listings.</p>
+    </section>
+
+    <section id="self-host" class="reveal">
+      <h2>What is the best open-source coding model to self-host?</h2>
+
+      <p>If self-hosting means shipping something commercial, filter by license first. The AA-mapped consumer fits under Apache 2.0 are <a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B</a> (24 GB) and <a href="/local-ai-models.html#devstral-small-2-24b">Devstral Small 2</a> (16 GB), plus <a href="/local-ai-models.html#qwen3-5-4b-9b-27b">Qwen3.5 4B</a> on 8 GB<a href="#src-2" class="ref">[2]</a><a href="#src-4" class="ref">[4]</a><a href="#src-6" class="ref">[6]</a>.</p>
+
+      <p>License is the constraint most comparison articles skip. GLM-4.7-Flash is MIT on the Hub and the catalog card, so it joins Phi-4 in that column. DeepSeek Coder V2 is the one to re-read: the catalog still says MIT, the Hub card says DeepSeek License.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <caption>License position of the coding-focused catalog entries named above, checked against Hub cards on 2026-08-25.</caption>
+          <thead>
+            <tr><th scope="col">Model</th><th scope="col">License</th><th scope="col">Commercial self-host</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row"><a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B</a></th><td>Apache 2.0 (Hub and catalog)</td><td>Unambiguously safe</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#qwen3-6-27b">Qwen3.6 27B</a></th><td>Apache 2.0 (Hub and catalog)</td><td>Unambiguously safe</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#qwen3-5-4b-9b-27b">Qwen3.5 4B</a></th><td>Apache 2.0 (Hub and catalog)</td><td>Unambiguously safe</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#devstral-small-2-24b">Devstral Small 2</a></th><td>Apache 2.0 (Hub and catalog)</td><td>Unambiguously safe</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#qwen3-coder-next-80b-moe-3b-active">Qwen3-Coder-Next</a></th><td>Apache 2.0 (Hub and catalog)</td><td>Unambiguously safe; catalog Q4 about 40 GB</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#qwen3-coder-32b-dense">Qwen3-Coder 32B Dense</a></th><td>Apache 2.0 (catalog; Hub gated, HTTP 401)</td><td>Unambiguously safe on the catalog listing</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#qwen3-coder-30-5b-moe-3-3b-active">Qwen3-Coder 30.5B MoE</a></th><td>Apache 2.0 (Hub and catalog)</td><td>Unambiguously safe; VRAM is a catalog estimate</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#phi-4-14b">Phi-4</a></th><td>MIT (Hub and catalog)</td><td>Unambiguously safe</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#glm-4-7-flash-30b-moe-3b-active">GLM-4.7-Flash</a></th><td>MIT (Hub and catalog)</td><td>Unambiguously safe</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#deepseek-coder-v2-16b-236b">DeepSeek Coder V2</a></th><td>Hub: DeepSeek License; catalog still says MIT</td><td>Read the Hub license first</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#starcoder2-3b-7b">StarCoder2</a></th><td>BigCode OpenRAIL-M (Hub and catalog)</td><td>Use restrictions apply</td></tr>
+            <tr><th scope="row"><a href="/local-ai-models.html#codestral-25-05-25b">Codestral 25.05</a></th><td>Non-commercial (catalog; Hub gated, HTTP 401)</td><td>Needs a separate license</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Once a model is in production, memory follows total parameters and speed follows active parameters on a MoE<a href="#src-5" class="ref">[5]</a>. If your environment demands auditability, <a href="/local-ai-models.html#olmo-3-1-7b-32b">OLMo 3.1</a> is the only catalog family publishing training code, dataset and checkpoints rather than weights alone, with the 32B at roughly 18 to 20 GB at Q4 and a 65K context<a href="#src-4" class="ref">[4]</a>. AA lists Olmo 3.1 32B Think at 8* and Instruct at 6*, both estimated<a href="#src-1" class="ref">[1]</a>.</p>
+    </section>
+
+    <section id="quantization-8gb" class="reveal">
+      <h2>Which quantization should you use for a coding model on 8 GB?</h2>
+
+      <p>Q4_K_M. It is this site's default for every VRAM figure it publishes, and the last level where structured code output holds up. Do not go below Q4 for coding, and do not reach for a bigger model at a lower quantization to compensate.</p>
+
+      <p>Two reasons, both from the quantization guide. Its sensitivity table rates structured code as highly sensitive, second only to math and logic, with syntax errors, wrong function signatures and broken JSON as the failures that appear below Q4<a href="#src-5" class="ref">[5]</a>. And its rule of thumb is that a smaller model at a higher quantization usually beats a larger model at a lower one, precisely for coding<a href="#src-5" class="ref">[5]</a>.</p>
+
+      <p>On what Q4_K_M costs in quality, the quantization guide's practitioner-reported range is 95 to 97 percent of FP16 quality on most benchmarks<a href="#src-5" class="ref">[5]</a>. The same guide applies a 1.2× to 1.5× multiplier over raw weight size for KV cache, activations and overhead. On an 8 GB card, use that buffer. The <a href="/quantization.html">quantization guide</a> has the full compression table and the per-task sensitivity breakdown, and the <a href="/local-ai-models.html">model catalog</a> lists a Q4_K_M VRAM figure for every model it carries.</p>
+    </section>
+
+    <section id="method" class="reveal">
+      <h2>How were these models compared, and what is not being claimed?</h2>
+
+      <p>Quality on this page is Artificial Analysis Intelligence Index v4.1.1. Fit is Hub license plus catalog or calculated VRAM. Named SWE figures stay on their original write-ups. Nothing here was measured on our hardware. Hub download dates are traction, not the reason a pick moved.</p>
+
+      <h3>What each claim rests on</h3>
+
+      <ul>
+        <li><strong>Artificial Analysis Intelligence Index v4.1.1.</strong> Fetched 2026-08-25 from the public models leaderboard and the model pages for Qwen3.8 27B, Qwen3.6 27B, Qwen3.5 4B, and Devstral Small 2. The Index incorporates nine evaluations: GDPval-AA v2, τ³-Banking, Terminal-Bench v2.1, SciCode, Humanity's Last Exam, GPQA Diamond, CritPt, AA-Omniscience, AA-LCR<a href="#src-1" class="ref">[1]</a><a href="#src-2" class="ref">[2]</a>. Starred scores are estimated on AA.</li>
+        <li><strong>Artificial Analysis Coding Agent Index v1.4.</strong> Equal-weight DeepSWE (113 tasks), Terminal-Bench v2.1 (89 tasks), and SWE-Atlas-QnA (124 tasks); each task averages pass@1 across three attempts. Methodology page: Version 1.4, August 2026, current. The public page's picker said "14 of 56 models." The structured data this fetch dumped lists harness-plus-API pairs (Claude Code, Codex, Grok Build, Kimi Code CLI, Opencode, Cursor CLI). None of the catalog consumer models named above appear in those rows, so no Coding Agent Index number is quoted for them<a href="#src-3" class="ref">[3]</a>.</li>
+        <li><strong>Named SWE write-ups.</strong> Devstral Small 2 at 68.0 percent on SWE-bench Verified from Mistral AI<a href="#src-8" class="ref">[8]</a>, Qwen3-Coder-Next at 70.6 percent under SWE-Agent from its technical report<a href="#src-9" class="ref">[9]</a>, and Qwen3-Coder 480B at 66.5 percent Pass@1 from Nebius under OpenHands<a href="#src-10" class="ref">[10]</a>. Those three do not share a harness. The <a href="/benchmark-goodhart-law.html">leaderboard-reading guide</a> is the rule for a two-point SWE gap<a href="#src-11" class="ref">[11]</a>. GLM-4.7-Flash at 59.2 percent is a catalog assertion without a citation<a href="#src-4" class="ref">[4]</a>.</li>
+        <li><strong>Community traction.</strong> Download and like counts come from the Hugging Face Hub public API, fetched 2026-08-25<a href="#src-6" class="ref">[6]</a>. The one Hacker News figure is from this site's signals pipeline, dated<a href="#src-7" class="ref">[7]</a>.</li>
+        <li><strong>VRAM footprints.</strong> Where the catalog publishes a figure, it is quoted<a href="#src-4" class="ref">[4]</a>. Where arithmetic is shown, it uses the quantization guide's rule of thumb, roughly 0.6 GB per billion parameters at Q4_K_M, or the catalog's Params × 0.5 estimate, and is labeled<a href="#src-5" class="ref">[5]</a>.</li>
+      </ul>
+
+      <h3>What is not being claimed</h3>
+
+      <ul>
+        <li><strong>No first-party benchmark runs.</strong> We did not run SWE-bench, SciCode, Terminal-Bench, or the Intelligence Index. Every score is reported from a source, and if that source is wrong, this page is wrong.</li>
+        <li><strong>No invented Coding Agent Index numbers.</strong> This fetch did not return a Coding Agent Index score for Qwen3.8 27B, Qwen3.5 4B, Devstral Small 2, or the other catalog consumer models named here.</li>
+        <li><strong>No per-eval SciCode or Terminal-Bench numbers.</strong> Those names appear as Intelligence Index v4.1.1 components. Numeric per-eval scores did not dump from the pages fetched 2026-08-25.</li>
+        <li><strong>No Qwen3.8 Max score treated as the 27B.</strong> The Intelligence Index table also lists Qwen3.8 Max at 58. That is a different listing.</li>
+        <li><strong>No AA score for models this fetch did not list.</strong> Qwen3-Coder 32B Dense, GLM-4.7-Flash, Qwen3 8B, StarCoder2, and Codestral are absent from the Intelligence Index table fetched 2026-08-25.</li>
+        <li><strong>No speed figures of our own.</strong> The 60 to 80 tokens per second for GLM-4.7-Flash at 4-bit is the catalog's claim<a href="#src-4" class="ref">[4]</a>. AA's 52.9 tokens per second for Qwen3.8 27B (xhigh) is Alibaba API throughput on the model page, not a local-card measurement<a href="#src-2" class="ref">[2]</a>.</li>
+        <li><strong>No invented SWE scores.</strong> DeepSeek V4 Pro has no SWE figure on this page. Its Intelligence Index row is the 0813 (max) listing at 53.</li>
+        <li><strong>No reconstructed Hub traction.</strong> Hub fetches for Qwen3-Coder 32B Dense and both Codestral ids returned HTTP 401 on 2026-08-25<a href="#src-6" class="ref">[6]</a>.</li>
+      </ul>
+    </section>
+
+    <section id="faq" class="reveal">
+      <h2>FAQ</h2>
+
+      <h3>Do I need a dedicated coding model, or will a general model do?</h3>
+      <p>On 8 GB, AA lists <a href="/local-ai-models.html#qwen3-5-4b-9b-27b">Qwen3.5 4B</a> at 20*, a general / vision 4B<a href="#src-1" class="ref">[1]</a>. On 24 GB, <a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B (xhigh)</a> at 52 sits above the dedicated coders AA lists at 18 to 21. Intelligence Index v4.1.1 includes SciCode and Terminal-Bench v2.1 plus six other evaluations, so a general 27B can outrank a dedicated coder on this map. Use Mistral's 68.0 percent SWE-bench Verified when you want a dedicated-coder SWE figure for <a href="/local-ai-models.html#devstral-small-2-24b">Devstral Small 2</a><a href="#src-8" class="ref">[8]</a>.</p>
+
+      <h3>Does a bigger context window help with code?</h3>
+      <p>Only if you have the VRAM for it. This site's quantization guide prices an 8B-class KV cache at about 0.7 GB at 8K, 2.5 GB at 32K, and 10 GB at 128K, and a 70B-class cache at about 5.5 / 20 / 80 GB on the same steps<a href="#src-5" class="ref">[5]</a>. A model advertising 256K context on a 24 GB card cannot use anywhere near that window. Qwen3.8 27B's xhigh 52 spends additional thinking tokens into that same budget.</p>
+
+      <h3>Can I run these on an AMD card or an Apple Silicon Mac?</h3>
+      <p>Broadly yes, with the same VRAM arithmetic. The catalog notes <a href="/local-ai-models.html#glm-4-7-flash-30b-moe-3b-active">GLM-4.7-Flash</a> running on RTX 3090 and 4090 class cards and on Apple M-series<a href="#src-4" class="ref">[4]</a>. On unified-memory Macs the budget is shared with the system, so size down.</p>
+
+      <h3>Where do DeepSeek V4 and Qwen3-Coder-Next sit relative to a 24 GB card?</h3>
+      <p><a href="/local-ai-models.html#qwen3-coder-next-80b-moe-3b-active">Qwen3-Coder-Next</a> is on the Intelligence Index at 21, with a catalog Q4 estimate of about 40 GB and serve examples on 2 to 4 GPUs<a href="#src-1" class="ref">[1]</a><a href="#src-4" class="ref">[4]</a>. <a href="/local-ai-models.html#deepseek-v4-pro-1-6t-moe-49b-active">V4 Pro</a> appears as "DeepSeek V4 Pro 0813 (max)" at 53; catalog Q4 is about 800 GB of weights<a href="#src-1" class="ref">[1]</a><a href="#src-4" class="ref">[4]</a>. The 24 GB job on this map is <a href="/local-ai-models.html#qwen3-8-27b">Qwen3.8 27B (xhigh)</a> at 52.</p>
+    </section>
+
+    <section id="sources" class="reveal">
+      <h2>Sources</h2>
+      <ol class="sources-list">
+        <li id="src-1">Artificial Analysis, LLM leaderboard / Intelligence Index v4.1.1, fetched 2026-08-25. Scores cited in the body: Qwen3.8 27B (xhigh) 52, (medium) 44, (low) 43, unqualified 35; Qwen3.6 27B 38 and 31; Qwen3.5 4B 20* and 16*; Qwen3.5 9B 22; Devstral Small 2 18; Devstral 2 19; Qwen3 Coder Next 21; Phi-4 5* (16k context on AA); DeepSeek V4 Pro 0813 (max) 53; DeepSeek V4 Flash 0731 (max) 52; Qwen3.8 Max 58; Olmo 3.1 32B Think 8* and Instruct 6*. Index components named: GDPval-AA v2, τ³-Banking, Terminal-Bench v2.1, SciCode, Humanity's Last Exam, GPQA Diamond, CritPt, AA-Omniscience, AA-LCR. <a href="https://artificialanalysis.ai/leaderboards/models" rel="nofollow">artificialanalysis.ai/leaderboards/models</a></li>
+        <li id="src-2">Artificial Analysis model pages, fetched 2026-08-25: <a href="https://artificialanalysis.ai/models/qwen3-8-27b" rel="nofollow">Qwen3.8 27B (xhigh)</a> (52; release 14 August 2026; Apache 2.0; 27B; 160M Index output tokens; 52.9 t/s on Alibaba API; 256k / 260k context on that page); <a href="https://artificialanalysis.ai/models/qwen3-6-27b" rel="nofollow">Qwen3.6 27B</a> (38); <a href="https://artificialanalysis.ai/models/qwen3-5-4b" rel="nofollow">Qwen3.5 4B</a> (20 estimated; 4.7B; 262k); <a href="https://artificialanalysis.ai/models/devstral-small-2" rel="nofollow">Devstral Small 2</a> (18; 24B; 256k; Apache 2.0; non-reasoning on the page fetched); <a href="https://artificialanalysis.ai/models/devstral-2" rel="nofollow">Devstral 2</a> (19; 125B).</li>
+        <li id="src-3">Artificial Analysis Coding Agent Index v1.4, fetched 2026-08-25: equal-weight DeepSWE, Terminal-Bench v2.1, and SWE-Atlas-QnA; picker text "14 of 56 models"; methodology Version 1.4, August 2026, current. Structured data dumped harness-plus-API rows only. No catalog-consumer Coding Agent Index scores cited. <a href="https://artificialanalysis.ai/agents/coding-agents" rel="nofollow">artificialanalysis.ai/agents/coding-agents</a> · <a href="https://artificialanalysis.ai/methodology/coding-agents-benchmarking" rel="nofollow">methodology</a></li>
+        <li id="src-4">local-ai-models.ai model catalog, <a href="/local-ai-models.html">local-ai-models.html</a>, 125 cards as of 2026-08-25. Per-model size, Q4 VRAM figure, context window, license, pipeline notes and card claims used in the body.</li>
+        <li id="src-5">local-ai-models.ai quantization guide, <a href="/quantization.html">quantization.html</a>: 4.8 bits per weight at Q4_K_M, 0.6 GB per billion parameters, 1.2× to 1.5× overhead, structured-code sensitivity, 95 to 97 percent of FP16 practitioner-reported, MoE memory versus active-parameter speed, KV cache cost by context length, and CPU offload penalty.</li>
+        <li id="src-6">Hugging Face Hub public API, <code>https://huggingface.co/api/models/{id}</code>, fetched 2026-08-25. Download and like counts, <code>pipeline_tag</code>, and <code>cardData.license</code> for every traction or license figure in the body. HTTP 401 on <code>Qwen/Qwen3-Coder-32B-Instruct</code>, <code>mistralai/Codestral-25.01-Instruct</code>, and <code>mistralai/Codestral-25.05</code>.</li>
+        <li id="src-7">local-ai-models.ai model signals pipeline, <code>data/model-signals/qwen3-coder-32b-dense.json</code>, last written 2026-08-24: Hacker News record for the Qwen3-Coder launch post, 765 points and 366 comments on 2025-07-22.</li>
+        <li id="src-8">Mistral AI, Devstral 2 and Vibe CLI announcement: Devstral Small 2 at 68.0 percent on SWE-bench Verified, 24B, Apache 2.0, 256K context. Re-checked 2026-08-25. <a href="https://mistral.ai/news/devstral-2-vibe-cli/" rel="nofollow">mistral.ai/news/devstral-2-vibe-cli</a></li>
+        <li id="src-9">Qwen3-Coder-Next Technical Report: 70.6 percent on SWE-bench Verified under SWE-Agent (also 71.1 MiniSWE-Agent, 71.3 OpenHands). Re-checked 2026-08-25. <a href="https://arxiv.org/html/2603.00729v1" rel="nofollow">arxiv.org/html/2603.00729v1</a></li>
+        <li id="src-10">Nebius, OpenHands trajectories with Qwen3-Coder-480B: 66.5 percent Pass@1 on SWE-bench Verified (484-instance subset, OpenHands v0.54.0, max turns 500) for Qwen3-Coder-480B-A35B-Instruct. Re-checked 2026-08-25. <a href="https://nebius.com/blog/posts/openhands-trajectories-with-qwen3-coder-480b" rel="nofollow">nebius.com/blog/posts/openhands-trajectories-with-qwen3-coder-480b</a></li>
+        <li id="src-11">local-ai-models.ai leaderboard-reading guide, <a href="/benchmark-goodhart-law.html">benchmark-goodhart-law.html</a>: a two-point SWE-bench gap from separately sourced write-ups is a harness window.</li>
+      </ol>
+    </section>
+
+  </article>
 </div>
+
+<section class="related">
+  <div class="related-title reveal">Related</div>
+  <div class="related-grid reveal">
+    <a href="/vram-guide.html" class="related-card">
+      <div class="related-eyebrow">Hardware</div>
+      <div class="related-name">The VRAM Guide</div>
+      <div class="related-desc">How much video memory each model class actually needs, and what happens when it does not fit.</div>
+    </a>
+    <a href="/quantization.html" class="related-card">
+      <div class="related-eyebrow">Learn</div>
+      <div class="related-name">Quantization Explained</div>
+      <div class="related-desc">Why Q4_K_M is the default and what changes when you go higher or lower.</div>
+    </a>
+    <a href="/local-ai-models.html" class="related-card">
+      <div class="related-eyebrow">Catalog</div>
+      <div class="related-name">Browse 125 Models</div>
+      <div class="related-desc">Filter by VRAM, license, family, and use case, with a Q4_K_M figure on every card.</div>
+    </a>
+  </div>
+</section>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.08.24 &middot; 100 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="/local-ai-models.html">Models</a></li>
+      <li><a href="/sentiment.html">Community Data</a></li>
+      <li><a href="/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="/builder.html">Stack Builder</a></li>
+      <li><a href="/model-builder.html">PC Builder</a></li>
+      <li><a href="/recommend.html">Recommender</a></li>
+      <li><a href="/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="/getting-started.html">Get Started</a></li>
+      <li><a href="/guidance.html">Guidance</a></li>
+      <li><a href="/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="/quantization.html">Quantization</a></li>
+      <li><a href="/stacks.html">Stacks</a></li>
+      <li><a href="/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 24, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/cookies.html">Cookies</a> &middot; <a href="/accessibility.html">Accessibility</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+// Hero parallax
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+// Scroll reveal
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script src="/creatures.js" defer></script>
+<script src="/creatures-v2.js" defer></script>
 </body>
 </html>
