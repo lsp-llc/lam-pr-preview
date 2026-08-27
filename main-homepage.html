@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Local AI Models — The Reference for Running AI Locally</title>
+<meta name="description" content="The complete reference for running AI locally. 125 open-weight models cataloged, real-time benchmarks, hardware planning, agent frameworks, token-speed simulator. Updated August 24, 2026.">
+<meta name="keywords" content="local AI, run LLM locally, open source AI, ollama, llama.cpp, GGUF, VRAM calculator, hardware planning, AI workstation, agent frameworks">
+<link rel="canonical" href="https://local-ai-models.ai/">
+<meta name="google-adsense-account" content="ca-pub-9503309257265974">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Local AI Models — The Reference for Running AI Locally">
+<meta property="og:description" content="125 open-weight models · Hardware builder · Token simulator · Agent framework catalog. Updated August 24, 2026.">
+<meta property="og:url" content="https://local-ai-models.ai/">
+<meta property="og:site_name" content="Local AI Models">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Local AI Models — The Reference for Running AI Locally">
+<meta property="og:image" content="https://local-ai-models.ai/hero-bg.png">
+<meta property="og:image:alt" content="Local AI Models — the reference for running AI locally">
+<meta name="twitter:image" content="https://local-ai-models.ai/hero-bg.png">
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Local AI Models","url":"https://local-ai-models.ai","description":"The complete reference for running AI models locally — 125 models cataloged, hardware planning, agent frameworks.","potentialAction":{"@type":"SearchAction","target":"https://local-ai-models.ai/local-ai-models.html?q={q}","query-input":"required name=q"}}
+</script>
+
+<!-- Schema: Organization (publisher trust signal for AEO) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<!-- SVG FILTERS (turbulence / grain) -->
+<svg style="position:absolute;width:0;height:0" aria-hidden="true">
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0"/>
+  </filter>
+  <filter id="goo">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
+    <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="goo"/>
+    <feBlend in="SourceGraphic" in2="goo"/>
+  </filter>
+</svg>
+
+<style>
+/* ============ DESIGN TOKENS — Linear/Vercel-grade palette ============ */
+@property --angle {
+  syntax: '<angle>'; initial-value: 0deg; inherits: false;
+}
+
+:root {
+  /* Surfaces — near-black, never pure */
+  --bg: #06070a;
+  --bg-2: #0a0b10;
+  --surface: #131416;
+  --surface-2: #1c1d20;
+  --surface-3: #252629;
+  --border: rgba(255,255,255,0.07);
+  --border-bright: rgba(255,255,255,0.14);
+  --border-cyan: rgba(0,212,255,0.25);
+
+  /* Text */
+  --text: #f6f7f9;
+  --text-2: #c9cdd4;
+  --text-dim: #8a8f99;
+  --text-muted: #5b606b;
+
+  /* Brand */
+  --cyan: #00d4ff;
+  --cyan-soft: #7de7ff;
+  --indigo: #818cf8;
+  --purple: #a78bfa;
+  --pink: #ec4899;
+  --green: #22c55e;
+  --orange: #ff9f1c;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --gradient-halo: conic-gradient(from var(--angle, 0deg) at 50% 50%, #00d4ff 0%, #818cf8 25%, #a78bfa 50%, #ec4899 75%, #00d4ff 100%);
+
+  /* Typography */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+
+  /* Motion grammar — ONE easing, few durations (per research) */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-hover: 150ms;
+  --dur-entry: 400ms;
+
+  /* Spacing scale (8px baseline) */
+  --gap-xs: 8px; --gap-s: 16px; --gap: 24px; --gap-l: 48px; --gap-xl: 80px; --gap-2xl: 128px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 17px; line-height: 1.55; letter-spacing: -0.012em;
+  min-height: 100vh; overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02","cv03","cv04","cv11","ss01";
+  cursor: none;
+}
+@media (pointer: coarse) {
+  body { cursor: auto; }
+  .cursor, .cursor-trail, .cursor-spotlight { display: none !important; }
+}
+
+::selection { background: rgba(0,212,255,0.25); color: #fff; text-shadow: 0 0 10px rgba(0,212,255,0.55); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgba(6,7,10,0.6); }
+::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.18); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.45); }
+
+/* ============ BACKGROUND LAYERS ============ */
+.bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+/* PERF-V2: static mesh (no drift animation) — Gemini consensus: stacked blur animation = GPU overdraw */
+.bg-mesh {
+  background:
+    radial-gradient(ellipse 62% 52% at 12% 18%, rgba(0,212,255,0.22) 0%, transparent 62%),
+    radial-gradient(ellipse 52% 62% at 88% 28%, rgba(167,139,250,0.20) 0%, transparent 62%),
+    radial-gradient(ellipse 60% 48% at 50% 88%, rgba(236,72,153,0.14) 0%, transparent 62%),
+    radial-gradient(ellipse 70% 42% at 30% 68%, rgba(129,140,248,0.12) 0%, transparent 62%);
+  filter: blur(28px);
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(0,212,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 25%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 25%, transparent 90%);
+}
+
+@media (min-width: 901px) {
+  .bg-grid { display: none; }
+  .bg-mesh { opacity: 0.42; filter: blur(64px) saturate(0.75); }
+  .bg-grain { opacity: 0.14; }
+  #bg-shader {
+    opacity: 0.36;
+    filter: blur(18px) saturate(0.62) brightness(0.72);
+    transform: scale(1.075);
+  }
+  /* (cursor-spotlight removed — see note in the custom-cursor styles below) */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      radial-gradient(ellipse 72% 48% at 50% 42%, rgba(7,10,16,0.08) 0%, transparent 62%),
+      radial-gradient(ellipse 110% 95% at 50% 50%, transparent 0%, rgba(6,7,10,0.24) 78%, rgba(6,7,10,0.52) 100%),
+      linear-gradient(180deg, rgba(6,7,10,0.22) 0%, rgba(6,7,10,0.06) 45%, rgba(6,7,10,0.30) 100%);
+  }
+}
+
+.bg-grain { opacity: 0.5; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E"); mix-blend-mode: overlay; }
+
+/* LANDING-INNOVATION-V3: WebGL latent-space shader background (replaces particles + drift) */
+#bg-shader { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.95; }
+#bg-shader-fallback { position: fixed; inset: 0; pointer-events: none; z-index: 1; display: block; background: radial-gradient(ellipse 80% 60% at 30% 20%, rgba(0,212,255,0.12), transparent 60%), radial-gradient(ellipse 60% 80% at 80% 70%, rgba(167,139,250,0.10), transparent 60%); }
+/* LANDING-INNOVATION-V4: floating model nodes (cursor-reactive, sits above shader) */
+#bg-nodes { position: fixed; inset: 0; pointer-events: none; z-index: 2 !important; }
+
+/* PERF-V2: 2 orbs (was 3), blur 60px (was 90px). Stacked blurs were the real perf killer per Gemini consensus. */
+.orb {
+  position: fixed; pointer-events: none; z-index: 0;
+  border-radius: 50%; filter: blur(60px);
+  will-change: transform;
+  transform: translate3d(0,0,0);
+}
+.orb-1 { width: 520px; height: 520px; background: radial-gradient(circle, var(--cyan) 0%, transparent 70%); top: -120px; left: -120px; opacity: 0.50; animation: orb-1 26s ease-in-out infinite alternate; }
+.orb-2 { width: 620px; height: 620px; background: radial-gradient(circle, var(--purple) 0%, transparent 70%); bottom: -180px; right: -120px; opacity: 0.46; animation: orb-2 32s ease-in-out infinite alternate; }
+.orb-3 { display: none; }
+@keyframes orb-1 { to { transform: translate3d(140px, 90px, 0); } }
+@keyframes orb-2 { to { transform: translate3d(-120px, -140px, 0); } }
+
+/* Cursor spotlight REMOVED 2026-06-14: a full-viewport radial-gradient that
+   repainted on every mousemove — the primary cause of cursor lag (confirmed via
+   A/B toggle on real GPU). The custom ball cursor (.cursor) is retained. */
+
+/* ============ CUSTOM CURSOR (lerp via rAF per research) ============ */
+.cursor, .cursor-trail {
+  position: fixed; top: 0; left: 0; pointer-events: none;
+  border-radius: 50%;
+  transform: translate3d(-100px, -100px, 0);
+  will-change: transform;
+}
+.cursor {
+  z-index: 9999;
+  width: 10px; height: 10px; margin: -5px 0 0 -5px;
+  /* PERF-V2: removed mix-blend-mode (forces viewport-wide isolation/recompose every move). High-contrast white core + cyan ring instead. */
+  background: #fff;
+  border: 1px solid var(--cyan);
+  box-shadow: 0 0 16px rgba(0,212,255,0.85), 0 0 4px rgba(255,255,255,0.6);
+  transition: width var(--dur-entry) var(--ease), height var(--dur-entry) var(--ease), margin var(--dur-entry) var(--ease), opacity var(--dur-hover);
+}
+.cursor.hover { width: 52px; height: 52px; margin: -26px 0 0 -26px; background: rgba(0,212,255,0.12); border: 1px solid var(--cyan); }
+.cursor.click { opacity: 0.5; }
+/* Keep the ball cursor (not the native finger/arrow) over interactive elements.
+   UA styles give links cursor:pointer and some widgets set it explicitly; override
+   to none. Scoped to where the custom cursor is active so touch + reduced-motion
+   users keep their native cursors. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  a, button, [role="button"], [data-magnetic], .dest-card,
+  .intent-chip, .cmdk-hint, .cmdk-item, label, summary, select {
+    cursor: none !important;
+  }
+}
+.cursor-trail {
+  z-index: 9998;
+  width: 40px; height: 40px; margin: -20px 0 0 -20px;
+  border: 1px solid rgba(0,212,255,0.35);
+  opacity: 0.75;
+}
+
+/* ============ NAV ============ */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 32px;
+  transition: padding 250ms var(--ease), background 250ms var(--ease), border-color 250ms var(--ease);
+  border-bottom: 1px solid transparent;
+}
+.topnav.scrolled {
+  padding: 12px 32px;
+  background: rgba(6,7,10,0.72);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+.topnav-brand {
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.84rem;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--cyan); text-decoration: none;
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.topnav-brand::before {
+  content: ''; width: 10px; height: 10px; background: var(--cyan); border-radius: 50%;
+  box-shadow: 0 0 12px var(--cyan);
+  animation: neon-flicker 3.6s ease-in-out infinite;
+}
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  42% { opacity: 1; }
+  43% { opacity: 0.35; }
+  44% { opacity: 1; }
+  62% { opacity: 1; }
+  63% { opacity: 0.5; }
+  64% { opacity: 1; }
+}
+.topnav-brand .b-light { color: var(--text); font-weight: 500; }
+
+/* Nav indicator pill — magnetizes to hovered item */
+.topnav-links {
+  position: relative;
+  display: flex; align-items: center; gap: 2px;
+}
+.topnav-links a {
+  position: relative;
+  font-family: var(--font-mono); font-size: 0.74rem;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--text-dim); text-decoration: none;
+  padding: 10px 16px; border-radius: 100px;
+  transition: color 200ms var(--ease);
+  z-index: 2;
+}
+.topnav-links a:hover { color: var(--text); }
+.topnav-indicator {
+  position: absolute; top: 0; left: 0; height: 100%;
+  background: rgba(255,255,255,0.06);
+  border-radius: 100px; z-index: 1;
+  opacity: 0;
+  transition: transform 400ms var(--ease), width 400ms var(--ease), opacity 200ms var(--ease);
+  pointer-events: none;
+}
+.topnav-indicator.show { opacity: 1; }
+
+.topnav-cta {
+  font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  background: var(--cyan); color: var(--bg);
+  padding: 10px 18px; border-radius: 100px;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: transform var(--dur-entry) var(--ease-spring), box-shadow 200ms var(--ease);
+  box-shadow: 0 4px 20px rgba(0,212,255,0.25);
+  white-space: nowrap;
+}
+.topnav-cta:hover { box-shadow: 0 8px 30px rgba(0,212,255,0.5); }
+.topnav-cta::after { content: '→'; transition: transform 200ms var(--ease); }
+.topnav-cta:hover::after { transform: translateX(4px); }
+
+.topnav-burger {
+  display: none; background: none; border: 1px solid rgba(255,255,255,0.12);
+  width: 42px; height: 42px; border-radius: 100px; cursor: none;
+  align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+}
+.topnav-burger span { width: 16px; height: 1.5px; background: var(--text); display: block; transition: transform 250ms var(--ease); }
+.topnav-burger.open span:first-child { transform: rotate(45deg) translate(4px, 4px); }
+.topnav-burger.open span:last-child { transform: rotate(-45deg) translate(4px, -4px); }
+
+@media (max-width: 900px) {
+  .topnav-links, .topnav-indicator { display: none; }
+  .topnav-burger { display: inline-flex; }
+  .topnav.menu-open .topnav-links {
+    display: flex; flex-direction: column; align-items: stretch;
+    position: absolute; top: 100%; left: 16px; right: 16px; margin-top: 8px;
+    background: rgba(6,7,10,0.96);
+    backdrop-filter: blur(22px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 12px;
+  }
+  .topnav.menu-open .topnav-links a { padding: 14px 16px; }
+  .topnav-cta { display: none; }
+}
+
+/* ============ HERO ============ */
+.hero {
+  position: relative; z-index: 3;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 130px 32px 80px; text-align: center;
+  overflow: hidden;
+}
+.hero-inner { max-width: 1100px; width: 100%; position: relative; z-index: 2; }
+
+@media (min-width: 901px) {
+  .hero {
+    min-height: clamp(720px, 86vh, 900px);
+    align-items: flex-start;
+    padding: 132px 32px 64px;
+  }
+  .hero-inner { max-width: 1060px; }
+  .hero-badge { margin-bottom: 22px; }
+  .hero-title {
+    font-size: clamp(4.6rem, 7.2vw, 6rem);
+    line-height: 0.92;
+    margin-bottom: 20px;
+  }
+  .hero-rotator {
+    margin-bottom: 20px;
+    opacity: 0.72;
+  }
+  .hero-sub {
+    max-width: 700px;
+    margin-bottom: 30px;
+  }
+  .hero-stats {
+    max-width: 820px;
+    margin-top: 42px;
+    padding-top: 28px;
+  }
+  .scroll-cue { display: none; }
+}
+
+/* Conic halo behind hero — the signature "wow" element */
+.hero-halo {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(1100px, 100%); height: 560px;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.hero-halo::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--gradient-halo);
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: halo-rotate 24s linear infinite;
+}
+@property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes halo-rotate { to { --angle: 360deg; } }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-dim);
+  padding: 8px 16px;
+  background: rgba(19,20,22,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 100px; margin-bottom: 32px;
+  backdrop-filter: blur(10px);
+  opacity: 0; transform: translateY(-12px);
+  animation: up-in 700ms var(--ease) 100ms forwards;
+}
+.hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: neon-flicker 4s ease-in-out infinite; }
+.hero-badge .sep { color: var(--text-muted); }
+
+.hero-title {
+  font-family: var(--font);
+  font-size: clamp(2.8rem, 8.5vw, 6.8rem);
+  font-weight: 560;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  margin-bottom: 28px;
+}
+.hero-title .word {
+  display: inline-block;
+  opacity: 0; transform: translateY(40px);
+  filter: blur(10px);
+  animation: word-in 900ms var(--ease) forwards;
+}
+.hero-title .word:nth-child(1) { animation-delay: 180ms; }
+.hero-title .word:nth-child(2) { animation-delay: 300ms; }
+.hero-title .word:nth-child(3) { animation-delay: 420ms; }
+.hero-title .word:nth-child(4) { animation-delay: 540ms; }
+.hero-title .word:nth-child(5) { animation-delay: 660ms; }
+@keyframes word-in { to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+
+.hero-title .gradient {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--indigo) 50%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  background-size: 200% 200%;
+  animation: gradient-pan 7s ease-in-out infinite;
+}
+/* Words with BOTH .word and .gradient would otherwise have .word's word-in
+   animation silently overridden by .gradient's animation: gradient-pan rule
+   (same specificity, defined later). Combine both here at higher specificity. */
+.hero-title .word.gradient {
+  animation: word-in 900ms var(--ease) forwards,
+             gradient-pan 7s ease-in-out infinite;
+}
+.hero-title .italic {
+  font-family: var(--font-serif); font-style: italic;
+  font-weight: 400; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  /* Italic serif glyphs overhang to the right; background-clip:text would cut
+     the last letter at the box edge without this. */
+  padding-right: 0.08em;
+}
+@keyframes gradient-pan { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+.hero-rotator {
+  font-family: var(--font-mono); font-size: 0.85rem;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-dim);
+  height: 24px; overflow: hidden;
+  margin-bottom: 28px;
+  opacity: 0; animation: up-in 700ms var(--ease) 900ms forwards;
+}
+.hero-rotator .scramble .accent { color: var(--cyan); }
+
+.hero-sub {
+  font-size: clamp(1.02rem, 2vw, 1.2rem);
+  color: var(--text-2);
+  max-width: 640px; margin: 0 auto 40px;
+  line-height: 1.55;
+  opacity: 0; transform: translateY(12px);
+  animation: up-in 700ms var(--ease) 1000ms forwards;
+}
+.hero-sub em { font-style: italic; font-family: var(--font-serif); color: var(--text); font-size: 1.1em; }
+
+.hero-cta-row {
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  opacity: 0; transform: translateY(12px);
+  animation: up-in 700ms var(--ease) 1150ms forwards;
+}
+@keyframes up-in { to { opacity: 1; transform: translateY(0); } }
+
+.btn {
+  font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 16px 26px; border-radius: 100px;
+  text-decoration: none; cursor: none;
+  display: inline-flex; align-items: center; gap: 10px;
+  transition: transform var(--dur-entry) var(--ease-spring), box-shadow 200ms var(--ease), background 200ms var(--ease), border-color 200ms var(--ease);
+  border: 1px solid transparent;
+  position: relative; overflow: hidden;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--cyan); color: var(--bg); box-shadow: 0 8px 30px rgba(0,212,255,0.3), inset 0 1px 0 rgba(255,255,255,0.25); }
+.btn-primary:hover { box-shadow: 0 14px 40px rgba(0,212,255,0.55), inset 0 1px 0 rgba(255,255,255,0.35); }
+/* Conic border rotation on ghost button hover */
+.btn-ghost {
+  background: rgba(19,20,22,0.6); color: var(--text);
+  border-color: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+.btn-ghost::before {
+  content: ''; position: absolute; inset: -1px; border-radius: 100px;
+  background: var(--gradient-halo);
+  z-index: -1;
+  opacity: 0; transition: opacity 250ms var(--ease);
+  padding: 1px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: halo-rotate 6s linear infinite;
+}
+.btn-ghost:hover::before { opacity: 1; }
+.btn-ghost:hover { background: rgba(28,29,32,0.75); }
+.btn .arrow { transition: transform 200ms var(--ease); }
+.btn:hover .arrow { transform: translateX(6px); }
+
+/* Sheen sweep on primary buttons */
+.btn-primary::after {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+  transition: left 600ms var(--ease);
+}
+.btn-primary:hover::after { left: 100%; }
+
+/* Hero stats */
+.hero-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+  max-width: 880px; margin: 60px auto 0;
+  padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.06);
+  opacity: 0; transform: translateY(20px);
+  animation: up-in 700ms var(--ease) 1350ms forwards;
+}
+@media (max-width: 700px) { .hero-stats { grid-template-columns: repeat(2,1fr); gap: 24px; } }
+.hero-stat { text-align: center; }
+.hero-stat-num {
+  font-family: var(--font); font-weight: 620;
+  font-size: clamp(1.8rem, 4vw, 3.1rem);
+  letter-spacing: -0.03em; line-height: 1;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+.hero-stat-num.grad-2 { background: var(--gradient-secondary); -webkit-background-clip: text; background-clip: text; }
+.hero-stat-label {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  text-transform: uppercase; letter-spacing: 1.8px;
+  color: var(--text-dim);
+}
+
+/* Scroll cue */
+.scroll-cue {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 0.64rem;
+  text-transform: uppercase; letter-spacing: 2.5px;
+  color: var(--text-muted);
+  opacity: 0; animation: up-in 700ms var(--ease) 1500ms forwards;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  pointer-events: none;
+}
+.scroll-cue-line { width: 1px; height: 32px; background: linear-gradient(180deg, transparent 0%, var(--cyan) 100%); position: relative; overflow: hidden; }
+.scroll-cue-line::after { content: ''; position: absolute; top: -50%; left: 0; width: 1px; height: 50%; background: linear-gradient(180deg, transparent 0%, #fff 100%); animation: scroll-cue-fall 2.4s ease-in-out infinite; }
+@keyframes scroll-cue-fall { 0% { top: -50%; } 100% { top: 100%; } }
+
+/* Aurora wave at hero bottom */
+.aurora {
+  position: absolute; left: 0; right: 0; bottom: -80px;
+  height: 240px; pointer-events: none; z-index: 1;
+  background:
+    radial-gradient(ellipse 80% 100% at 20% 100%, rgba(0,212,255,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 100% at 80% 100%, rgba(167,139,250,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 50% 100%, rgba(236,72,153,0.08) 0%, transparent 60%);
+  filter: blur(40px);
+  animation: aurora-wave 10s ease-in-out infinite alternate;
+}
+@keyframes aurora-wave { 0% { transform: translateX(-3%); } 100% { transform: translateX(3%); } }
+
+/* ============ MARQUEE ============ */
+.marquee {
+  position: relative; z-index: 3;
+  padding: 22px 0;
+  border-block: 1px solid rgba(255,255,255,0.06);
+  background: rgba(6,7,10,0.5);
+  overflow: hidden;
+  margin-top: 40px;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+}
+.marquee-track { display: flex; gap: 56px; animation: marquee 46s linear infinite; white-space: nowrap; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-item {
+  font-family: var(--font-mono); font-size: 0.82rem;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-dim);
+  display: inline-flex; align-items: center; gap: 14px;
+}
+.marquee-item .dot { width: 4px; height: 4px; background: var(--cyan); border-radius: 50%; }
+.marquee-item b { color: var(--text); font-weight: 600; }
+
+/* ============ SECTIONS ============ */
+.section { position: relative; z-index: 3; padding: 120px 32px; }
+.section-inner { max-width: 1300px; margin: 0 auto; }
+.section-eyebrow {
+  font-family: var(--font-mono); font-size: 0.74rem;
+  text-transform: uppercase; letter-spacing: 3px;
+  color: var(--cyan); margin-bottom: 18px;
+  display: inline-flex; align-items: center; gap: 12px;
+}
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--cyan); }
+.section-title {
+  font-family: var(--font);
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 560;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin-bottom: 22px; max-width: 840px;
+}
+.section-title .italic {
+  font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -0.02em;
+  background: var(--gradient-secondary); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.section-sub {
+  font-size: 1.05rem; color: var(--text-2);
+  max-width: 660px; line-height: 1.55; margin-bottom: 56px;
+}
+
+/* ============ DESTINATIONS ============ */
+.dest-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 18px;
+}
+.dest-card {
+  position: relative; overflow: hidden;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--bg-2) 100%);
+  border-radius: 20px;
+  padding: 32px;
+  text-decoration: none; color: var(--text);
+  display: flex; flex-direction: column; gap: 16px;
+  cursor: none;
+  min-height: 280px;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 400ms var(--ease);
+  /* PERF-V2: paint+layout containment shrinks invalidation scope on hover */
+  contain: paint layout;
+}
+@media (pointer: coarse) { .dest-card { cursor: pointer; } }
+
+/* Gradient border via mask trick */
+.dest-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 300ms var(--ease);
+}
+/* Rotating conic border on hover (premium signature) */
+.dest-card::after {
+  content: ''; position: absolute; inset: -1px; border-radius: 20px;
+  padding: 1px;
+  background: var(--gradient-halo);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms var(--ease);
+  pointer-events: none;
+  animation: halo-rotate 6s linear infinite;
+}
+.dest-card:hover::after { opacity: 0.9; }
+
+/* Cursor-reactive radial glow inside card */
+.dest-card .glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(400px circle at var(--cx, 50%) var(--cy, 0%), rgba(0,212,255,0.12), transparent 55%);
+  opacity: 0; transition: opacity 300ms var(--ease);
+  pointer-events: none;
+  border-radius: 20px;
+}
+.dest-card:hover .glow { opacity: 1; }
+
+/* Sheen sweep */
+.dest-card .sheen {
+  position: absolute; top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.08) 50%, transparent 80%);
+  transition: left 800ms var(--ease);
+  pointer-events: none;
+}
+.dest-card:hover .sheen { left: 140%; }
+
+.dest-card:hover { transform: translateY(-6px); }
+
+.dest-card.feature { grid-column: span 8; min-height: 380px; }
+.dest-card.half { grid-column: span 4; }
+.dest-card.third { grid-column: span 4; }
+.dest-card.two-third { grid-column: span 8; }
+@media (max-width: 1100px) {
+  .dest-card.feature, .dest-card.half, .dest-card.third, .dest-card.two-third { grid-column: span 12; }
+}
+
+.dest-icon {
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 1.8px; text-transform: uppercase;
+  color: var(--cyan);
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.25);
+  padding: 6px 14px; border-radius: 100px;
+  display: inline-flex; align-items: center; gap: 8px;
+  align-self: flex-start;
+  position: relative; z-index: 2;
+}
+.dest-icon.purple { color: var(--purple); background: rgba(167,139,250,0.08); border-color: rgba(167,139,250,0.3); }
+.dest-icon.pink { color: var(--pink); background: rgba(236,72,153,0.08); border-color: rgba(236,72,153,0.3); }
+.dest-icon.green { color: var(--green); background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.3); }
+.dest-icon.indigo { color: var(--indigo); background: rgba(129,140,248,0.08); border-color: rgba(129,140,248,0.3); }
+.dest-icon.orange { color: var(--orange); background: rgba(255,159,28,0.08); border-color: rgba(255,159,28,0.3); }
+.dest-icon::before { content: ''; width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
+
+.dest-num {
+  font-family: var(--font); font-weight: 720;
+  font-size: clamp(2.6rem, 5vw, 4.2rem);
+  letter-spacing: -0.045em; line-height: 0.95;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-top: auto;
+  position: relative; z-index: 2;
+}
+.dest-card.purple-num .dest-num { background: var(--gradient-secondary); -webkit-background-clip: text; background-clip: text; }
+.dest-card.full-num .dest-num { background: var(--gradient-halo); -webkit-background-clip: text; background-clip: text; }
+
+.dest-title {
+  font-family: var(--font); font-size: 1.6rem; font-weight: 600;
+  letter-spacing: -0.025em; color: var(--text);
+  margin-bottom: 4px; position: relative; z-index: 2;
+}
+.dest-card.feature .dest-title { font-size: 2.25rem; letter-spacing: -0.035em; font-weight: 620; }
+.dest-desc {
+  font-size: 0.95rem; color: var(--text-dim);
+  line-height: 1.55;
+  position: relative; z-index: 2;
+}
+.dest-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.74rem;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--cyan);
+  margin-top: 8px;
+  transition: gap 300ms var(--ease);
+  position: relative; z-index: 2;
+}
+.dest-card:hover .dest-cta { gap: 14px; }
+.dest-cta::after { content: '→'; }
+
+.dest-card .corner {
+  position: absolute; top: 18px; right: 24px;
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--text-muted); letter-spacing: 1.5px;
+  pointer-events: none; opacity: 0.55;
+  z-index: 2;
+}
+
+/* ============ PHILOSOPHY ============ */
+.philosophy { position: relative; z-index: 3; text-align: center; padding: 140px 32px; }
+.philosophy-quote {
+  font-family: var(--font-serif); font-style: italic;
+  font-size: clamp(1.9rem, 4vw, 3.1rem);
+  line-height: 1.3; letter-spacing: -0.02em;
+  max-width: 880px; margin: 0 auto 32px;
+  color: var(--text);
+  font-weight: 400;
+}
+.philosophy-quote .gt {
+  background: var(--gradient-halo);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  font-family: var(--font); font-style: normal; font-weight: 600;
+}
+.philosophy-attr {
+  font-family: var(--font-mono); font-size: 0.74rem;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-muted);
+}
+
+/* ============ FINAL CTA ============ */
+.final-cta { position: relative; z-index: 3; padding: 100px 32px 40px; text-align: center; }
+.final-cta-card {
+  max-width: 980px; margin: 0 auto;
+  background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(167,139,250,0.04), rgba(236,72,153,0.04));
+  border-radius: 32px;
+  padding: 72px 48px;
+  position: relative; overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.final-cta-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: 32px;
+  padding: 1px;
+  background: var(--gradient-halo);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: halo-rotate 10s linear infinite;
+  pointer-events: none;
+}
+.final-cta-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 50% 100%, rgba(0,212,255,0.14), transparent 60%);
+  pointer-events: none;
+}
+.final-cta-title {
+  font-family: var(--font); font-weight: 640;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: -0.035em; line-height: 1.05;
+  margin-bottom: 18px;
+  position: relative; z-index: 2;
+}
+.final-cta-title .italic {
+  font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -0.02em;
+  background: var(--gradient-halo);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.final-cta-sub {
+  font-size: 1.08rem; color: var(--text-2);
+  max-width: 600px; margin: 0 auto 36px;
+  position: relative; z-index: 2;
+}
+.final-cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2; }
+
+/* ============ FOOTER ============ */
+.foot {
+  position: relative; z-index: 3;
+  padding: 72px 32px 32px;
+  margin-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  /* PERF-V2: defer rendering of off-screen footer entirely (Deep Research: +20-30 FPS off-screen content) */
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
+}
+.foot-grid {
+  max-width: 1300px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px;
+}
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cyan); margin-bottom: 12px; }
+.foot-tagline { font-size: 0.88rem; color: var(--text-dim); line-height: 1.55; max-width: 340px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.9rem; color: var(--text-2); text-decoration: none; transition: color 200ms var(--ease), transform 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--cyan); transform: translateX(2px); }
+.foot-bottom {
+  max-width: 1300px; margin: 40px auto 0; padding: 20px 0 0;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: neon-flicker 3s ease-in-out infinite; }
+
+/* ============ REVEAL ============ */
+.reveal { opacity: 0; transform: translateY(32px); transition: opacity 900ms var(--ease), transform 900ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-stagger > * { opacity: 0; transform: translateY(30px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+.reveal-stagger.visible > * { opacity: 1; transform: translateY(0); }
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 40ms; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 110ms; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 180ms; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 250ms; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 320ms; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 390ms; }
+.reveal-stagger.visible > *:nth-child(7) { transition-delay: 460ms; }
+
+/* ============ CLICK BURST PARTICLE ============ */
+.burst {
+  position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9997;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan);
+  animation: burst-out 700ms var(--ease) forwards;
+}
+@keyframes burst-out { to { transform: translate3d(var(--dx,0), var(--dy,0), 0) scale(0); opacity: 0; } }
+
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+  body { cursor: auto; }
+  .cursor, .cursor-trail, .cursor-spotlight, #bg-shader, .orb { display: none; }
+  #bg-shader-fallback { display: block; }
+  .hero-title .word, .hero-badge, .hero-rotator, .hero-sub, .hero-cta-row, .hero-stats, .scroll-cue, .reveal, .reveal-stagger > * { opacity: 1; transform: none; filter: none; }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 700px) {
+  .topnav { padding: 14px 18px; }
+  .topnav.scrolled { padding: 10px 18px; }
+  .hero { padding: 110px 20px 80px; }
+  .section { padding: 80px 20px; }
+  .final-cta-card { padding: 48px 24px; border-radius: 24px; }
+  .dest-card { padding: 24px; min-height: 240px; }
+  .dest-card.feature .dest-title { font-size: 1.7rem; }
+  .marquee-item { font-size: 0.74rem; }
+  .hero-halo { height: 400px; }
+}
+
+@media (min-width: 901px) and (max-height: 820px) {
+  .hero {
+    min-height: 760px;
+    padding-top: 112px;
+  }
+  .hero-title {
+    font-size: clamp(4rem, 6.8vw, 5.35rem);
+    margin-bottom: 16px;
+  }
+  .hero-sub {
+    font-size: 1.04rem;
+    line-height: 1.48;
+    max-width: 660px;
+    margin-bottom: 24px;
+  }
+  .hero-stats {
+    margin-top: 32px;
+    padding-top: 24px;
+  }
+}
+</style>
+<!-- Google Consent Mode v2 — EEA/UK/CH default denied until consent (Google CMP completes this post-verification) -->
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500,'region':['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']});
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
+     crossorigin="anonymous"></script>
+<script src="/consent.js" defer></script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+</head>
+<body>
+
+<!-- ===== BACKGROUND STACK ===== -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="bg-layer bg-mesh"></div>
+<div class="bg-layer bg-grid"></div>
+<div class="bg-layer bg-grain"></div>
+<canvas id="bg-shader"></canvas>
+<div id="bg-shader-fallback"></div>
+<canvas id="bg-nodes" aria-hidden="true"></canvas>
+
+<!-- Custom cursor (ball) -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursor-trail"></div>
+
+<!-- ===== NAV ===== -->
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="/local-ai-models.html">Models</a>
+      <a href="/builder.html">Stack Builder</a>
+      <a href="/model-builder.html">PC Builder</a>
+      <a href="/recommend.html">Recommender</a>
+      <a href="/token-simulator.html">Token Sim</a>
+      <a href="/claws.html">CLAWS</a>
+      <a href="/sentiment.html">Community</a>
+      <a href="/guidance.html">Guidance</a>
+      <a href="/getting-started.html">Get Started</a>
+      <a href="/quantization.html">Quantization</a>
+      <a href="/stacks.html">Stacks</a>
+      <a href="/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<main id="main-content" tabindex="-1">
+<!-- ===== HERO ===== -->
+<section class="hero" id="top">
+  <div class="hero-halo"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span>Mission Control · Online</span>
+      <span class="sep">·</span>
+      <span>v2026.08.24</span>
+    </div>
+
+    <h1 class="hero-title">
+      <span class="word">Run</span>
+      <span class="word gradient">AI</span>
+      <span class="word">on</span>
+      <span class="word italic">your own</span>
+      <span class="word gradient">hardware.</span>
+    </h1>
+
+    <div class="hero-rotator" aria-hidden="true">
+      <div class="scramble" id="scramble" data-phrases='["<span class=&#39;accent&#39;>125</span> open-weight models · cataloged","<span class=&#39;accent&#39;>59</span> agent frameworks · compared","<span class=&#39;accent&#39;>$199 to $138K</span> · workstation builds","<span class=&#39;accent&#39;>5 to 280</span> tokens/sec · simulated"]'></div>
+    </div>
+
+    <p class="hero-sub">
+      The reference for engineers running AI locally. VRAM math, hardware tradeoffs, model benchmarks, and the agent ecosystem — all in one place. Built to help you <em>understand</em>, not just install.
+    </p>
+
+    <div class="hero-cta-row">
+      <a href="#destinations" class="btn btn-primary" data-magnetic>Pick a destination <span class="arrow">→</span></a>
+      <a href="/local-ai-models.html" class="btn btn-ghost">Browse 125 models</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num" data-count="125">0</div><div class="hero-stat-label">Models</div></div>
+      <div class="hero-stat"><div class="hero-stat-num grad-2" data-count="59">0</div><div class="hero-stat-label">Agent Frameworks</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" data-count="6">0</div><div class="hero-stat-label">Hardware Tiers</div></div>
+      <div class="hero-stat"><div class="hero-stat-num grad-2" data-count="7">0</div><div class="hero-stat-label">Live Tools</div></div>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <div class="scroll-cue-line"></div>
+  </div>
+  <div class="aurora"></div>
+</section>
+
+<!-- ===== STAT STRIP (LANDING-INNOVATION-V4: count-up on view) ===== -->
+<div class="stat-strip" id="stat-strip" aria-label="Site at a glance">
+  <div class="stat-strip-inner">
+    <div class="stat-cell"><div class="stat-num" data-target="125">0</div><div class="stat-label">Models</div><div class="stat-bar"></div></div>
+    <div class="stat-cell"><div class="stat-num" data-target="21">0</div><div class="stat-label">Pages</div><div class="stat-bar"></div></div>
+    <div class="stat-cell"><div class="stat-num" data-target="7">0</div><div class="stat-label">Hardware tiers</div><div class="stat-bar"></div></div>
+    <div class="stat-cell"><div class="stat-num" data-target="100" data-suffix="%">0</div><div class="stat-label">Local · zero cloud</div><div class="stat-bar"></div></div>
+  </div>
+</div>
+
+<!-- ===== MARQUEE ===== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marquee-track">
+    <span class="marquee-item"><span class="dot"></span> <b>Llama 3.3 70B</b></span>
+    <span class="marquee-item"><span class="dot"></span> Qwen3 32B</span>
+    <span class="marquee-item"><span class="dot"></span> <b>DeepSeek V3.2 671B</b></span>
+    <span class="marquee-item"><span class="dot"></span> Phi-4 14B</span>
+    <span class="marquee-item"><span class="dot"></span> <b>GLM-5 744B</b></span>
+    <span class="marquee-item"><span class="dot"></span> Mistral Small 22B</span>
+    <span class="marquee-item"><span class="dot"></span> <b>Nemotron 3 Super</b></span>
+    <span class="marquee-item"><span class="dot"></span> Yi 34B</span>
+    <span class="marquee-item"><span class="dot"></span> <b>Mixtral 8x22B</b></span>
+    <span class="marquee-item"><span class="dot"></span> Llama 4 Scout</span>
+    <span class="marquee-item"><span class="dot"></span> <b>Qwen2-VL 72B</b></span>
+    <span class="marquee-item"><span class="dot"></span> Gemma 3 27B</span>
+  </div>
+</div>
+
+<!-- ===== DESTINATIONS ===== -->
+<section class="section" id="destinations">
+  <div class="section-inner">
+    <div class="section-eyebrow reveal">Destinations</div>
+    <h2 class="section-title reveal">Pick your path. <span class="italic">Or take all of them.</span></h2>
+    <p class="section-sub reveal">Ten destinations, one mission: help you decide which model, which hardware, and which framework actually fits what you're building.</p>
+
+    <div class="intent-chips" id="intent-chips" data-target-grid="dest-grid">
+      <span class="intent-chips-label">I want to…</span>
+      <button type="button" class="intent-chip" data-card="0"><span class="intent-chip-glyph">›</span>Browse all 125 models</button>
+      <button type="button" class="intent-chip" data-card="1"><span class="intent-chip-glyph">›</span>Build a rig (real prices)</button>
+      <button type="button" class="intent-chip" data-card="2"><span class="intent-chip-glyph">›</span>Estimate token cost</button>
+      <button type="button" class="intent-chip" data-card="3"><span class="intent-chip-glyph">›</span>Pick an agent framework</button>
+      <button type="button" class="intent-chip" data-card="4"><span class="intent-chip-glyph">›</span>Get a recommendation</button>
+      <button type="button" class="intent-chip" data-card="5"><span class="intent-chip-glyph">›</span>Mix &amp; match a stack</button>
+    </div>
+
+    <div class="dest-grid reveal-stagger" id="dest-grid">
+      <a href="/local-ai-models.html" class="dest-card feature full-num">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="corner">01 · MODEL INDEX</span>
+        <span class="dest-icon">Catalog</span>
+        <div class="dest-num">125</div>
+        <div class="dest-title">Every open-weight model, in one place.</div>
+        <div class="dest-desc">VRAM, quantization, license, hardware tier, community sentiment. Searchable, filterable, mobile-first. The single reference you bookmark.</div>
+        <div class="dest-cta">Open the Index</div>
+      </a>
+      <a href="/model-builder.html" class="dest-card half purple-num">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon purple">PC Builder</span>
+        <div class="dest-num">$3,990</div>
+        <div class="dest-title">Build a workstation from real parts.</div>
+        <div class="dest-desc">Pick CPU, GPU, RAM, PSU at real April 2026 prices. See the total, see what models fit.</div>
+        <div class="dest-cta">Configure a build</div>
+      </a>
+      <a href="/token-simulator.html" class="dest-card third">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon green">Simulator</span>
+        <div class="dest-num">5 → 80</div>
+        <div class="dest-title">Feel the speed.</div>
+        <div class="dest-desc">Side-by-side streaming at 5, 25, and 80 tok/s. Pick your hardware, see your real throughput.</div>
+        <div class="dest-cta">Run the simulator</div>
+      </a>
+      <a href="/claws.html" class="dest-card two-third">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon pink">CLAWS Catalog</span>
+        <div class="dest-num">59</div>
+        <div class="dest-title">The agent-framework ecosystem.</div>
+        <div class="dest-desc">OpenClaw, Hermes, Claw Code, plus 50 coding / orchestration / browser-use frameworks. Filter by category, decide by question.</div>
+        <div class="dest-cta">Explore the catalog</div>
+      </a>
+      <a href="/recommend.html" class="dest-card third">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon indigo">Recommender</span>
+        <div class="dest-num">3 steps</div>
+        <div class="dest-title">Tell me what you're building.</div>
+        <div class="dest-desc">Use case → hardware → recommended models with reasoning. Skip the analysis paralysis.</div>
+        <div class="dest-cta">Get a recommendation</div>
+      </a>
+      <a href="/builder.html" class="dest-card third">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon orange">Stack Builder</span>
+        <div class="dest-num">Fits?</div>
+        <div class="dest-title">Match models to hardware.</div>
+        <div class="dest-desc">Already have a GPU? See which of the 125 models fit and how fast they run.</div>
+        <div class="dest-cta">Plan a stack</div>
+      </a>
+      <a href="/sentiment.html" class="dest-card third purple-num">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon purple">Live Data</span>
+        <div class="dest-num">Live</div>
+        <div class="dest-title">Community pulse.</div>
+        <div class="dest-desc">Real HuggingFace download counts and likes. What's trending, what's rising, what to watch.</div>
+        <div class="dest-cta">See community data</div>
+      </a>
+      <a href="/local-ai-server-guide.html" class="dest-card third">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon green">Guide</span>
+        <div class="dest-num">6 tiers</div>
+        <div class="dest-title">Build a local AI server.</div>
+        <div class="dest-desc">The long-form hardware guide: six budget tiers, from first GPU to dedicated rig, and what each unlocks.</div>
+        <div class="dest-cta">Read the guide</div>
+      </a>
+      <a href="/vram-guide.html" class="dest-card half">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon">Guide</span>
+        <div class="dest-num">GB</div>
+        <div class="dest-title">How much VRAM do you actually need?</div>
+        <div class="dest-desc">The sizing guide: worked VRAM math from 3B to 70B, quantization tradeoffs, KV-cache growth, and Mac unified memory. Updated August 2026.</div>
+        <div class="dest-cta">Size your hardware</div>
+      </a>
+      <a href="/best-local-coding-llm.html" class="dest-card half purple-num">
+        <span class="glow"></span><span class="sheen"></span>
+        <span class="dest-icon purple">Guide</span>
+        <div class="dest-num">8-24 GB</div>
+        <div class="dest-title">The best local LLM for coding.</div>
+        <div class="dest-desc">What actually runs on 8, 16, and 24 GB of VRAM, grounded in published benchmarks and our weekly community signals. Updated August 2026.</div>
+        <div class="dest-cta">Pick your coding model</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHAT IS LOCAL AI · REFERENCE + FAQ ===== -->
+<section class="section" id="what-is-local-ai">
+  <div class="section-inner">
+
+    <div class="home-primer reveal">
+      <div class="home-primer-eyebrow">Reference · Start here</div>
+      <p class="home-primer-lead">Local AI means running language models on hardware you own instead of calling a company's API. This section explains what that <em>actually</em> means, the honest reasons people choose it, and the tradeoffs to weigh before you commit.</p>
+    </div>
+
+    <div class="section-eyebrow reveal">Local AI, explained</div>
+    <h2 class="section-title reveal">What is local AI, and <span class="italic">why run models locally?</span></h2>
+    <p class="section-sub reveal">Open-weight models you download and run on your own hardware, the real reasons people choose them, and where the limits actually are.</p>
+
+    <div class="home-prose reveal">
+      <p>Most people meet AI through a hosted service. You open a website or an app, type into a box, and a company's servers do the work and send back an answer. Local AI inverts that arrangement. Instead of renting access to a model that lives in someone else's data center, you download the model's weights (the trained numerical parameters that define how it behaves) and run them on your own computer.</p>
+      <p>The models that make this possible are usually called open-weight models. Their creators publish the trained parameters under a license that lets you download, run, and often modify them. That is not quite the same as open-source software in the strict sense, because the training data and full training code are not always released, but the finished weights are yours to run. Once the file is on your disk, no account, subscription, or internet connection is required to use it. A local runtime program loads those weights, feeds it your prompt, and streams back the response entirely on your machine.</p>
+      <p>In practice a local setup has three parts: the model file (commonly distributed in quantized formats like GGUF, which compress the weights so they fit in less memory, as covered in the <a href="/quantization.html">quantization guide</a>), a runtime or inference engine that executes it, and the hardware it runs on. The <a href="/local-ai-models.html">model catalog</a> on this site tracks open-weight models and the memory each one needs, so you can see what is actually downloadable and runnable rather than only what is hosted behind an API.</p>
+    </div>
+
+    <h3 class="home-subhead reveal">Why people run locally</h3>
+    <div class="home-points reveal-stagger">
+      <div class="home-point">
+        <span class="home-tag">Privacy</span>
+        <div class="home-point-title">Private by default</div>
+        <p>Your prompts and files never leave the machine. There is no account to create, no usage history tied to your identity, and nothing handed to a third party. For sensitive documents, proprietary code, or personal notes, the data simply stays where it already is.</p>
+      </div>
+      <div class="home-point">
+        <span class="home-tag">Cost</span>
+        <div class="home-point-title">No per-token fees</div>
+        <p>Hosted APIs bill per token, so cost scales with how much you use them. A local model carries an up-front hardware and electricity cost but no metered charge per request. Once it runs, you can generate freely without watching a billing meter. Gauge request volume with the <a href="/token-simulator.html">token simulator</a>.</p>
+      </div>
+      <div class="home-point">
+        <span class="home-tag">Offline</span>
+        <div class="home-point-title">Offline and durable</div>
+        <p>A downloaded model works with no internet at all: on a plane, in an air-gapped lab, or during an outage. It also cannot be rate-limited or discontinued out from under you. The version you saved keeps working exactly as it did the day you downloaded it.</p>
+      </div>
+      <div class="home-point">
+        <span class="home-tag">Control</span>
+        <div class="home-point-title">Control and reproducibility</div>
+        <p>You choose the exact model version, settings, and system prompt, and they do not change unless you change them. A hosted endpoint can be updated silently, while a local model gives you a fixed, reproducible target. That matters for research, testing, and anything that needs to behave the same way twice.</p>
+      </div>
+      <div class="home-point">
+        <span class="home-tag">Throughput</span>
+        <div class="home-point-title">No rate limits</div>
+        <p>There are no request quotas or throttling tiers. The only ceiling is your own hardware. You can batch, loop, and automate freely, which makes local models a natural fit for agents and pipelines that would otherwise burn through an API quota.</p>
+      </div>
+      <div class="home-point">
+        <span class="home-tag">Flexibility</span>
+        <div class="home-point-title">Your choice of model</div>
+        <p>You are not locked to one vendor's single model. You can keep several specialized models on disk, switch between them, and adapt open weights to your own domain. The <a href="/recommend.html">recommender</a> helps match a model to what you are building.</p>
+      </div>
+    </div>
+
+    <h3 class="home-subhead reveal">The honest tradeoffs</h3>
+    <div class="home-prose reveal">
+      <p>Running locally is not free of cost. It trades a recurring bill for an up-front one, and it asks more of you. You become the operator: you pick the model, manage updates, and troubleshoot when something does not load. The largest, most capable open models are enormous, and the very best hosted systems are often bigger still, so a model that fits comfortably on a laptop will not match a frontier cloud model on every task.</p>
+      <p>The single biggest constraint is GPU VRAM, the dedicated memory on your graphics card. A model has to fit in memory to run quickly, and it is that memory budget, far more than raw compute, that decides which models you can run and how fast they respond. This is why quantization matters so much: compressing the weights to fewer bits per parameter shrinks the memory footprint, letting a larger model fit on a smaller card in exchange for a modest and usually acceptable drop in quality.</p>
+      <p>As a rough rule of thumb, a 7-to-8-billion-parameter model quantized to 4-bit needs on the order of 5 to 6 GB of VRAM, and the requirement climbs with parameter count from there, while longer context windows add more on top. Treat these as approximations, not guarantees. For the memory a specific model and quantization need on specific hardware, use the <a href="/builder.html">stack builder</a> to check what fits, or the <a href="/model-builder.html">workstation builder</a> to plan a machine around the models you want to run. If you have no dedicated GPU, small models can still run on the CPU and system RAM. They are just slower.</p>
+    </div>
+
+    <h3 class="home-subhead reveal">Common questions</h3>
+    <div class="home-faq reveal">
+      <details>
+        <summary>Do I need a GPU?</summary>
+        <p>Not strictly. Small models run on a CPU using ordinary system RAM. They will simply generate text more slowly. A dedicated GPU with its own VRAM is what makes larger models both possible and fast, because the model can live in fast graphics memory instead of being shuttled through slower system memory. Apple Silicon Macs sit in the middle: their unified memory lets the GPU draw on a large shared pool. If you are choosing hardware, the <a href="/model-builder.html">workstation builder</a> shows what different setups can run.</p>
+      </details>
+      <details>
+        <summary>Is running models locally free?</summary>
+        <p>The software and the open-weight models are typically free to download and use. What is not free is the hardware you run them on and the electricity they draw. The meaningful difference from a hosted API is that there is no per-token or per-request charge: once you own the machine, generating more text does not cost more per use. It is a shift from a recurring metered bill to a mostly up-front cost.</p>
+      </details>
+      <details>
+        <summary>How much VRAM do I need?</summary>
+        <p>It depends on the model's size and how heavily it is quantized. As an approximate guide, a 7-to-8-billion-parameter model at 4-bit quantization needs roughly 5 to 6 GB of VRAM, and the requirement grows with parameter count and context length. Rather than rely on a single number, check a specific model and quantization against your hardware with the <a href="/builder.html">stack builder</a>, and read the <a href="/quantization.html">quantization guide</a> to understand the memory-versus-quality trade.</p>
+      </details>
+      <details>
+        <summary>Is a local model as good as ChatGPT?</summary>
+        <p>For many everyday tasks, such as drafting, summarizing, coding help, and question answering, a good open-weight model running locally can be very capable. On the hardest reasoning and the broadest general knowledge, the largest hosted frontier systems still tend to lead, partly because they are far bigger than what fits on typical personal hardware. The honest framing is that local models have closed much of the gap for common work while trading some peak capability for privacy, cost control, and independence. The <a href="/local-ai-models.html">model index</a> and <a href="/sentiment.html">community data</a> can help you gauge which open models are strongest for your use case.</p>
+      </details>
+      <details>
+        <summary>Where do I start?</summary>
+        <p>Begin with the <a href="/getting-started.html">getting-started guide</a>, which walks through installing a runtime and downloading your first model. If you are not sure which model to pick, the <a href="/recommend.html">recommender</a> suggests options from your use case and hardware, and the <a href="/builder.html">stack builder</a> confirms what will actually fit before you download anything.</p>
+      </details>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== PHILOSOPHY ===== -->
+<section class="philosophy">
+  <div class="section-inner reveal">
+    <p class="philosophy-quote">
+      We don't list specs. We help you <span class="gt">understand</span> the tradeoffs, <span class="gt">compare</span> the options, and <span class="gt">decide</span> what to actually run.
+    </p>
+    <div class="philosophy-attr">— The Local AI Models guiding principle</div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="final-cta">
+  <div class="final-cta-card reveal">
+    <h3 class="final-cta-title">Ready to <span class="italic">run AI locally?</span></h3>
+    <p class="final-cta-sub">No accounts required. Free reference material for engineers running AI on their own hardware.</p>
+    <div class="final-cta-row">
+      <a href="/local-ai-models.html" class="btn btn-primary" data-magnetic>Browse the Index <span class="arrow">→</span></a>
+      <a href="/recommend.html" class="btn btn-ghost">Recommend me a model</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<style>
+/* ============ HOME · WHAT-IS-LOCAL-AI PRIMER + FAQ (scoped: .home-*) ============ */
+.home-primer {
+  position: relative;
+  max-width: 780px;
+  margin: 0 0 52px;
+  padding: 4px 0 4px 24px;
+  border-left: 2px solid var(--cyan);
+}
+.home-primer-eyebrow {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--cyan); margin-bottom: 10px;
+}
+.home-primer-lead { font-size: 1.08rem; line-height: 1.6; color: var(--text-2); }
+.home-primer-lead em { font-family: var(--font-serif); font-style: italic; color: var(--text); }
+
+.home-prose { max-width: 780px; margin: 0 0 44px; }
+.home-prose p { font-size: 1.02rem; line-height: 1.7; color: var(--text-2); margin-bottom: 18px; }
+.home-prose p:last-child { margin-bottom: 0; }
+.home-prose a, .home-point a, .home-faq a {
+  color: var(--cyan); text-decoration: none;
+  border-bottom: 1px solid rgba(0,212,255,0.3);
+  transition: color 200ms var(--ease), border-color 200ms var(--ease);
+}
+.home-prose a:hover, .home-point a:hover, .home-faq a:hover {
+  color: var(--cyan-soft); border-bottom-color: var(--cyan);
+}
+
+.home-subhead {
+  font-family: var(--font); font-size: 1.5rem; font-weight: 600;
+  letter-spacing: -0.02em; color: var(--text);
+  margin: 8px 0 24px;
+}
+
+/* points grid (auto-fit minmax cards) */
+.home-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin-bottom: 56px;
+}
+.home-point {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--bg-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: border-color 300ms var(--ease), transform 300ms var(--ease);
+}
+.home-point:hover { border-color: var(--border-cyan); transform: translateY(-3px); }
+.home-tag {
+  display: inline-block;
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.6px;
+  color: var(--cyan);
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.22);
+  padding: 4px 10px; border-radius: 100px;
+  margin-bottom: 14px;
+}
+.home-point-title {
+  font-family: var(--font); font-size: 1.12rem; font-weight: 600;
+  letter-spacing: -0.02em; color: var(--text);
+  margin-bottom: 8px;
+}
+.home-point p { font-size: 0.92rem; line-height: 1.6; color: var(--text-dim); }
+
+/* crawler-visible FAQ (native details/summary, zero JS) */
+.home-faq { max-width: 820px; }
+.home-faq details {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(19,20,22,0.5);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 250ms var(--ease);
+}
+.home-faq details[open] { border-color: var(--border-cyan); }
+.home-faq summary {
+  list-style: none; cursor: pointer;
+  padding: 20px 24px;
+  font-family: var(--font); font-size: 1.05rem; font-weight: 560;
+  letter-spacing: -0.015em; color: var(--text);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.home-faq summary::-webkit-details-marker { display: none; }
+.home-faq summary::after {
+  content: '+';
+  font-family: var(--font-mono); font-weight: 400; font-size: 1.3rem;
+  color: var(--cyan); flex-shrink: 0; line-height: 1;
+  transition: transform 250ms var(--ease);
+}
+.home-faq details[open] summary::after { transform: rotate(45deg); }
+.home-faq details p {
+  padding: 0 24px 22px;
+  font-size: 0.98rem; line-height: 1.7; color: var(--text-2);
+  margin: 0;
+}
+@media (max-width: 700px) {
+  .home-primer { padding-left: 18px; margin-bottom: 40px; }
+  .home-point { padding: 20px; }
+  .home-faq summary { padding: 16px 18px; font-size: 0.98rem; }
+  .home-faq details p { padding: 0 18px 18px; }
+}
+</style>
+
+<!-- ===== FOOTER ===== -->
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.08.24 &middot; 125 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="/local-ai-models.html">Models</a></li>
+      <li><a href="/sentiment.html">Community Data</a></li>
+      <li><a href="/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="/builder.html">Stack Builder</a></li>
+      <li><a href="/model-builder.html">PC Builder</a></li>
+      <li><a href="/recommend.html">Recommender</a></li>
+      <li><a href="/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="/getting-started.html">Get Started</a></li>
+      <li><a href="/guidance.html">Guidance</a></li>
+      <li><a href="/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="/quantization.html">Quantization</a></li>
+      <li><a href="/stacks.html">Stacks</a></li>
+      <li><a href="/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 24, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/cookies.html">Cookies</a> &middot; <a href="/accessibility.html">Accessibility</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+/* ==================================================================
+   LANDING PAGE — $20K polish layer
+   Built on research synthesis (Linear / Vercel / Stripe + Awwwards).
+   Motion grammar: ONE easing, TWO durations. Safe-stack perf:
+     - cursor via rAF lerp (NOT CSS transition — Awwwards convention)
+     - DPR-capped canvas at 60fps, 75 particles
+     - mix-blend-mode on cursor is fine per 2025 perf reality
+     - blur(90px) on orbs is cheap because they only translate
+================================================================== */
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+  /* Legacy topnav JS (sticky state, burger, indicator pill) removed 2026-08-10:
+     the canonical stamped nav (DESIGN-BRIEF.md section 4) replaces the topnav
+     and needs none of it. */
+
+  /* ------ Custom cursor (rAF lerp — Awwwards pattern) ------ */
+  var mx = -100, my = -100;      // target (true mouse pos)
+  var cx = mx, cy = my;          // cursor follower
+  var tx = mx, ty = my;          // trail follower (slower)
+  if (!isTouch && !reduced) {
+    var cursor = document.getElementById('cursor');
+    var trail = document.getElementById('cursor-trail');
+
+    document.addEventListener('mousemove', function(e){
+      mx = e.clientX; my = e.clientY;
+    }, { passive: true });
+
+    function cursorLoop(){
+      // Main cursor: stiff follow (feels instant)
+      cx += (mx - cx) * 0.35;
+      cy += (my - cy) * 0.35;
+      cursor.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
+      // Trail: slower follow (feels like it drags behind)
+      tx += (mx - tx) * 0.14;
+      ty += (my - ty) * 0.14;
+      trail.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0)';
+      requestAnimationFrame(cursorLoop);
+    }
+    requestAnimationFrame(cursorLoop);
+
+    document.addEventListener('mousedown', function(){ cursor.classList.add('click'); });
+    document.addEventListener('mouseup', function(){ cursor.classList.remove('click'); });
+    var hoverTargets = 'a, button, [data-magnetic], .dest-card';
+    document.querySelectorAll(hoverTargets).forEach(function(el){
+      el.addEventListener('mouseenter', function(){ cursor.classList.add('hover'); });
+      el.addEventListener('mouseleave', function(){ cursor.classList.remove('hover'); });
+    });
+  }
+
+  /* ------ Magnetic hover (rAF-throttled for perf) ------ */
+  if (!isTouch && !reduced) {
+    document.querySelectorAll('[data-magnetic]').forEach(function(el){
+      var raf = false;
+      el.addEventListener('mousemove', function(e){
+        if (raf) return;
+        raf = true;
+        var r = el.getBoundingClientRect();
+        var dx = (e.clientX - r.left - r.width/2) * 0.28;
+        var dy = (e.clientY - r.top - r.height/2) * 0.28;
+        requestAnimationFrame(function(){
+          el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+          raf = false;
+        });
+      });
+      el.addEventListener('mouseleave', function(){ el.style.transform = ''; });
+    });
+  }
+
+  /* ------ 3D card tilt (rAF-throttled) + cursor-follow glow ------ */
+  if (!isTouch && !reduced) {
+    document.querySelectorAll('.dest-card').forEach(function(card){
+      var raf = false;
+      card.addEventListener('mousemove', function(e){
+        if (raf) return;
+        raf = true;
+        var r = card.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width;
+        var py = (e.clientY - r.top) / r.height;
+        var rx = (py - 0.5) * -6;
+        var ry = (px - 0.5) * 8;
+        requestAnimationFrame(function(){
+          card.style.transform = 'translateY(-6px) perspective(1000px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+          card.style.setProperty('--cx', (px * 100) + '%');
+          card.style.setProperty('--cy', (py * 100) + '%');
+          raf = false;
+        });
+      });
+      card.addEventListener('mouseleave', function(){
+        card.style.transform = '';
+        card.style.setProperty('--cx', '50%');
+        card.style.setProperty('--cy', '0%');
+      });
+    });
+  }
+
+  /* ------ Click burst particles ------ */
+  document.addEventListener('click', function(e){
+    if (reduced) return;
+    var colors = ['#00d4ff', '#818cf8', '#a78bfa', '#ec4899'];
+    for (var i = 0; i < 8; i++) {
+      var b = document.createElement('div');
+      b.className = 'burst';
+      var angle = (Math.PI * 2 * i) / 8 + Math.random() * 0.4;
+      var dist = 40 + Math.random() * 30;
+      b.style.setProperty('--dx', (Math.cos(angle) * dist) + 'px');
+      b.style.setProperty('--dy', (Math.sin(angle) * dist) + 'px');
+      b.style.left = e.clientX + 'px';
+      b.style.top = e.clientY + 'px';
+      b.style.background = colors[i % colors.length];
+      document.body.appendChild(b);
+      setTimeout(function(el){ return function(){ el.remove(); }; }(b), 720);
+    }
+  });
+
+  /* ------ Marquee double-fill ------ */
+  var mt = document.getElementById('marquee-track');
+  if (mt) mt.innerHTML += mt.innerHTML;
+
+  /* ------ Stat count-up (easeOut cubic) ------ */
+  function animateCount(el){
+    var target = parseInt(el.dataset.count, 10);
+    if (isNaN(target) || el.dataset.done) return;
+    el.dataset.done = '1';
+    if (reduced) { el.textContent = target.toLocaleString(); return; }
+    var dur = 1600, start = performance.now();
+    function tick(now){
+      var t = Math.min(1, (now - start) / dur);
+      var v = Math.round((1 - Math.pow(1 - t, 3)) * target);
+      el.textContent = v.toLocaleString();
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  var statIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { animateCount(e.target); statIO.unobserve(e.target); } });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('[data-count]').forEach(function(el){ statIO.observe(el); });
+
+  /* ------ Scroll reveal ------ */
+  var revealIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealIO.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ revealIO.observe(el); });
+
+  /* ------ Scramble text rotator (signature effect) ------ */
+  var scrambleEl = document.getElementById('scramble');
+  if (scrambleEl && !reduced) {
+    var phrases = JSON.parse(scrambleEl.dataset.phrases);
+    var desktop = window.matchMedia('(min-width: 901px)').matches;
+    var chars = desktop ? '01·-_/' : '01!<>-_\\/[]{}—=+*^?#________';
+    var currentIdx = -1;
+
+    function scrambleTo(htmlTarget){
+      // htmlTarget has <span class="accent">X</span> blocks — walk characters
+      // by rendering to a temp node and iterating textContent
+      var tmp = document.createElement('div');
+      tmp.innerHTML = htmlTarget;
+      var finalText = tmp.textContent;
+      var queue = [];
+      var fromText = scrambleEl.textContent;
+      var maxLen = Math.max(fromText.length, finalText.length);
+      for (var i = 0; i < maxLen; i++) {
+        var from = fromText[i] || '';
+        var to = finalText[i] || '';
+        var startF = Math.floor(Math.random() * (desktop ? 10 : 30));
+        var endF = startF + Math.floor(Math.random() * (desktop ? 14 : 30));
+        queue.push({ from: from, to: to, start: startF, end: endF });
+      }
+      var frame = 0;
+      function update(){
+        var out = '';
+        var done = 0;
+        for (var i = 0; i < queue.length; i++) {
+          var q = queue[i];
+          if (frame >= q.end) { out += q.to; done++; }
+          else if (frame >= q.start) {
+            if (!q.char || Math.random() < 0.28) q.char = chars[Math.floor(Math.random()*chars.length)];
+            out += q.char;
+          } else { out += q.from; }
+        }
+        scrambleEl.textContent = out;
+        if (done < queue.length) { frame++; requestAnimationFrame(update); }
+        else { scrambleEl.innerHTML = htmlTarget; }
+      }
+      update();
+    }
+
+    function nextPhrase(){
+      currentIdx = (currentIdx + 1) % phrases.length;
+      scrambleTo(phrases[currentIdx]);
+    }
+    // First reveal right away
+    scrambleEl.textContent = '';
+    setTimeout(nextPhrase, desktop ? 450 : 1100);
+    setInterval(nextPhrase, desktop ? 6200 : 4800);
+  }
+
+  /* ------ Smooth anchor scroll ------ */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href').slice(1);
+      if (!id) return;
+      var t = document.getElementById(id);
+      if (!t) return;
+      e.preventDefault();
+      window.scrollTo({ top: t.offsetTop - 60, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+
+
+<style>
+/* LANDING-INNOVATION-V1 styles */
+.dest-card { transition: transform 0.5s var(--ease), border-color 0.4s, box-shadow 0.5s var(--ease), filter 250ms ease; }
+.dest-card.cursor-near {
+  filter: brightness(1.08) saturate(1.15);
+  border-color: rgba(0,212,255,0.45);
+  box-shadow: 0 0 28px rgba(0,212,255,0.18), 0 12px 32px -10px rgba(0,212,255,0.22);
+}
+.hero-title .word.glitch { position: relative; }
+.hero-title .word.glitch::before, .hero-title .word.glitch::after {
+  content: attr(data-text); position: absolute; left: 0; top: 0;
+  width: 100%; height: 100%; pointer-events: none;
+  background: inherit; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  opacity: 0;
+}
+.hero-title .word.glitch::before { color: #00d4ff; transform: translate(-2px, 0); animation: glitch-r 360ms ease-out forwards; }
+.hero-title .word.glitch::after  { color: #ec4899; transform: translate(2px, 0);  animation: glitch-l 360ms ease-out forwards; }
+@keyframes glitch-r { 0% { opacity: 0.8; transform: translate(-3px, -1px); } 100% { opacity: 0; transform: translate(0, 0); } }
+@keyframes glitch-l { 0% { opacity: 0.8; transform: translate(3px, 1px); }   100% { opacity: 0; transform: translate(0, 0); } }
+.live-tick {
+  position: absolute; top: -36px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--text-muted); display: inline-flex; align-items: center; gap: 8px;
+  white-space: nowrap; opacity: 0; animation: live-fade-in 800ms cubic-bezier(0.16,1,0.3,1) 1.6s forwards;
+}
+.live-tick::before {
+  content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%;
+  box-shadow: 0 0 6px var(--green); animation: brand-pulse 2s ease-in-out infinite;
+}
+.live-tick-msg { color: var(--text-2); transition: opacity 400ms; }
+.live-tick-msg b { color: var(--cyan); font-weight: 600; }
+@keyframes live-fade-in { to { opacity: 1; } }
+.hero-badge { position: relative; }
+/* Konami easter egg — confetti */
+.konami-confetti { position: fixed; pointer-events: none; z-index: 9999; width: 8px; height: 8px; border-radius: 2px; will-change: transform, opacity; animation: kc-fall 2.4s cubic-bezier(0.4, 0, 1, 1) forwards; }
+@keyframes kc-fall { 0% { opacity: 1; transform: translate3d(0,0,0) rotate(0deg); } 100% { opacity: 0; transform: translate3d(var(--kdx,0), 100vh, 0) rotate(720deg); } }
+/* Vortex mode indicator */
+.vortex-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(6,7,10,0.95); backdrop-filter: blur(12px); border: 1px solid rgba(0,212,255,0.35); border-radius: 100px; padding: 10px 22px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 1.5px; z-index: 9999; opacity: 0; transition: all 280ms cubic-bezier(0.34,1.56,0.64,1); }
+.vortex-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (prefers-reduced-motion: reduce) { .konami-confetti, .live-tick, .hero-title .word.glitch::before, .hero-title .word.glitch::after { display: none !important; animation: none !important; } }
+
+/* ============ LANDING-INNOVATION-V4: Stat strip ============ */
+.stat-strip { position: relative; z-index: 3; padding: 0 32px; margin-top: -10px; }
+.stat-strip-inner { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid rgba(0,212,255,0.14); border-radius: 16px; background: linear-gradient(180deg, rgba(15,17,21,0.65), rgba(11,13,17,0.45)); backdrop-filter: blur(14px); overflow: hidden; box-shadow: 0 20px 60px -30px rgba(0,212,255,0.25); }
+.stat-cell { position: relative; padding: 26px 22px 24px; text-align: center; border-right: 1px solid rgba(255,255,255,0.05); transition: background 220ms var(--ease); }
+.stat-cell:last-child { border-right: none; }
+.stat-cell:hover { background: rgba(0,212,255,0.04); }
+.stat-num { font-family: var(--font-display, var(--font-sans)); font-size: clamp(2.0rem, 4.6vw, 3.4rem); font-weight: 620; letter-spacing: -0.04em; line-height: 1; background: linear-gradient(140deg, #fff 0%, var(--cyan) 60%, var(--purple) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; tabular-nums: yes; font-variant-numeric: tabular-nums; }
+.stat-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-muted); margin-top: 8px; }
+.stat-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); transform: scaleX(0); transform-origin: left; transition: transform 1.4s cubic-bezier(0.16,1,0.3,1); }
+.stat-strip.in-view .stat-bar { transform: scaleX(1); }
+@media (max-width: 760px) { .stat-strip-inner { grid-template-columns: repeat(2, 1fr); } .stat-cell:nth-child(2) { border-right: none; } .stat-cell:nth-child(1), .stat-cell:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,0.05); } }
+
+/* ============ LANDING-INNOVATION-V4: Intent chips ============ */
+.intent-chips { max-width: 1180px; margin: 0 auto 38px; padding: 0 32px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; opacity: 0; transform: translateY(8px); transition: all 600ms cubic-bezier(0.16,1,0.3,1); }
+.intent-chips.in-view { opacity: 1; transform: translateY(0); }
+.intent-chips-label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-muted); margin-right: 4px; }
+.intent-chip { cursor: pointer; padding: 9px 16px; border-radius: 100px; background: rgba(15,17,21,0.55); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.10); color: var(--text-2); font-family: var(--font-sans); font-size: 0.85rem; letter-spacing: -0.005em; transition: all 220ms var(--ease); display: inline-flex; align-items: center; gap: 8px; }
+.intent-chip:hover { border-color: var(--cyan); color: var(--text); background: rgba(0,212,255,0.06); transform: translateY(-1px); box-shadow: 0 8px 24px -10px rgba(0,212,255,0.4); }
+.intent-chip-glyph { color: var(--cyan); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; }
+.dest-card.shockwave { animation: dest-shockwave 1.4s cubic-bezier(0.16,1,0.3,1); }
+@keyframes dest-shockwave {
+  0%   { box-shadow: 0 0 0 0 rgba(0,212,255,0.7), 0 0 0 0 rgba(0,212,255,0.4); border-color: rgba(0,212,255,0.9); }
+  60%  { box-shadow: 0 0 0 22px rgba(0,212,255,0.0), 0 0 60px 6px rgba(0,212,255,0.35); }
+  100% { box-shadow: 0 0 0 40px rgba(0,212,255,0.0), 0 0 0 0 rgba(0,212,255,0.0); border-color: rgba(255,255,255,0.10); }
+}
+@media (prefers-reduced-motion: reduce) { .stat-bar, .intent-chips, .dest-card.shockwave { animation: none !important; transition: none !important; transform: none !important; opacity: 1 !important; } }
+
+/* ============ LANDING-INNOVATION-V2: CSS Scroll-Driven Animations ============
+   Native compositor-thread scroll effects (no JS scroll listener).
+   Baseline 2026 (Chromium 115+, Firefox 142+, Safari 26).
+   @supports gate keeps older browsers safe — they just see no scroll effect. */
+@supports (animation-timeline: scroll()) {
+  /* Hero parallax tilt — drifts as you scroll, recessing into the page */
+  @keyframes hero-scroll-tilt {
+    from { transform: perspective(1400px) rotateX(0deg) translateZ(0); opacity: 1; }
+    to   { transform: perspective(1400px) rotateX(8deg) translateZ(-80px); opacity: 0.55; }
+  }
+  .hero-inner {
+    animation: hero-scroll-tilt linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 80vh;
+    transform-origin: 50% 0%;
+  }
+  /* Halo intensifies with scroll */
+  @keyframes halo-scroll-bloom {
+    from { opacity: 1; filter: blur(0px); }
+    to   { opacity: 0.4; filter: blur(6px); }
+  }
+  .hero-halo {
+    animation: halo-scroll-bloom linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 60vh;
+  }
+  /* Destination cards reveal as they scroll into view (replaces JS IntersectionObserver) */
+  @keyframes dest-card-reveal {
+    from { opacity: 0; transform: translateY(40px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .dest-card {
+    animation: dest-card-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  @supports (animation-timeline: scroll()) {
+    .hero-inner, .hero-halo, .dest-card { animation: none !important; }
+  }
+}
+</style>
+
+<script>
+/* LANDING-INNOVATION-V1 */
+(function(){
+  if (window.__landingInnovation) return;
+  window.__landingInnovation = true;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* === 2. Cursor-proximity glow on destination cards === */
+  var destCards = document.querySelectorAll('.dest-card');
+  if (destCards.length && !reduced) {
+    var raf = false;
+    var lastX = -9999, lastY = -9999;
+    document.addEventListener('mousemove', function(e){
+      lastX = e.clientX; lastY = e.clientY;
+      if (raf) return;
+      raf = true;
+      requestAnimationFrame(function(){
+        destCards.forEach(function(c){
+          var r = c.getBoundingClientRect();
+          var cx = r.left + r.width/2, cy = r.top + r.height/2;
+          var dx = lastX - cx, dy = lastY - cy;
+          var d = Math.sqrt(dx*dx + dy*dy);
+          c.classList.toggle('cursor-near', d < 280);
+        });
+        raf = false;
+      });
+    }, { passive: true });
+  }
+
+  /* === 3. RGB-split chromatic glitch on hero word reveal === */
+  if (!reduced) {
+    var words = document.querySelectorAll('.hero-title .word');
+    words.forEach(function(w, i){
+      w.dataset.text = w.textContent;
+      setTimeout(function(){
+        w.classList.add('glitch');
+        setTimeout(function(){ w.classList.remove('glitch'); }, 400);
+      }, 200 + i * 150 + 800); /* fires after the word-in animation */
+    });
+  }
+
+  /* === 4. Live activity ticker in hero === */
+  var heroBadge = document.querySelector('.hero-badge');
+  if (heroBadge) {
+    var tick = document.createElement('div');
+    tick.className = 'live-tick';
+    tick.innerHTML = '<span class="live-tick-msg" id="liveTickMsg"><b>125</b> models cataloged</span>';
+    heroBadge.appendChild(tick);
+    if (!reduced) {
+      var msgs = [
+        '<b>125</b> models cataloged',
+        '<b>59</b> agent frameworks compared',
+        '<b>12</b> pages live · 26K lines',
+        '<b>4</b> hero images · Nano Banana Pro',
+        '<b>$199</b> to $138K · workstation builds',
+        '<b>5 → 280</b> tokens/sec · simulated'
+      ];
+      var idx = 0;
+      var msgEl = document.getElementById('liveTickMsg');
+      setInterval(function(){
+        if (!msgEl) return;
+        msgEl.style.opacity = '0';
+        setTimeout(function(){
+          idx = (idx + 1) % msgs.length;
+          msgEl.innerHTML = msgs[idx];
+          msgEl.style.opacity = '1';
+        }, 400);
+      }, 4200);
+    }
+  }
+
+  /* === 5. Konami code easter egg → confetti burst === */
+  var konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  var pos = 0;
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if (k === konami[pos] || k.toLowerCase() === konami[pos]) {
+      pos++;
+      if (pos === konami.length) {
+        pos = 0;
+        burstConfetti();
+        showVortexToast('★ KONAMI · CONFETTI');
+      }
+    } else { pos = (k === konami[0] ? 1 : 0); }
+  });
+  function burstConfetti() {
+    if (reduced) return;
+    var colors = ['#00d4ff','#818cf8','#a78bfa','#ec4899','#22c55e'];
+    for (var i = 0; i < 90; i++) {
+      var c = document.createElement('div');
+      c.className = 'konami-confetti';
+      c.style.background = colors[i % colors.length];
+      c.style.left = (window.innerWidth / 2 + (Math.random() - 0.5) * 200) + 'px';
+      c.style.top = (window.innerHeight / 2) + 'px';
+      c.style.setProperty('--kdx', ((Math.random() - 0.5) * 800) + 'px');
+      c.style.animationDelay = (Math.random() * 0.4) + 's';
+      document.body.appendChild(c);
+      setTimeout(function(el){ return function(){ el.remove(); }; }(c), 2900);
+    }
+  }
+  function showVortexToast(msg) {
+    var t = document.createElement('div');
+    t.className = 'vortex-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function(){ t.classList.add('show'); }, 30);
+    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 400); }, 1800);
+  }
+
+  if (window.console) console.log('%c✦ Landing Innovation v3 loaded — WebGL shader + Cmd-K', 'color:#00d4ff;font-family:monospace;font-size:11px');
+})();
+</script>
+
+<!-- ============ LANDING-INNOVATION-V4: stat counters + intent chips + floating model nodes ============ -->
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ------ Stat strip count-up on view ------ */
+  var strip = document.getElementById('stat-strip');
+  if (strip && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (!e.isIntersecting) return;
+        strip.classList.add('in-view');
+        strip.querySelectorAll('.stat-num').forEach(function(el){
+          var target = parseInt(el.getAttribute('data-target'), 10) || 0;
+          var suffix = el.getAttribute('data-suffix') || '';
+          if (reduced) { el.textContent = target + suffix; return; }
+          var dur = 1400 + Math.random() * 400, t0 = performance.now();
+          (function tick(now){
+            var p = Math.min(1, (now - t0) / dur);
+            var eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(target * eased) + suffix;
+            if (p < 1) requestAnimationFrame(tick);
+          })(t0);
+        });
+        io.unobserve(strip);
+      });
+    }, { threshold: 0.4 });
+    io.observe(strip);
+  }
+
+  /* ------ Intent chips: reveal-on-view + click → smooth-scroll + shockwave on matching card ------ */
+  var chips = document.getElementById('intent-chips');
+  var grid = document.getElementById('dest-grid');
+  if (chips && grid) {
+    if ('IntersectionObserver' in window) {
+      var io2 = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if (e.isIntersecting) { chips.classList.add('in-view'); io2.unobserve(chips); } });
+      }, { threshold: 0.3 });
+      io2.observe(chips);
+    } else { chips.classList.add('in-view'); }
+
+    var cards = grid.querySelectorAll('.dest-card');
+    chips.querySelectorAll('.intent-chip').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = parseInt(btn.getAttribute('data-card'), 10);
+        var card = cards[idx];
+        if (!card) return;
+        var top = card.getBoundingClientRect().top + window.pageYOffset - 100;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+        cards.forEach(function(c){ c.classList.remove('shockwave'); });
+        setTimeout(function(){ card.classList.add('shockwave'); }, 380);
+        setTimeout(function(){ card.classList.remove('shockwave'); }, 1900);
+      });
+    });
+  }
+
+  if (window.console) console.log('%c✦ Landing v4 ready — stat counters · intent chips · floating model nodes', 'color:#00d4ff;font-family:monospace;font-size:11px');
+})();
+</script>
+
+<!-- ============ LANDING-INNOVATION-V3: Cmd-K Command Bar ============ -->
+<style>
+.cmdk-hint { position: fixed; right: 24px; bottom: 24px; z-index: 9990; display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 100px; background: rgba(15,17,21,0.78); backdrop-filter: blur(14px); border: 1px solid rgba(0,212,255,0.22); color: var(--text-2); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 1.4px; text-transform: uppercase; cursor: pointer; transition: all 250ms var(--ease); opacity: 0; transform: translateY(8px); animation: cmdk-hint-in 600ms cubic-bezier(0.16,1,0.3,1) 1.8s forwards; }
+.cmdk-hint:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 24px -6px rgba(0,212,255,0.45); }
+.cmdk-hint kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 5px; background: rgba(0,212,255,0.10); border: 1px solid rgba(0,212,255,0.28); color: var(--cyan); font-family: inherit; font-size: 0.7rem; font-weight: 600; }
+@keyframes cmdk-hint-in { to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 760px) { .cmdk-hint { display: none; } }
+
+.cmdk-overlay { position: fixed; inset: 0; z-index: 10000; display: none; align-items: flex-start; justify-content: center; padding: 14vh 24px 24px; background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); animation: cmdk-fade 220ms var(--ease); }
+.cmdk-overlay.open { display: flex; }
+@keyframes cmdk-fade { from { opacity: 0; } to { opacity: 1; } }
+.cmdk { width: 100%; max-width: 620px; background: linear-gradient(180deg, rgba(20,22,28,0.96), rgba(11,13,17,0.96)); border: 1px solid rgba(255,255,255,0.10); border-radius: 16px; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.65), 0 0 60px -20px rgba(0,212,255,0.25); overflow: hidden; transform: translateY(-12px) scale(0.98); animation: cmdk-pop 280ms cubic-bezier(0.16,1,0.3,1) forwards; }
+@keyframes cmdk-pop { to { transform: translateY(0) scale(1); } }
+.cmdk-input-row { display: flex; align-items: center; gap: 14px; padding: 18px 22px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.cmdk-input-row .glyph { color: var(--cyan); font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 1px; }
+.cmdk-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: var(--font-sans); font-size: 1.05rem; letter-spacing: -0.01em; caret-color: var(--cyan); }
+.cmdk-input::placeholder { color: var(--text-muted); }
+.cmdk-esc { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); padding: 4px 8px; border: 1px solid rgba(255,255,255,0.10); border-radius: 5px; letter-spacing: 1.2px; }
+.cmdk-list { max-height: 56vh; overflow-y: auto; padding: 8px; }
+.cmdk-list::-webkit-scrollbar { width: 6px; }
+.cmdk-list::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.20); border-radius: 3px; }
+.cmdk-section { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-muted); padding: 10px 14px 6px; }
+.cmdk-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 9px; cursor: pointer; color: var(--text-2); transition: background 120ms; }
+.cmdk-item:hover, .cmdk-item.active { background: rgba(0,212,255,0.10); color: var(--text); }
+.cmdk-item.active { box-shadow: inset 0 0 0 1px rgba(0,212,255,0.35); }
+.cmdk-item-icon { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border-radius: 7px; background: rgba(0,212,255,0.10); color: var(--cyan); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; flex-shrink: 0; }
+.cmdk-item-body { flex: 1; min-width: 0; }
+.cmdk-item-label { font-size: 0.92rem; color: var(--text); }
+.cmdk-item-meta { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; font-family: var(--font-mono); letter-spacing: 0.4px; }
+.cmdk-item-arrow { color: var(--text-muted); font-size: 0.85rem; opacity: 0; transition: opacity 120ms, transform 120ms; }
+.cmdk-item.active .cmdk-item-arrow, .cmdk-item:hover .cmdk-item-arrow { opacity: 1; transform: translateX(2px); }
+.cmdk-empty { padding: 28px 18px; text-align: center; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.5px; }
+.cmdk-foot { border-top: 1px solid rgba(255,255,255,0.06); padding: 10px 18px; display: flex; gap: 18px; justify-content: flex-end; font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.cmdk-foot kbd { display: inline-block; padding: 2px 6px; border: 1px solid rgba(255,255,255,0.10); border-radius: 4px; font-family: inherit; margin-right: 4px; color: var(--text-2); }
+@media (prefers-reduced-motion: reduce) { .cmdk-overlay, .cmdk { animation: none !important; transform: none !important; } }
+</style>
+
+<div class="cmdk-hint" id="cmdk-hint" aria-label="Open command bar"><kbd>⌘</kbd><kbd>K</kbd> <span>Search</span></div>
+<div class="cmdk-overlay" id="cmdk-overlay" role="dialog" aria-modal="true" aria-label="Command bar">
+  <div class="cmdk" role="combobox" aria-expanded="true">
+    <div class="cmdk-input-row">
+      <span class="glyph">›_</span>
+      <input class="cmdk-input" id="cmdk-input" type="text" placeholder="Jump to a model, page, or topic…" autocomplete="off" spellcheck="false" aria-label="Search command bar" />
+      <span class="cmdk-esc">ESC</span>
+    </div>
+    <div class="cmdk-list" id="cmdk-list" role="listbox"></div>
+    <div class="cmdk-foot"><span><kbd>↑↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* Index — kind/label/href/keywords. Pages are deterministic; categories cover the model index. */
+  var INDEX = [
+    { k:'page', g:'P', l:'Models — full catalog (125)', h:'/local-ai-models.html', kw:'index browse all models llama qwen deepseek mistral phi' },
+    { k:'page', g:'B', l:'Stack Builder', h:'/builder.html', kw:'stack pick combo configuration vram fill bar' },
+    { k:'page', g:'M', l:'Model Builder — hardware', h:'/model-builder.html', kw:'rig hardware pc parts gpu cpu prices builder' },
+    { k:'page', g:'R', l:'Recommender — by use case', h:'/recommend.html', kw:'recommend pick choose use case match reasoning trace' },
+    { k:'page', g:'T', l:'Token Simulator', h:'/token-simulator.html', kw:'tokens cost estimate budget simulate per second' },
+    { k:'page', g:'C', l:'CLAWS — agent frameworks', h:'/claws.html', kw:'agent agents frameworks scaffolding openclaw langchain autogen crewai' },
+    { k:'page', g:'S', l:'Sentiment Lab', h:'/sentiment.html', kw:'sentiment lab text emotion classify' },
+    { k:'page', g:'Q', l:'Quantization Guide', h:'/quantization.html', kw:'quant gguf q4 q5 q8 awq gptq fp16 bf16 quantization' },
+    { k:'page', g:'K', l:'Stacks — runners & UIs', h:'/stacks.html', kw:'stacks runners ollama lm studio llama.cpp jan koboldcpp ui' },
+    { k:'page', g:'U', l:'Updates — what is new', h:'/updates.html', kw:'changelog news updates releases timeline' },
+    { k:'page', g:'G', l:'Getting Started', h:'/getting-started.html', kw:'getting started install setup quickstart begin first' },
+    { k:'topic', g:'#', l:'Llama family', h:'/local-ai-models.html#llama', kw:'llama 3 3.1 3.2 3.3 meta foundation' },
+    { k:'topic', g:'#', l:'Qwen family', h:'/local-ai-models.html#qwen', kw:'qwen 2 2.5 3 alibaba multilingual' },
+    { k:'topic', g:'#', l:'DeepSeek family', h:'/local-ai-models.html#deepseek', kw:'deepseek r1 v3 v2 reasoning code' },
+    { k:'topic', g:'#', l:'Mistral / Mixtral', h:'/local-ai-models.html#mistral', kw:'mistral mixtral nemo small large' },
+    { k:'topic', g:'#', l:'Phi family (small)', h:'/local-ai-models.html#phi', kw:'phi 3 3.5 microsoft small efficient' },
+    { k:'topic', g:'#', l:'Gemma family', h:'/local-ai-models.html#gemma', kw:'gemma 2 3 google open small' },
+    { k:'topic', g:'#', l:'Code models (CodeLlama, DeepSeek-Coder, Qwen-Coder)', h:'/local-ai-models.html#code', kw:'code coder programming codellama starcoder' },
+    { k:'topic', g:'#', l:'Vision / VLM models', h:'/local-ai-models.html#vision', kw:'vision vlm multimodal llava qwen-vl pixtral' },
+    { k:'topic', g:'#', l:'Embedding models', h:'/local-ai-models.html#embed', kw:'embedding embed nomic bge mxbai retrieval' },
+    { k:'action', g:'→', l:'Pick a destination (jump to grid)', h:'#destinations', kw:'destinations grid pick where to start' },
+    { k:'action', g:'→', l:'Try the recommender', h:'/recommend.html', kw:'recommend recommendation help me pick' },
+    { k:'action', g:'→', l:'Read the server guide', h:'/local-ai-server-guide.html', kw:'server guide hardware tiers budget build rig' },
+    { k:'action', g:'→', l:'How much VRAM do you need?', h:'/vram-guide.html', kw:'vram guide memory requirements gpu sizing how much' },
+    { k:'action', g:'→', l:'Best local LLM for coding', h:'/best-local-coding-llm.html', kw:'coding llm best local code model 8gb 16gb 24gb' }
+  ];
+
+  var overlay = document.getElementById('cmdk-overlay');
+  var input = document.getElementById('cmdk-input');
+  var list = document.getElementById('cmdk-list');
+  var hint = document.getElementById('cmdk-hint');
+  if (!overlay || !input || !list) return;
+
+  var active = 0;
+  var visible = INDEX.slice();
+
+  function score(item, q){
+    if (!q) return 0;
+    var hay = (item.l + ' ' + item.kw).toLowerCase();
+    var ql = q.toLowerCase();
+    if (hay.indexOf(ql) !== -1) return 100 - hay.indexOf(ql) / 10;
+    var parts = ql.split(/\s+/).filter(Boolean);
+    var s = 0, hit = 0;
+    for (var i = 0; i < parts.length; i++) {
+      var idx = hay.indexOf(parts[i]);
+      if (idx !== -1) { s += 30 - Math.min(idx, 30) / 3; hit++; }
+    }
+    return hit === parts.length ? s : -1;
+  }
+
+  function render(){
+    var q = input.value.trim();
+    if (!q) {
+      visible = INDEX.slice(0, 12);
+    } else {
+      visible = INDEX.map(function(it){ return { it: it, s: score(it, q) }; })
+                    .filter(function(x){ return x.s >= 0; })
+                    .sort(function(a, b){ return b.s - a.s; })
+                    .slice(0, 12)
+                    .map(function(x){ return x.it; });
+    }
+    if (active >= visible.length) active = visible.length - 1;
+    if (active < 0) active = 0;
+
+    if (!visible.length) {
+      list.innerHTML = '<div class="cmdk-empty">No matches. Try "llama", "code", "stacks"…</div>';
+      return;
+    }
+    var groups = { page: [], topic: [], action: [] };
+    visible.forEach(function(it){ (groups[it.k] || (groups[it.k] = [])).push(it); });
+    var html = '';
+    var labels = { page: 'Pages', topic: 'Model topics', action: 'Actions' };
+    var idx = 0;
+    ['page','topic','action'].forEach(function(g){
+      if (!groups[g] || !groups[g].length) return;
+      html += '<div class="cmdk-section">' + labels[g] + '</div>';
+      groups[g].forEach(function(it){
+        var act = idx === active ? ' active' : '';
+        html += '<div class="cmdk-item' + act + '" data-i="' + idx + '" data-h="' + it.h + '" role="option">' +
+                  '<span class="cmdk-item-icon">' + it.g + '</span>' +
+                  '<div class="cmdk-item-body"><div class="cmdk-item-label">' + escape(it.l) + '</div>' +
+                  '<div class="cmdk-item-meta">' + it.h + '</div></div>' +
+                  '<span class="cmdk-item-arrow">↵</span>' +
+                '</div>';
+        idx++;
+      });
+    });
+    list.innerHTML = html;
+  }
+  function escape(s){ return s.replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+
+  function open(){
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    input.value = '';
+    active = 0;
+    render();
+    setTimeout(function(){ input.focus(); }, 30);
+  }
+  function close(){
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function go(href){
+    if (!href) return;
+    close();
+    if (href.charAt(0) === '#') {
+      var el = document.querySelector(href);
+      if (el) window.scrollTo({ top: el.offsetTop - 60, behavior: 'smooth' });
+    } else {
+      window.location.href = href;
+    }
+  }
+
+  document.addEventListener('keydown', function(e){
+    var meta = e.metaKey || e.ctrlKey;
+    if (meta && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); overlay.classList.contains('open') ? close() : open(); return; }
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); active = Math.min(active + 1, visible.length - 1); render(); return; }
+    if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); render(); return; }
+    if (e.key === 'Enter') { e.preventDefault(); if (visible[active]) go(visible[active].h); return; }
+  });
+  input.addEventListener('input', function(){ active = 0; render(); });
+  list.addEventListener('click', function(e){
+    var it = e.target.closest('.cmdk-item');
+    if (it) go(it.getAttribute('data-h'));
+  });
+  list.addEventListener('mousemove', function(e){
+    var it = e.target.closest('.cmdk-item');
+    if (!it) return;
+    var i = parseInt(it.getAttribute('data-i'), 10);
+    if (!isNaN(i) && i !== active) { active = i; render(); }
+  });
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) close(); });
+  hint.addEventListener('click', open);
+
+  if (window.console) console.log('%c⌘K command bar ready', 'color:#00d4ff;font-family:monospace;font-size:11px');
+})();
+</script>
+
+<script src="/creatures.js" defer></script>
+<script src="/creatures-v2.js" defer></script>
+<script src="/bg-nodes.js" defer></script>
+</body>
+</html>
