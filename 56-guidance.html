@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guidance | Local AI Models</title>
+<meta name="description" content="Practitioner guides for running local AI. Newest first.">
+<link rel="canonical" href="https://local-ai-models.ai/guidance.html">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Guidance | Local AI Models">
+<meta property="og:description" content="Practitioner guides for running local AI. Newest first.">
+<meta property="og:url" content="https://local-ai-models.ai/guidance.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta property="og:image" content="https://local-ai-models.ai/sundog-model-clinic.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Guidance | Local AI Models">
+<meta name="twitter:image" content="https://local-ai-models.ai/sundog-model-clinic.jpg">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Guidance",
+  "description": "Practitioner guides for running local AI. Newest first.",
+  "url": "https://local-ai-models.ai/guidance.html",
+  "isPartOf": {"@type": "WebSite", "name": "Local AI Models", "url": "https://local-ai-models.ai"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Guidance",
+  "itemListOrder": "https://schema.org/ItemListOrderDescending",
+  "numberOfItems": 7,
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"url":"https://local-ai-models.ai/benchmark-goodhart-law.html","name":"How to Read a Coding-Model Leaderboard"},
+    {"@type":"ListItem","position":2,"url":"https://local-ai-models.ai/best-local-coding-llm.html","name":"Best Local LLM for Coding in 2026"},
+    {"@type":"ListItem","position":3,"url":"https://local-ai-models.ai/vram-guide.html","name":"How Much VRAM Do You Need to Run Local AI (2026)"},
+    {"@type":"ListItem","position":4,"url":"https://local-ai-models.ai/getting-started.html","name":"Get Started"},
+    {"@type":"ListItem","position":5,"url":"https://local-ai-models.ai/stacks.html","name":"Recommended Stacks"},
+    {"@type":"ListItem","position":6,"url":"https://local-ai-models.ai/quantization.html","name":"Quantization Explained"},
+    {"@type":"ListItem","position":7,"url":"https://local-ai-models.ai/local-ai-server-guide.html","name":"Local AI Server Build Guide"}
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06070a; --surface: #131416;
+  --border: rgba(255,255,255,0.07);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99;
+  --accent: #00d4ff;
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 17px; line-height: 1.6;
+  letter-spacing: -0.012em; min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; }
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px 24px;
+}
+.page h1 {
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.page-sub {
+  color: var(--text-2);
+  font-size: 1.02rem;
+  margin-bottom: 32px;
+}
+
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 860px) { .guide-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .guide-grid { grid-template-columns: 1fr; } }
+
+.guide-card {
+  position: relative;
+  min-height: 168px;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 16px 16px 18px;
+  text-decoration: none;
+  color: var(--text);
+  border: 1px solid var(--border);
+  transition: border-color 200ms var(--ease), transform 200ms var(--ease);
+}
+.guide-card:hover { border-color: rgba(0,212,255,0.35); transform: translateY(-2px); }
+.guide-card-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+.guide-card-shade {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(6,7,10,0.42) 0%, rgba(6,7,10,0.88) 100%);
+}
+.guide-card-body { position: relative; z-index: 1; }
+.guide-card-title {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.guide-card-date {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+  .guide-card:hover { transform: none; }
+}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500,'region':['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']});
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974" crossorigin="anonymous"></script>
+<script src="/consent.js" defer></script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+</head>
+<body>
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="/local-ai-models.html">Models</a>
+      <a href="/builder.html">Stack Builder</a>
+      <a href="/model-builder.html">PC Builder</a>
+      <a href="/recommend.html">Recommender</a>
+      <a href="/token-simulator.html">Token Sim</a>
+      <a href="/claws.html">CLAWS</a>
+      <a href="/sentiment.html">Community</a>
+      <a href="/guidance.html" class="active" aria-current="page">Guidance</a>
+      <a href="/getting-started.html">Get Started</a>
+      <a href="/quantization.html">Quantization</a>
+      <a href="/stacks.html">Stacks</a>
+      <a href="/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<main class="page" id="main-content" tabindex="-1">
+  <h1>Guidance</h1>
+  <p class="page-sub">Practitioner guides. Newest first.</p>
+
+  <div class="guide-grid">
+    <a class="guide-card" href="/best-local-coding-llm.html">
+      <span class="guide-card-bg" style="background-image:url('/hero-bg-2.png')"></span>
+      <span class="guide-card-shade"></span>
+      <span class="guide-card-body">
+        <span class="guide-card-title">Best Local LLM for Coding in 2026</span>
+        <time class="guide-card-date" datetime="2026-08-27">August 2026</time>
+      </span>
+    </a>
+    <a class="guide-card" href="/benchmark-goodhart-law.html">
+      <span class="guide-card-bg" style="background-image:url('/sundog-model-clinic.jpg')"></span>
+      <span class="guide-card-shade"></span>
+      <span class="guide-card-body">
+        <span class="guide-card-title">How to Read a Coding-Model Leaderboard</span>
+        <time class="guide-card-date" datetime="2026-08-20">20 August 2026</time>
+      </span>
+    </a>
+
+    
+    <a class="guide-card" href="/vram-guide.html">
+      <span class="guide-card-bg" style="background-image:url('/hero-quantization.png')"></span>
+      <span class="guide-card-shade"></span>
+      <span class="guide-card-body">
+        <span class="guide-card-title">How Much VRAM Do You Need to Run Local AI (2026)</span>
+        <time class="guide-card-date" datetime="2026-08">August 2026</time>
+      </span>
+    </a>
+
+    <a class="guide-card" href="/getting-started.html">
+      <span class="guide-card-bg" style="background-image:url('/hero-getting-started.png')"></span>
+      <span class="guide-card-shade"></span>
+      <span class="guide-card-body">
+        <span class="guide-card-title">Get Started</span>
+        <time class="guide-card-date" datetime="2026-08">August 2026</time>
+      </span>
+    </a>
+
+    <a class="guide-card" href="/stacks.html">
+      <span class="guide-card-bg" style="background-image:url('/hero-stacks.png')"></span>
+      <span class="guide-card-shade"></span>
+      <span class="guide-card-body">
+        <span class="guide-card-title">Recommended Stacks</span>
+        <time class="guide-card-date" datetime="2026-08">August 2026</time>
+      </span>
+    </a>
+
+    <a class="guide-card" href="/quantization.html">
+      <span class="guide-card-bg" style="background-image:url('/hero-quantization.png')"></span>
+      <span class="guide-card-shade"></span>
+      <span class="guide-card-body">
+        <span class="guide-card-title">Quantization Explained</span>
+        <time class="guide-card-date" datetime="2026-04-18">18 April 2026</time>
+      </span>
+    </a>
+
+    <a class="guide-card" href="/local-ai-server-guide.html">
+      <span class="guide-card-bg" style="background-image:url('/hero-bg.png')"></span>
+      <span class="guide-card-shade"></span>
+      <span class="guide-card-body">
+        <span class="guide-card-title">Local AI Server Build Guide</span>
+      </span>
+    </a>
+  </div>
+</main>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.08.24 &middot; 125 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="/local-ai-models.html">Models</a></li>
+      <li><a href="/sentiment.html">Community Data</a></li>
+      <li><a href="/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="/builder.html">Stack Builder</a></li>
+      <li><a href="/model-builder.html">PC Builder</a></li>
+      <li><a href="/recommend.html">Recommender</a></li>
+      <li><a href="/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="/getting-started.html">Get Started</a></li>
+      <li><a href="/guidance.html">Guidance</a></li>
+      <li><a href="/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="/quantization.html">Quantization</a></li>
+      <li><a href="/stacks.html">Stacks</a></li>
+      <li><a href="/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 24, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/cookies.html">Cookies</a> &middot; <a href="/accessibility.html">Accessibility</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+</body>
+</html>
