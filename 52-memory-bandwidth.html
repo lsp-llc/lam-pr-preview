@@ -13,20 +13,22 @@
 <meta property="og:url" content="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html">
 <meta property="og:site_name" content="Local AI Models">
 <meta property="og:image" content="https://local-ai-models.ai/hero-quantization.png">
+<!-- TODO(human): og:image and the CSS hero still use hero-quantization.png. There is no bandwidth-specific asset in public/. Do not swap in another page's plate. -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Why Local LLM Chat Speed Follows Memory Bandwidth (2026)">
+<meta name="twitter:image" content="https://local-ai-models.ai/hero-quantization.png">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "Why Local LLM Chat Speed Follows Memory Bandwidth (2026)",
+  "headline": "Why Local LLM Chat Speed Follows Memory Bandwidth",
   "description": "Batch-1 decode on a desk GPU sits under a memory-bandwidth ceiling. Peak tokens/s is roughly memory bandwidth divided by bytes moved per token. Prefill is the compute-bound exception.",
   "datePublished": "2026-08-20",
-  "dateModified": "2026-08-20",
+  "dateModified": "2026-08-28",
   "inLanguage": "en",
-  "author": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "author": {"@type": "Person", "name": "Sundog"},
   "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
   "mainEntityOfPage": {"@type": "WebPage", "@id": "https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html"}
 }
@@ -39,7 +41,7 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"},
     {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://local-ai-models.ai/#destinations"},
-    {"@type": "ListItem", "position": 3, "name": "Memory Bandwidth and Tokens per Second", "item": "https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html"}
+    {"@type": "ListItem", "position": 3, "name": "Why Local LLM Chat Speed Follows Memory Bandwidth", "item": "https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html"}
   ]
 }
 </script>
@@ -62,7 +64,7 @@
       "name": "Will a GPU with more TFLOPS make local chat faster?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Only if it also widens the memory corridor. An RTX 4090 advertises 82.6 FP32 TFLOPS and 1008 GB/s. An RTX 3090 advertises 35.6 FP32 TFLOPS and 936 GB/s. Compute more than doubled. Bandwidth moved about 8 percent. Batch-1 decode cannot collect the TFLOPS dividend."
+        "text": "Only if it also widens the memory bus. An RTX 4090 advertises 82.6 FP32 TFLOPS and 1008 GB/s. An RTX 3090 advertises 35.6 FP32 TFLOPS and 936 GB/s. Compute more than doubled. Bandwidth moved about 8 percent. Batch-1 decode cannot collect the TFLOPS dividend."
       }
     },
     {
@@ -117,7 +119,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 @media (max-width: 900px) { .site-nav-links { display: none; } }
 
 .hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
-.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('https://local-ai-models.ai/hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
 .hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
 .breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
@@ -127,9 +129,10 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 .hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
 .hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
 @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
-.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title { font-family: var(--font); font-size: clamp(2.0rem, 5vw, 3.6rem); font-weight: 560; line-height: 1.08; letter-spacing: -0.04em; margin-bottom: 18px; }
 .hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 600px; margin: 0 auto; line-height: 1.55; }
+.hero-byline { font-size: 0.98rem; color: var(--text-2); margin: -4px 0 16px; letter-spacing: 0.01em; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 640px; margin: 0 auto; line-height: 1.55; }
 
 .container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
 .lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
@@ -212,40 +215,6 @@ button:focus-visible, a:focus-visible { outline-offset: 3px; }
 .sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
 .sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
 
-.plate-block {
-  max-width: 820px;
-  margin: 0 0 56px;
-  padding: 36px 32px 32px;
-  background: linear-gradient(180deg, rgba(167,139,250,0.06) 0%, rgba(6,7,10,0.2) 100%);
-  border: 1px solid rgba(167,139,250,0.22);
-  border-radius: 18px;
-}
-.plate-kicker {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--purple);
-  margin-bottom: 14px;
-}
-.plate-block p {
-  font-family: var(--font-serif);
-  font-size: 1.18rem;
-  line-height: 1.62;
-  color: var(--text-2);
-  margin-bottom: 18px;
-}
-.plate-block p:last-child { margin-bottom: 0; }
-.plate-block em { color: var(--text); font-style: italic; }
-.bends-block {
-  max-width: 820px;
-  margin: 0 0 64px;
-  padding: 32px 28px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-}
-.bends-block .article-h2 { margin-top: 0; }
 .formula-box {
   margin: 0 0 28px;
   padding: 22px 24px;
@@ -259,14 +228,16 @@ button:focus-visible, a:focus-visible { outline-offset: 3px; }
   overflow-x: auto;
 }
 .formula-box .note { display: block; margin-top: 10px; color: var(--text-dim); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; }
-.decision-box {
-  margin: 0 0 28px;
-  padding: 22px 24px;
-  border-left: 3px solid var(--accent);
+.decision-card {
+  max-width: 820px;
+  margin: 0 0 36px;
+  padding: 24px 26px;
+  border: 1px solid rgba(0,212,255,0.28);
+  border-radius: 16px;
   background: rgba(0,212,255,0.05);
-  border-radius: 0 12px 12px 0;
 }
-.decision-box p { margin-bottom: 0; }
+.decision-card h3 { margin-top: 0; }
+.decision-card p:last-child { margin-bottom: 0; }
 .callout {
   margin: 0 0 28px;
   padding: 20px 22px;
@@ -277,22 +248,6 @@ button:focus-visible, a:focus-visible { outline-offset: 3px; }
   color: var(--text-2);
 }
 .callout strong { color: var(--text); }
-.ad-slot {
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: 14px;
-  padding: 14px;
-  margin: 36px 0;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  min-height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 820px;
-}
 .ref { font-size: 0.78em; vertical-align: super; margin-left: 1px; border-bottom: none !important; }
 </style>
 
@@ -305,9 +260,9 @@ gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_pers
 </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
      crossorigin="anonymous"></script>
-<script src="/consent.js" defer></script>
+<script src="https://local-ai-models.ai/consent.js" defer></script>
 <!-- BEGIN site-chrome-css -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="https://local-ai-models.ai/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 /* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
@@ -403,37 +358,26 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
   <div class="hero-overlay"></div>
   <div class="hero-inner">
     <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/#destinations">Guides</a><span class="sep">/</span><span>Memory Bandwidth</span></div>
-    <div class="hero-eyebrow">Decode tok/s · 20 August 2026</div>
-    <h1 class="hero-title">Chat Speed Follows the <span class="accent">Corridor</span></h1>
-    <div class="updated-line">Updated: August 2026 · Dated decision 2026-08-20</div>
-    <p class="hero-sub">Batch-1 decode on a desk GPU walks the memory bus. Shopping more TFLOPS on the same GDDR bus leaves the token arrival rate where it was.</p>
+    <div class="hero-eyebrow">Guide · August 2026</div>
+    <h1 class="hero-title">Why Local LLM Chat Speed Follows Memory Bandwidth</h1>
+    <p class="hero-byline">By Sundog.</p>
+    <div class="updated-line">Published: 20 August 2026</div>
+    <p class="hero-sub">Batch-1 decode tok/s on a desk GPU sits under a memory-bandwidth ceiling. Extra TFLOPS on the same GDDR bus leave the token arrival rate where it was.</p>
   </div>
 </section>
 
 <div class="container" id="main-content" role="main" tabindex="-1">
   <article class="article-body">
 
-    <section class="plate-block" data-nosnippet>
-      <div class="plate-kicker">Plate · the librarian and the corridor</div>
-      <p>Picture the GPU as a librarian and the memory bus as the only corridor between the stacks and the reading room. Every time a visitor asks for the next word, the librarian must walk the <em>entire</em> collection down that corridor: every shelf of weights, plus the growing cart of notes already taken. The reading room is vast. The corridor is narrow.</p>
-      <p>A faster reader at the far end of the same corridor still waits on the cart. That is batch-1 decode. The advertised teraflops are the reading room. The published gigabytes per second are the corridor. Chat speed is the trip, repeated once per token, and the trip is what you buy.</p>
-      <p>The stacks stay long when the reader is quicker. They shorten when you compress the books or skip a wing. Those choices sit apart from a faster GPU on the brochure.</p>
-    </section>
+    <p class="lede">Peak tokens per second is memory bandwidth divided by bytes moved per token. The tables below are calculated from vendor-published GB/s and a stated weight footprint, not a measured 4090 run.</p>
 
-    <section class="bends-block" data-nosnippet>
-      <h2 class="section-h2 article-h2">Where the Metaphor Bends</h2>
-      <p>A corridor is a single width. Real silicon is messier. Peak bandwidth is a datasheet number. Kernels, cache hierarchy, and allocator noise mean you never walk it at 100 percent. The cart of notes (the KV cache) grows with context, so the second half of a long reply is a heavier trip than the first word. Unified memory on Apple silicon is a different building: one floor plan shared with the operating system, beside a discrete GDDR annex.</p>
-      <p>The metaphor also fails on the first pass through a long prompt. Prefill is a class arriving at once. The same shelves are read. The work is reused across hundreds or thousands of tokens, and the reading room can finally fill. That is the compute-bound exception. First-token latency and chat tokens-per-second are different shopping questions.</p>
-      <p>Three more bends, named here so they do not sneak in later as magic. A batch of visitors shares one trip and intensity rises. An assistant who guesses the next line lets the librarian check a handful of words in one walk (speculative decoding). A library that only opens two wings per request still stores every wing (mixture of experts). Speed and occupancy part company. The rest of this page is the arithmetic those bends sit on.</p>
-    </section>
-
-    <p class="lede">On <strong>20 August 2026</strong> this site treats desk-GPU <em>chat</em> speed as a bandwidth ceiling. The formula below is calculated from vendor-published memory bandwidth and a stated weight footprint. Use it to refuse a purchase that leaves the corridor unchanged.</p>
-
-    <div class="decision-box">
-      <p><strong>The decision.</strong> Buy memory bandwidth (and the VRAM to keep the weights on that bus) for interactive batch-1 decode. Buy compute for prefill-heavy work: long prompts, retrieval dumps, fill-in-the-middle. A card that advertises more TFLOPS on a similar GDDR corridor will not raise batch-1 tok/s in proportion to the brochure.</p>
+    <div class="decision-card">
+      <h3 class="article-h3">The tradeoff</h3>
+      <p><strong>Buy memory bandwidth, and the VRAM to keep the weights on that bus, for interactive batch-1 decode. Buy compute for prefill-heavy work: long prompts, retrieval dumps, fill-in-the-middle.</strong></p>
+      <p>A card that advertises more TFLOPS on a similar GDDR bus will not raise batch-1 tok/s in proportion to the brochure.</p>
     </div>
 
-    <h2 class="section-h2 article-h2">What is the tokens-per-second ceiling for batch-1 decode?</h2>
+    <h2 class="section-h2 article-h2">The tokens-per-second ceiling for batch-1 decode</h2>
     <p>Once the weights fit in VRAM, each new token is a memory stream. The GPU must read the parameters (and the KV cache) from device memory into the compute units. The arithmetic update is small. Pope, Douglas, Chowdhery and colleagues put the same split in serving language: at small batch the time to load weights dominates. At large batch and long sequence, KV traffic takes over<a href="#src-pope" class="ref">[2]</a>. A desk chat session is the small-batch case.</p>
     <p>That produces a hard ceiling you can write on a whiteboard:</p>
     <div class="formula-box">
@@ -443,7 +387,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <p>Bytes moved per token is, to first order, the resident weight file plus the KV bytes you reread at this context length. For a planning 8B at Q4, the site’s <a href="/quantization.html">quantization table</a> prices Q4_K_M at 4.8 effective bits, so 8 × 4.8 / 8 = <strong>4.8 GB of weights</strong>, which we round to <strong>~5 GB</strong> when talking in the same units as a spec sheet<a href="#src-quant" class="ref">[11]</a>. Divide published bandwidth by that number and you have an upper bound. Real llama.cpp or Ollama runs land at a fraction of it. Imperfect bus utilization, kernel launch, and the KV term eat the gap. The <a href="/builder.html">stack builder</a> already labels its tok/s column as a theoretical upper bound from this model.</p>
     <p>Capacity decides whether the model runs on the GPU at all. That is the <a href="/vram-guide.html">VRAM guide</a>. Bandwidth decides how fast the tokens arrive once it does. Confusing the two is how people buy a faster SKU and keep the same chat pace.</p>
 
-    <h2 class="section-h2 article-h2">How does the roofline model place decode under the memory roof?</h2>
+    <h2 class="section-h2 article-h2">Roofline puts batch-1 decode under the memory roof</h2>
     <p>Williams, Waterman and Patterson’s 2009 Roofline paper is the visual: attainable performance is the minimum of peak FLOP/s and bandwidth times operational intensity<a href="#src-roof" class="ref">[1]</a>.</p>
     <div class="formula-box">
       peak performance  ≈  min( peak_FLOP/s ,  bandwidth × operational_intensity )
@@ -453,12 +397,9 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <p>NVIDIA’s Ada whitepaper lists the GeForce RTX 4090 at <strong>82.6 FP32 TFLOPS</strong> and <strong>1008 GB/s</strong> of memory bandwidth<a href="#src-ada" class="ref">[3]</a>. The ridge point is 82.6e12 / 1008e9 ≈ <strong>82 FLOP/byte</strong>. Batch-1 decode at 1–4 FLOP/byte sits an order of magnitude to the left. Tensor-core peaks are higher still, which only moves the flat roof up and leaves decode on the slope.</p>
     <p>Prefill walks the other way. A prompt of length <code>S</code> reuses the same weights across <code>S</code> tokens, so intensity scales with <code>S</code>. At <code>S = 512</code> and Q4, a back-of-envelope 512 × 3.3 ≈ 1,700 FLOP/byte is already past that 82 FLOP/byte ridge. The kernel can saturate the ALUs. A machine that feels merely fine in chat can still chew a long system prompt. First-token time is the wrong number when you are shopping for streaming replies.</p>
 
-    <div class="ad-slot" id="ad-mid">
-      <div>Ad · Support this free resource</div>
-    </div>
-
-    <h2 class="section-h2 article-h2">What is the calculated decode ceiling on published GPU bandwidth?</h2>
-    <p>The table uses vendor-published peak bandwidth. Weight traffic is the 5.00 GB planning figure for an 8B Q4 (the 4.8 GB k-quant math, rounded). The last column is <code>bandwidth / 5.00e9</code>. It assumes the entire weight file moves every token and that KV is zero. Both assumptions make the number <em>optimistic</em>.</p>
+    <h2 class="section-h2 article-h2">Calculated decode ceilings on published GPU bandwidth</h2>
+    <!-- TODO(human): table hardware set is Ampere / Ada / M1 / M2. A later generation that widens the bus is a different purchase than a same-generation TFLOPS bump. Cite vendor docs before adding those rows. Do not invent GB/s or tok/s figures. -->
+    <p>The table uses vendor-published peak bandwidth. Weight traffic is the 5.00 GB planning figure for an 8B Q4 (the 4.8 GB k-quant math, rounded). The last column is <code>bandwidth / 5.00e9</code>. It assumes the entire weight file moves every token and that KV is zero. Assuming the whole file moves is conservative: it raises bytes per token and lowers the ceiling. Assuming KV is zero is optimistic.</p>
 
     <div class="table-wrap">
       <table class="vram-table">
@@ -524,31 +465,33 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
       </table>
     </div>
 
-    <p>Read the 4090 and 3090 rows together. Ampere lists the 3090 at <strong>35.6 FP32 TFLOPS</strong> and 936 GB/s<a href="#src-amp" class="ref">[4]</a>. Ada lists the 4090 at 82.6 FP32 TFLOPS and 1008 GB/s<a href="#src-ada" class="ref">[3]</a>. Compute more than doubles. The corridor widens by 1008 / 936 ≈ <strong>8 percent</strong>. The calculated weight-only ceilings move from 187 to 202 tok/s. Ada spent the process node on ALUs and caches. The memory bus stayed in the same class. If your workload is batch-1 chat, you bought the reading room. I would refuse a 3090-to-4090 jump sold as a chat-speed doubling on an 8B that already fits. The calculated corridor moves 8 percent.</p>
-    <p>The 4080 row is the intra-generation check. Same Ada family, 716.8 GB/s against 1008 GB/s: a 29 percent narrower corridor and a 143 vs 202 calculated ceiling. If two cards share a memory technology and a similar bus width, chat will not follow the CUDA-core count.</p>
+    <p>Read the 4090 and 3090 rows together. Ampere lists the 3090 at <strong>35.6 FP32 TFLOPS</strong> and 936 GB/s<a href="#src-amp" class="ref">[4]</a>. Ada lists the 4090 at 82.6 FP32 TFLOPS and 1008 GB/s<a href="#src-ada" class="ref">[3]</a>. Compute more than doubles. The memory bus widens by 1008 / 936 ≈ <strong>8 percent</strong>. The calculated weight-only ceilings move from 187 to 202 tok/s. Ada spent the process node on ALUs and caches. The memory bus stayed in the same class. I would refuse a 3090-to-4090 jump sold as a chat-speed doubling on an 8B that already fits.</p>
+    <p>The 4080 row is the intra-generation check. Same Ada family, 716.8 GB/s against 1008 GB/s: a 29 percent narrower bus and a 143 vs 202 calculated ceiling. If two cards share a memory technology and a similar bus width, chat will not follow the CUDA-core count.</p>
     <p>The 3060 12 GB row is the budget reality. 360 GB/s is a bit over a third of the 4090. The calculated ceiling is 72 tok/s on the same 5 GB file, and only if the 8B actually fits with context, which on 12 GB it can at Q4 with a modest window (<a href="/vram-guide.html">VRAM arithmetic</a>). People who call a 3060 slow at 7B and a 4090 fast at 7B are naming the bus.</p>
-    <p>Apple’s published unified-memory figures explain the Mac stacks on this site. M2 at 100 GB/s is a 20 tok/s calculated ceiling on the same 5 GB file. M1 Max at 400 GB/s is 80. The <a href="/stacks.html">recommended stacks</a> already warn that M-series generation is memory-bandwidth-bound and that a 64 GB Mac is a capacity play. A 70B at Q4 that finally fits in unified memory still walks a 100–400 GB/s corridor. The 1008 GB/s GDDR6X annex is a different invoice.</p>
+    <p>The table is Ampere, Ada, and M1/M2. A later card that widens the memory bus is a different purchase than a same-generation TFLOPS bump. This page does not add those later datasheets.</p>
+    <p>Apple’s published unified-memory figures explain the Mac stacks on this site. M2 at 100 GB/s is a 20 tok/s calculated ceiling on the same 5 GB file. M1 Max at 400 GB/s is 80. The <a href="/stacks.html">recommended stacks</a> already warn that M-series generation is memory-bandwidth-bound and that a 64 GB Mac is a capacity play. The M2 (100 GB/s) and M1 Pro (200 GB/s) rows are speed ceilings on that 5 GB file. They are not a 70B host. A 64 GB M-series that can hold a 70B still generates on the published Mac bus (400 GB/s on the M1 Max row), not on 1008 GB/s GDDR6X.</p>
     <div class="callout">
       <strong>Do not quote these ceilings as “a 4090 does 202 tok/s.”</strong> They are arithmetic on a datasheet. The stack builder applies an efficiency factor and still calls the result theoretical. Community benches vary with context, backend, and whether the run is decode-only. This page will not invent a 4090 measurement it did not take.
     </div>
 
-    <h2 class="section-h2 article-h2">How much does the KV cache move the ceiling?</h2>
+    <h2 class="section-h2 article-h2">How the KV cache moves the ceiling</h2>
     <p>Pope et al. treat weights and KV as the two large HBM residents that must be transferred each forward pass<a href="#src-pope" class="ref">[2]</a>. At short context the weight term wins. At long context the cache can rival it. That is the same third term the VRAM guide charges for occupancy. Here it is a bandwidth term.</p>
     <p>A concrete calculated example. Meta’s Llama 3 8B config uses 32 layers, 8 key/value heads, and a 128-wide head<a href="#src-llama3" class="ref">[9]</a>. For FP16 KV, bytes per token of context are:</p>
     <div class="formula-box">
       2 × 32 layers × 8 KV heads × 128 dim × 2 bytes  =  131,072 bytes / token of context
       <span class="note">Calculated from the published 8B config · FP16 cache · not a measured trace</span>
     </div>
-    <p>At 4,096 tokens that is 512 MiB. Add it to the 5.00 GB weight file and the 4090 weight-only ceiling of 202 tok/s becomes 1008e9 / 5.50e9 ≈ <strong>183 tok/s</strong>, still calculated. At 32,768 tokens the cache is 4.00 GiB and the same formula gives 1008 / 9.00 ≈ <strong>112 tok/s</strong>. The card did not get slower. The cart got heavier. Grouped-query attention is why that cache is 8 heads. Multi-head at 32 would have quadrupled the KV term.</p>
+    <!-- TODO(human): 512 MiB and 4.00 GiB are binary. If the 5.00 GB weight term is decimal, the mixed-unit denominators 5.50e9 and 9.00e9 understate KV traffic. Do not silently rewrite 183 or 112. Recheck units from a human-opened source, then decide whether to keep GiB throughout or convert. -->
+    <p>At 4,096 tokens that is 512 MiB. Add it to the 5.00 GB weight file and the 4090 weight-only ceiling of 202 tok/s becomes 1008e9 / 5.50e9 ≈ <strong>183 tok/s</strong>, still calculated. At 32,768 tokens the cache is 4.00 GiB and the same formula gives 1008 / 9.00 ≈ <strong>112 tok/s</strong>. The card did not get slower. The KV term got heavier. Grouped-query attention is why that cache is 8 heads. Multi-head at 32 would have quadrupled the KV term.</p>
     <p>Two operator consequences. First, a decode-speed complaint that appears only after the context fills is often KV traffic. Second, quantizing the cache (when the runtime offers a real flag for it) shrinks bytes moved the same way Q4 shrinks weights. The <a href="/quantization.html">quantization guide</a> already carries the quality caveat for weights. This page does not invent a cache-quant flag. Check the runtime you actually run.</p>
 
-    <h2 class="section-h2 article-h2">When do TFLOPS matter? On prefill.</h2>
+    <h2 class="section-h2 article-h2">TFLOPS matter on prefill</h2>
     <p>Prefill is the exception named in the decision. A long prompt is a batched matrix multiply against the same weights. Intensity rises with prompt length. The roofline can hit the flat roof. That is where 82.6 TFLOPS versus 35.6 TFLOPS is allowed to show up: time-to-first-token on a 4K or 32K paste. Streaming pace of the reply stays on the bus.</p>
     <p><strong>A compute-heavy card helps you swallow the prompt. A bandwidth-heavy card helps you talk.</strong> RAG pipelines that dump retrieved chunks into the window are prefill-bound on the first token and bandwidth-bound on every token after. If your day is “paste a repo, wait, then skim a short answer,” shop the ALU. If your day is “small prompt, long streamed answer,” shop the bus. Most interactive local chat is the second day.</p>
-    <p>Offloading is a speed cliff. Once layers spill to host RAM you have left the 360–1008 GB/s device corridor for a CPU memory controller measured in tens of GB/s. The VRAM guide already records the occupancy failure. The bandwidth reading is the same failure in motion: the librarian is now walking to another building.</p>
+    <p>Offloading is a speed cliff. Once layers spill to host RAM you have left the 360–1008 GB/s device bus for a CPU memory controller measured in tens of GB/s. The VRAM guide already records the occupancy failure. The bandwidth reading is the same failure in motion.</p>
 
-    <h2 class="section-h2 article-h2">How do batch, speculative decoding, and MoE change intensity?</h2>
-    <p>Three legal ways to climb off the worst part of the slope. The list is batch, speculative decoding, and MoE. A new SKU with more cores on the same GDDR stays off it.</p>
+    <h2 class="section-h2 article-h2">Batch, speculative decoding, and MoE change intensity</h2>
+    <p>Three ways to climb off the worst part of the slope: batch, speculative decoding, and MoE. A new SKU with more cores on the same GDDR stays on it.</p>
 
     <h3 class="article-h3">1. Batch: share the weight trip</h3>
     <p>If two independent sequences need the next token, you still read the weights once and apply them twice. Intensity roughly doubles. Pope et al. say the obvious serving consequence: at large batch, weight load is amortized and KV can dominate<a href="#src-pope" class="ref">[2]</a>. On a desk this is the difference between one chat window and a small local server with a few concurrent clients. The <a href="/token-simulator.html">token simulator</a> is a single-stream feeler. It will not show you the batch win. The cost is latency isolation. You are no longer optimizing for one person’s next word.</p>
@@ -558,28 +501,24 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 
     <h3 class="article-h3">3. Mixture of experts: walk fewer shelves, store every wing</h3>
     <p>Mixtral 8x7B is the cited open example: 47B total parameters, 13B active per token, because a router picks two of eight feed-forward experts at each layer<a href="#src-mixtral" class="ref">[12]</a>. Compute and, if the runtime actually skips inactive experts, <em>weight traffic</em> follow the active set. Occupancy still holds every expert. The VRAM guide already prices that floor space. If llama.cpp (or whichever backend you run) streams only the chosen experts, the denominator in the ceiling shrinks and tok/s can rise toward a dense 13B. If a naive path touches every expert tensor, you paid the VRAM tax and kept the 47B walk. Confirm the path you are running.</p>
-    <p>MoE buys a larger library to get a shorter trip, provided the librarian is allowed to skip closed wings. The 4090-vs-3090 TFLOPS mistake buys a larger reading room and keeps the same hallway.</p>
+    <p>MoE buys a larger resident set to get a shorter trip, provided the runtime skips inactive experts. The 4090-vs-3090 TFLOPS mistake buys more ALUs and keeps the same bus.</p>
 
-    <div class="ad-slot" id="ad-bottom">
-      <div>Ad · Support this free resource</div>
-    </div>
-
-    <h2 class="section-h2 article-h2">What should you actually buy, given this ceiling?</h2>
+    <h2 class="section-h2 article-h2">What to buy, given this ceiling</h2>
     <p>Start from fit. Then read the bus. Then weigh compute.</p>
     <ul>
-      <li><strong>Fit first.</strong> A model that spills to host RAM has left the GPU corridor. Size weights, KV, and overhead with the <a href="/vram-guide.html">VRAM guide</a> and the <a href="/model-builder.html">workstation builder</a> before you argue tok/s.</li>
+      <li><strong>Fit first.</strong> A model that spills to host RAM has left the GPU bus. Size weights, KV, and overhead with the <a href="/vram-guide.html">VRAM guide</a> and the <a href="/model-builder.html">workstation builder</a> before you argue tok/s.</li>
       <li><strong>Then read the spec sheet’s memory line.</strong> 1008, 716.8, 936, 360, 400, 200, 100, 68.25. Those are the published numbers this page is willing to divide by. A card whose marketing lead is more CUDA cores or more TFLOPS on a similar GB/s figure is a prefill upgrade.</li>
       <li><strong>Then decide if your day is prefill.</strong> Long-context coding and retrieval dumps spend real time in the compute-bound region. That is when Ada’s 82.6 TFLOPS versus Ampere’s 35.6 is a reason to pay. Streaming tok/s will not scale 2.3×.</li>
     </ul>
-    <p>Worked refusal: upgrading a 3090 to a 4090 to “double chat speed” on an 8B that already fits. The calculated corridor moves 8 percent. Keep the 3090, or spend the money on capacity you do not have (a second card, a 70B that does not fit, unified memory for a model the 24 GB card cannot hold). Worked acceptance: replacing a 3060 12 GB (360 GB/s) with a 4090 (1008 GB/s) on a model both can hold is a calculated 2.8× ceiling move, and the 4090 also buys context headroom. That purchase can be about speed.</p>
-    <p>Mac buyers already live this split. The stack notes prefer MLX and tell you discrete-GPU tok/s will not appear. Unified memory is how a 64 GB M-series holds a 70B. 400 GB/s is why it will not feel like a 4090 while it talks. Capacity and corridor are different invoices.</p>
+    <p>Worked refusal: upgrading a 3090 to a 4090 to “double chat speed” on an 8B that already fits. The calculated bus widens 8 percent. Keep the 3090, or spend the money on capacity you do not have (a second card, a 70B that does not fit, unified memory for a model the 24 GB card cannot hold). Worked acceptance: replacing a 3060 12 GB (360 GB/s) with a 4090 (1008 GB/s) on a model both can hold is a calculated 2.8× ceiling move, and the 4090 also buys context headroom. That purchase can be about speed.</p>
+    <p>Mac buyers already live this split. The stack notes prefer MLX and tell you discrete-GPU tok/s will not appear. Unified memory is how a 64 GB M-series holds a 70B. 400 GB/s is why it will not feel like a 4090 while it talks. Capacity and bandwidth are different invoices.</p>
 
-    <h2 class="section-h2 article-h2">Which llama.cpp flags actually touch this picture?</h2>
-    <p>Only flags that exist in the current llama.cpp server README are worth naming here. <code>-ngl</code> / <code>--n-gpu-layers</code> (also <code>--gpu-layers</code>) sets how many layers live in VRAM: exact count, <code>auto</code>, or <code>all</code><a href="#src-llama" class="ref">[13]</a>. That is a fit flag. It decides whether you are on the device corridor or walking to host memory. It does not widen the bus. <code>-fa</code> / <code>--flash-attn</code> takes <code>on</code>, <code>off</code>, or <code>auto</code> (default <code>auto</code>)<a href="#src-llama" class="ref">[13]</a>. FlashAttention changes how attention traffic is staged. The MLP weight stream stays a bandwidth walk. If a blog tells you to pass a flag this README does not list, treat that as a different program.</p>
+    <h2 class="section-h2 article-h2">llama.cpp flags that touch this picture</h2>
+    <p>Only flags that exist in the current llama.cpp server README are worth naming here. <code>-ngl</code> / <code>--n-gpu-layers</code> (also <code>--gpu-layers</code>) sets how many layers live in VRAM: exact count, <code>auto</code>, or <code>all</code><a href="#src-llama" class="ref">[13]</a>. That is a fit flag. It decides whether you are on the device bus or walking to host memory. It does not widen the bus. <code>-fa</code> / <code>--flash-attn</code> takes <code>on</code>, <code>off</code>, or <code>auto</code> (default <code>auto</code>)<a href="#src-llama" class="ref">[13]</a>. FlashAttention changes how attention traffic is staged. The MLP weight stream stays a bandwidth walk. If a blog tells you to pass a flag this README does not list, treat that as a different program.</p>
     <p>The operator habit this page wants: before you change cards, confirm <code>-ngl</code> has the whole model resident and that you are looking at decode tok/s. The <a href="/token-simulator.html">token simulator</a> is there to calibrate what 5, 25, and 80 tok/s feel like. The ceiling table above tells you which of those bands a given bus can even reach on a 5 GB file.</p>
 
-    <h2 class="section-h2 article-h2">How this sits next to the rest of the site</h2>
-    <p>The <a href="/vram-guide.html">VRAM guide</a> answers “does it fit.” The <a href="/quantization.html">quantization guide</a> answers “how many bits per weight,” which is the denominator of intensity and the size of the file you stream. The <a href="/builder.html">stack builder</a> already divides published bandwidth by model size and labels the result a theoretical upper bound. The <a href="/stacks.html">recommended stacks</a> already call M-series generation bandwidth-bound. This page is the missing essay: why those labels exist, and why the next GPU on the same GDDR generation is the wrong medicine for a slow chat.</p>
+    <h2 class="section-h2 article-h2">Where this sits on the site</h2>
+    <p>The <a href="/vram-guide.html">VRAM guide</a> answers whether the file fits. The <a href="/quantization.html">quantization guide</a> answers how many bits per weight, which is the denominator of intensity and the size of the file you stream. The <a href="/builder.html">stack builder</a> already divides published bandwidth by model size and labels the result a theoretical upper bound. The <a href="/stacks.html">recommended stacks</a> already call M-series generation bandwidth-bound. This page is why those labels exist: batch-1 chat tracks the GB/s line, not the TFLOPS line, unless the next card also widens the bus.</p>
     <p>If you want a feel for the stream, use the <a href="/token-simulator.html">token simulator</a>. If you do not own the card yet, the <a href="/model-builder.html">workstation builder</a> turns a VRAM target into parts. Neither tool invents a 4090 bench for this article.</p>
 
     <h2 class="section-h2 article-h2">Frequently asked questions</h2>
@@ -588,7 +527,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <p>At batch-1 decode the GPU streams nearly the whole weight file, plus the KV cache, for every new token. Arithmetic intensity is a few FLOPs per byte. Roofline then says the attainable rate is bandwidth times that intensity, which rewrites as tokens/s ≈ bandwidth / bytes_moved_per_token<a href="#src-roof" class="ref">[1]</a><a href="#src-pope" class="ref">[2]</a>. Extra TFLOPS sit unused on the flat part of the roof.</p>
 
     <h3 class="article-h3">Will a GPU with more TFLOPS make local chat faster?</h3>
-    <p>Only if it also widens the memory corridor. The 4090 versus 3090 pair is the dated example: 82.6 vs 35.6 FP32 TFLOPS, 1008 vs 936 GB/s<a href="#src-ada" class="ref">[3]</a><a href="#src-amp" class="ref">[4]</a>. Compute more than doubled. The calculated 5 GB ceiling moved from 187 to 202 tok/s. Shop the GB/s line.</p>
+    <p>Only if it also widens the memory bus. The 4090 versus 3090 pair is the dated example: 82.6 vs 35.6 FP32 TFLOPS, 1008 vs 936 GB/s<a href="#src-ada" class="ref">[3]</a><a href="#src-amp" class="ref">[4]</a>. Compute more than doubled. The calculated 5 GB ceiling moved from 187 to 202 tok/s. Shop the GB/s line.</p>
 
     <h3 class="article-h3">When do TFLOPS matter for local LLMs?</h3>
     <p>Prefill. A long prompt reuses weights across many tokens, intensity rises, and the kernel can hit the compute roof. First-token time on a pasted context is the compute-bound number. Streaming chat stays on the slope.</p>
@@ -605,7 +544,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <h2 class="section-h2 article-h2">Sources</h2>
     <ol class="sources-list">
       <li id="src-roof">Samuel Williams, Andrew Waterman, David Patterson, “Roofline: an insightful visual performance model for multicore architectures,” <em>Communications of the ACM</em> 52(4), April 2009. DOI <a href="https://doi.org/10.1145/1498765.1498785">10.1145/1498765.1498785</a>. Also: <a href="https://dl.acm.org/doi/10.1145/1498765.1498785">ACM Digital Library</a>, <a href="https://cacm.acm.org/research/roofline-an-insightful-visual-performance-model-for-multicore-architectures/">CACM page</a>.</li>
-      <li id="src-pope">Reiner Pope, Sholto Douglas, Aakanksha Chowdhery, Jacob Devlin, James Bradbury, Jonathan Heek, Kefan Xiao, Shivani Agrawal, Jeff Dean, “Efficiently Scaling Transformer Inference,” arXiv:2211.05102, 2022. <a href="https://arxiv.org/abs/2211.05102">https://arxiv.org/abs/2211.05102</a>. Memory-time discussion: weights and KV must be loaded from HBM each step. At small batch, weight load dominates.</li>
+      <li id="src-pope">Reiner Pope, Sholto Douglas, Aakanksha Chowdhery, Jacob Devlin, James Bradbury, Jonathan Heek, Kefan Xiao, Shivani Agrawal, Anselm Levskaya, Jeff Dean, “Efficiently Scaling Transformer Inference,” arXiv:2211.05102, 2022. <a href="https://arxiv.org/abs/2211.05102">https://arxiv.org/abs/2211.05102</a>. Memory-time discussion: weights and KV must be loaded from HBM each step. At small batch, weight load dominates.</li>
       <li id="src-ada">NVIDIA, “NVIDIA Ada GPU Architecture” whitepaper. RTX 4090 memory bandwidth 1008 GB/s. RTX 4080 716.8 GB/s. RTX 4090 FP32 82.6 TFLOPS. <a href="https://images.nvidia.com/aem-dam/Solutions/geforce/ada/nvidia-ada-gpu-architecture.pdf">https://images.nvidia.com/aem-dam/Solutions/geforce/ada/nvidia-ada-gpu-architecture.pdf</a>. Product page (cores, clocks, 24 GB GDDR6X, 384-bit): <a href="https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/">GeForce RTX 4090</a>.</li>
       <li id="src-amp">NVIDIA, “NVIDIA Ampere GA102 GPU Architecture” whitepaper v2. GeForce RTX 3090 peak memory bandwidth 936 GB/s. Peak FP32 TFLOPS (non-Tensor) 35.6. <a href="https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf">https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf</a>.</li>
       <li id="src-3060">NVIDIA GeForce News, “GeForce RTX: Game On Event Announcements! You Asked, We Answered.” States GeForce RTX 3060 is 192-bit GDDR6 at 15 Gbps, “delivering 360GB/s of bandwidth.” <a href="https://www.nvidia.com/en-us/geforce/news/game-on-you-asked-we-answered-qa/">https://www.nvidia.com/en-us/geforce/news/game-on-you-asked-we-answered-qa/</a>.</li>
@@ -648,7 +587,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <a href="/model-builder.html" class="related-card">
       <div class="related-eyebrow">Tool</div>
       <div class="related-name">Workstation Builder</div>
-      <div class="related-desc">Turn a VRAM target into a parts list once you know which corridor you need.</div>
+      <div class="related-desc">Turn a VRAM target into a parts list once you know which memory bus you need.</div>
     </a>
     <a href="/stacks.html" class="related-card">
       <div class="related-eyebrow">Hardware</div>

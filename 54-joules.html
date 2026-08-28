@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joules Per Token: Desk-GPU Decode Tracks Bytes Moved (2026) | Local AI Models</title>
+<meta name="description" content="Decode energy tracks bytes moved, not TFLOPS. Prefill is compute-bound. 4090 TGP 450 W and Mac Studio M4 Max 145 W are envelopes, not llama.cpp measurements. Dated 2026-08-20.">
+<meta name="keywords" content="joules per token, llm inference energy, local llm electricity cost, gpu tdp decode, memory bandwidth tokens per second, idle gpu power, prefill vs decode energy">
+<link rel="canonical" href="https://local-ai-models.ai/joules-per-token.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Joules Per Token: Desk-GPU Decode Tracks Bytes Moved (2026)">
+<meta property="og:description" content="Nameplates are envelopes. The honest unit is average watts in that phase divided by tokens per second. We do not invent a 4090 joules-per-token number.">
+<meta property="og:url" content="https://local-ai-models.ai/joules-per-token.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta property="og:image" content="https://local-ai-models.ai/hero-quantization.png">
+<!-- TODO(human): og:image and the CSS hero still use hero-quantization.png. There is no joules-specific asset in public/. Do not swap in another page's plate. -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://local-ai-models.ai/hero-quantization.png">
+<meta name="twitter:title" content="Joules Per Token: Desk-GPU Decode Tracks Bytes Moved (2026)">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Joules Per Token: Desk-GPU Decode Tracks Bytes Moved (2026)",
+  "description": "Practitioner guide to local LLM energy: decode tracks bytes moved (weights plus KV), prefill is compute-bound, and vendor nameplates are envelopes. No invented desk-GPU joules per token.",
+  "datePublished": "2026-08-20",
+  "dateModified": "2026-08-28",
+  "inLanguage": "en",
+  "author": {"@type": "Person", "name": "Sundog"},
+  "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://local-ai-models.ai/joules-per-token.html"},
+  "about": [
+    {"@type": "Thing", "name": "LLM inference energy"},
+    {"@type": "Thing", "name": "Memory-bandwidth-bound decode"},
+    {"@type": "Thing", "name": "GPU thermal design power"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://local-ai-models.ai/#destinations"},
+    {"@type": "ListItem", "position": 3, "name": "Joules Per Token", "item": "https://local-ai-models.ai/joules-per-token.html"}
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('https://local-ai-models.ai/hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-byline { font-size: 0.98rem; color: var(--text-2); margin: -4px 0 16px; letter-spacing: 0.01em; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 600px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+/* PREMIUM-PATCH-V2 */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+/* end PREMIUM-PATCH-V2 */
+</style>
+
+<!-- ARTICLE-ONLY: long-form body, tables, sources list -->
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.formula {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 0 0 22px;
+  color: var(--text);
+  overflow-x: auto;
+}
+.callout {
+  border-left: 2px solid var(--orange);
+  padding: 4px 0 4px 18px;
+  margin: 0 0 26px;
+}
+.callout p { margin-bottom: 0; }
+.decision {
+  border: 1px solid rgba(34,197,94,0.28);
+  background: rgba(34,197,94,0.06);
+  border-radius: 16px;
+  padding: 22px 22px 8px;
+  margin: 0 0 28px;
+}
+</style>
+
+<!-- Schema: Organization (publisher trust signal for AEO) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<!-- Google Consent Mode v2 -->
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','wait_for_update':500,'region':['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']});
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
+     crossorigin="anonymous"></script>
+<script src="https://local-ai-models.ai/consent.js" defer></script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="https://local-ai-models.ai/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+</head>
+<body>
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="/local-ai-models.html">Models</a>
+      <a href="/builder.html">Stack Builder</a>
+      <a href="/model-builder.html">PC Builder</a>
+      <a href="/recommend.html">Recommender</a>
+      <a href="/token-simulator.html">Token Sim</a>
+      <a href="/claws.html">CLAWS</a>
+      <a href="/sentiment.html">Community</a>
+      <a href="/guidance.html">Guidance</a>
+      <a href="/getting-started.html">Get Started</a>
+      <a href="/quantization.html">Quantization</a>
+      <a href="/stacks.html">Stacks</a>
+      <a href="/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="/">Home</a><span class="sep">/</span><a href="/#destinations">Guides</a><span class="sep">/</span><span>Joules Per Token</span></div>
+    <div class="hero-eyebrow">Guide · August 2026</div>
+    <h1 class="hero-title">Joules Per <span class="accent">Token</span></h1>
+    <p class="hero-byline">By Sundog.</p>
+    <div class="updated-line">Published: 20 August 2026</div>
+    <p class="hero-sub">Desk-GPU decode energy tracks bytes moved, not peak TFLOPS. A quiet 24&nbsp;GB card generating all night can beat an API on electricity at high volume and lose on idle overhead at low volume.</p>
+  </div>
+</section>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+  <article class="article-body">
+
+    <p class="lede">This is a practitioner guide for people who already run, or are about to run, open-weight models on a desk GPU or a Mac Studio. It is dated <strong>20 August 2026</strong>. The thesis is narrow: <em>decode energy tracks bytes moved (the weight file plus the growing KV state), not peak TFLOPS</em>. Prefill is the compute-bound spike. Every watt printed below was opened on a vendor page or in a paper that names its hardware. No joules-per-token figure on this page is a measurement of llama.cpp on a GeForce RTX 4090. If the average watts for that loop were not measured here, they are not invented here.</p>
+
+    <h2 class="section-h2 article-h2">The only honest formula, and why this page will not finish it</h2>
+    <p>A joule is a watt-second. For one phase of inference (prefill or decode), the unit you actually want is:</p>
+    <div class="formula">
+      joules/token = (average watts in that phase) / (tokens per second in that phase)
+    </div>
+    <p>That identity is the definition of the unit. If you know the mean board draw while the runtime is prefilling, and you know how many prompt tokens you processed per second, you have prefill joules per token. If you know the mean draw while it is emitting tokens, and you know decode tokens per second, you have decode joules per token. Mix the phases and you hide the spike behind the walk.</p>
+    <p>This site does not have a measured average-watt number for llama.cpp decode on a 4090, a Mac Studio, or anything else. NVIDIA's published Total Graphics Power is a <strong>cap</strong>, not that average. Apple's published Mac Studio "Max" is a <strong>whole-system wall figure under a compute-intensive test</strong>, not an LLM-decode measurement. Plugging either nameplate into the formula and calling the result "joules per token on your desk" would be an invention. The formula stays on the page. The invented product does not.</p>
+    <p>What you can do tonight, if you want a number that is yours: read average watts from a tool that actually samples the board or the wall during a decode-only loop, read tokens per second from the runtime for that same loop, and divide. Until you do that, you have envelopes and a mechanism. You do not have a constant.</p>
+
+    <h2 class="section-h2 article-h2">Why decode tracks bytes moved, not TFLOPS</h2>
+    <p>A decoder that emits one token at a time, at batch size one, must stream the resident weights and attend over the key/value state it has already written. The arithmetic per weight is a handful of multiply-adds. The traffic is the quantized width of those weights plus the KV bytes that belong to the tokens already in context. Operational intensity (operations per byte of memory traffic) stays low. The card's published teraflop rating describes a different roof: the one you hit when the working set is reused hard enough that the arithmetic units stay busy. Batch-one decode is not that kernel.</p>
+    <p>Williams, Waterman, and Patterson's Roofline model (Communications of the ACM, April 2009, DOI 10.1145/1498765.1498785) is the picture for that split. A kernel either hits the flat compute roof or the slanted memory roof. The ridge is peak FLOPS divided by peak bandwidth. Sit left of the ridge and extra TFLOPS sit unused. Decode spends the memory roof. Peak teraflops on a nameplate are theater. This page uses Roofline for that geometry. It does not take a 2009 CPU paper as a joule measurement.</p>
+    <p>Resident bytes are the denominator of the speed ceiling, not a second thesis. At modest context the weight file dominates. As the conversation lengthens, KV grows and the walk gets heavier. That is why a long window feels slower on the same card that flew at 2K. The <a href="/vram-guide.html">VRAM guide</a> is how you decide whether the file plus the window still fit. This page is why the same bytes decide energy once they do: more bytes per token means fewer tokens per second on a memory roof, and joules per token move unless average watts fall as fast as throughput does.</p>
+    <p>The <a href="/builder.html">Stack Builder</a> already prints tokens per second as a theoretical upper bound from memory bandwidth divided by model size at the selected quantization. This article will not invent a second bandwidth guide and will not link a page that is not on this site. The ceiling is conceptual:</p>
+    <div class="formula">
+      tokens/s_ceiling ≈ published_bandwidth / resident_bytes_per_token<br>
+      resident_bytes ≈ weight_file + KV_state
+    </div>
+    <p>At <a href="/quantization.html">Q4_K_M, 4.8 effective bits</a>, the weight term is about 0.6 bytes per parameter. A 7B file is about 4.2 GB of weight traffic per decoded token before KV. A 32B file is about 19.2 GB. Those are file sizes, not joules. The 4090's published memory bandwidth is 1008 GB/s. The roof says you cannot decode faster than about 1008 divided by whatever resident bytes you are actually streaming. Real llama.cpp will come in under that roof. This page will not convert the roof into a fake joule by multiplying it by 450 W.</p>
+
+    <h2 class="section-h2 article-h2">Prefill is compute-bound. Decode is the long walk</h2>
+    <p>Fernandez, Na, Tiwari, Bisk, Luccioni, and Strubell, "Energy Considerations of Large Language Model Inference and Efficiency Optimizations" (arXiv:2504.17674, 2025), opened for this article, decompose inference the way a desk operator should. Quote the mechanism, not their hardware as yours:</p>
+    <ul>
+      <li>The prefill stage processes prompts in parallel and is typically <strong>compute-bound</strong>, achieving high GPU utilization.</li>
+      <li>The autoregressive decoding stage is typically <strong>memory-bound</strong> and leads to <strong>GPU under-utilization</strong>.</li>
+      <li>Decode energy intensity scales with sequence length because decode is sequential. In their controlled sweeps, decoding energy dominates the workload except at the shortest generations (classification, short summarization).</li>
+    </ul>
+    <p>Their accelerators are named in the paper: NVIDIA RTX A6000, A6000 Ada, and A100 80GB PCIe, measured with NVML via CodeCarbon, on Llama-3.1 and Qwen-class models in PyTorch and vLLM. That is <strong>not a GeForce RTX 4090</strong> and not a Mac Studio. This page takes the phase split and the dominance of decode on ordinary generation lengths. It does not take their joule totals, their 73 percent optimization figure, or their datacenter framing and reprint them as a desk-GPU result.</p>
+    <p>What a desk operator should do with that split is practical. A short prompt and a long completion spend almost all of the generating time (and, in Fernandez et al.'s geometry, most of the energy) in the memory-bound walk. A dumped repository and a one-line answer spend a surprising fraction in the compute-bound prefill spike. The 450 W and 145 W envelopes below are more plausible as brief prefill caps than as decode averages, because decode is the under-utilized phase. Using one number for both phases is how people talk themselves into a constant that does not exist.</p>
+    <p>Batching, continuous batching, and speculative decoding change utilization. Fernandez et al. show speculative decoding saving energy at small batches and costing energy at large ones, because the draft-and-verify extra work only pays when the target model was idle. Desk chat is usually batch one. Overnight evals do not have to be. Those are utilization knobs, not new nameplates.</p>
+
+    <h2 class="section-h2 article-h2">Nameplates: two envelopes you can actually open</h2>
+    <p>NVIDIA's GeForce RTX 4090 product page, opened for this article, is the consumer 24 GB card this site already treats as the desk sweet spot. The figures used here are Total Graphics Power <strong>450 W</strong>, <strong>24 GB</strong> of GDDR6X, and published memory bandwidth <strong>1008 GB/s</strong>. TGP is a cap: the board is not allowed to exceed that budget under the vendor's thermal and power design. It is not a promise that llama.cpp decode sits at 450 W. The same page also prints an Idle Power of <strong>19 W</strong> for a Founders / reference card left at the Windows desktop for ten minutes, and an Average Gaming Power of 315 W across 22 games. Neither of those is an LLM-decode measurement. They are listed so the 450 W row has company on the official table, and so idle tax has a published floor that is not 450 W.</p>
+    <p>Apple's "Mac Studio power consumption and thermal output (BTU) information" page (support.apple.com/en-us/102027, published 12 March 2025), opened for this article, is the whole-system envelope for a 2025 Mac Studio with M4 Max (14-core CPU, 32-core GPU, 36 GB unified memory, 512 GB SSD in the tested config). Apple prints <strong>Idle 6 W</strong> and <strong>Max 145 W</strong>. The notes on that page matter as much as the numbers: watts are measured from the wall and <strong>include power-supply and system losses</strong>. "Max" is a compute-intensive test that maximizes processor usage with no external peripherals. "Idle" is Finder open at default power-management settings. Ambient was 20.2 °C. That is Apple's honest nameplate for the box, not an LLM-decode measurement. A decode loop will sit somewhere between 6 W and 145 W. This page will not guess where.</p>
+
+    <div class="table-wrap">
+      <table class="vram-table">
+        <caption class="updated-line" style="caption-side:bottom; padding:12px 18px; text-align:left; text-transform:none; letter-spacing:0;">Vendor-published envelopes opened 2026-08-20. Not wall-meter readings of llama.cpp. Not joules per token.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Machine</th>
+            <th scope="col">Published envelope</th>
+            <th scope="col">What the vendor measured</th>
+            <th scope="col">Opened source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GeForce RTX 4090</td>
+            <td>450 W TGP cap, 24 GB, 1008 GB/s, 19 W desktop idle</td>
+            <td>Add-in-card Total Graphics Power and official memory spec. Idle is desktop idle, not decode.</td>
+            <td>NVIDIA RTX 4090 product page</td>
+          </tr>
+          <tr>
+            <td>Mac Studio (2025) M4 Max</td>
+            <td>6 W idle, 145 W max</td>
+            <td>Whole-system wall watts including PSU losses. Max is a compute-stress test, not LLM decode.</td>
+            <td>Apple Support HT102027, 12 March 2025</td>
+          </tr>
+          <tr>
+            <td>GeForce RTX 5090</td>
+            <td>575 W TGP, 32 GB, 1792 GB/s</td>
+            <td>Founders / reference Total Graphics Power and bandwidth on the same compare table.</td>
+            <td>NVIDIA GeForce compare, 50-series row</td>
+          </tr>
+          <tr>
+            <td>GeForce RTX 3060</td>
+            <td>170 W Graphics Card Power</td>
+            <td>30-series card-power row. No decode average published.</td>
+            <td>NVIDIA GeForce compare, 30-series row</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <p>Decode on a memory roof is under-utilized by construction (Fernandez et al., on A6000/A100, mechanism only). Expect average decode watts to sit <strong>well below</strong> the 450 W or 145 W nameplate more often than not. Prefill can walk toward the cap for a short interval. If you need a planning bound, the nameplate is the bound on power, not a substitute for average watts in the joules-per-token formula.</p>
+    </div>
+
+    <h2 class="section-h2 article-h2">Idle and always-on tax, without a fake per-token product</h2>
+    <p>Two clocks still hide inside any daily energy number. The generating clock is the seconds the runtime is prefilling or decoding. The occupancy clock is the hours the machine is powered. Fernandez et al. are about the first clock. The Apple 6 W idle row and the NVIDIA 19 W idle row are about the second.</p>
+    <p>Arithmetic on a published idle, not on an invented decode watt:</p>
+    <div class="formula">
+      Mac Studio M4 Max idle envelope: 6 W × 24 h = 0.144 kWh/day if the box never sleeps<br>
+      RTX 4090 desktop-idle envelope: 19 W × 24 h = 0.456 kWh/day if the card stays powered at that floor
+    </div>
+    <p>Those kilowatt-hours exist whether you emit a million tokens or ten. They are not joules per token until you divide by a token count you actually produced. At high overnight volume the occupancy term is a rounding error next to generating energy. At a handful of coding completions after dinner, occupancy is the bill. A quiet 24 GB card generating all night can beat an API on electricity. The same card left resident "so the first token is fast" can lose on idle overhead. That fork does not require a fabricated 4090 joules-per-token constant. It requires you to notice whether the machine was on.</p>
+    <p>Always-on tax is larger than the GPU row. Apple's 6 W already includes PSU losses for that idle test. NVIDIA's 19 W does not include the rest of a tower. This page leaves the unlisted watts unlisted. Your wall meter will not.</p>
+    <p>Powering down, or unloading the model so the driver can drop toward the published idle, is an energy decision. Leaving a 32B resident across an idle afternoon is also an energy decision. The <a href="/token-simulator.html">token simulator</a> will show you what slow feels like. It will not pay occupancy for you.</p>
+
+    <h2 class="section-h2 article-h2">Operator call, 20 August 2026: local energy versus an API list price</h2>
+    <div class="decision">
+      <p><strong>Call (opinion).</strong> I would size the energy story from the bytes the decode walk has to move (weights plus KV), then treat the 450 W TGP and the 145 W Studio max as envelopes. After the hardware is already on the desk, I would call local energy the cheap column against a public API list price when the day's tokens amortize occupancy and the generating phases are decode-heavy. I would call it the expensive column when the box is always on and the day's tokens are thin, or when the day is prefill-heavy and I had been budgeting as if the memory roof were the whole story. The fork is occupancy and phase mix. This repo still has no average-watt decode trace, so I would not write a 4090 J/token onto a comparison table.</p>
+    </div>
+    <p>This page will not print a dollars-per-million-token API table. OpenAI's pricing page exists. Other vendors publish list prices too. Those tables move, and a copied row that this article did not treat as a static primary source would be a fake table. Finish the comparison with two numbers you actually have: the rate on your utility bill, and the list price on the API page you pay.</p>
+    <p>If (and only if) you later measure average decode watts <code>W</code> and decode tokens per second <code>R</code>, generating-only cost is:</p>
+    <div class="formula">
+      kWh / million tokens = (W / R) × (1e6 / 3.6e6) = (W / R) × (5/18)<br>
+      $ / million tokens = that × your $/kWh
+    </div>
+    <p>Until <code>W</code> is a measurement, do not substitute 450 or 145 and call the result a local price. You may use 450 W or 145 W as a <em>cap</em> to ask "even at the nameplate, is generating energy in the same decade as this API row?" Treat that as a sanity check, not a quote. Add occupancy from the idle envelopes above before you declare victory at low volume.</p>
+    <ul>
+      <li><strong>High volume, sunk hardware, long generations.</strong> Decode dominates (Fernandez et al., mechanism). Occupancy is amortized. Local energy is the cheap column against most public list prices at household tariffs, once you have a measured <code>W/R</code>, or at least a nameplate sanity check that stays far below the API row.</li>
+      <li><strong>Low volume, always-on resident model.</strong> 0.144 kWh/day (Studio idle envelope) or 0.456 kWh/day (4090 desktop-idle envelope) plus the rest of the machine can exceed a cheap hosted mini model even when generating would have looked flattering. Unload or sleep.</li>
+      <li><strong>Prefill-heavy days</strong> (long prompts, short answers). Time sits nearer the compute-bound spike. The memory-roof story understates watts and overstates the relevance of bandwidth. Do not budget those days as if they were overnight decode.</li>
+      <li><strong>You do not yet own the card.</strong> This page is not a buyer's TCO. See the <a href="/local-ai-server-guide.html">server guide</a> and <a href="/model-builder.html">workstation builder</a>. Energy after the box is assembled is a different question from whether to buy the box.</li>
+    </ul>
+    <p>Privacy, offline operation, and license control remain reasons to run locally when the energy ratio goes the other way. They are not energy arguments. Keep them in their own column.</p>
+
+    <h2 class="section-h2 article-h2">What moves the bill besides the nameplate</h2>
+    <p>Four knobs change resident bytes, utilization, or occupancy. None of them require a new invented constant.</p>
+    <ul>
+      <li><strong>Quantization.</strong> Q8_0 is 1.0 byte per parameter on this site's compression table. Q4_K_M is 0.6. A lighter file lowers the byte term on the memory roof. Throughput can rise. Average watts may fall because the memory system is the thing working. They may not. Measure if you need the ratio.</li>
+      <li><strong>Model size and KV length.</strong> A 32B file is 4.6 times a 7B file at the same quant. A long window adds KV that the VRAM guide already treats as first-class. Both raise resident bytes. The <a href="/local-ai-models.html">catalog</a> is how you pick the smaller model that still does the job.</li>
+      <li><strong>Batching.</strong> Several sequences sharing one weight-file trip raise operational intensity and can lift utilization off the floor Fernandez et al. describe for decode. Desk chat is usually batch one. Overnight evals do not have to be.</li>
+      <li><strong>Occupancy.</strong> Sleep, unload, or schedule. The idle envelopes are the whole knob. A machine that is not powered has an idle of zero, which no TGP row will tell you.</li>
+    </ul>
+    <p>Mixture-of-experts models change the compute you execute per token but not the weights you must keep resident. Fernandez et al. found their OLMoE variant used more energy than a dense model with a similar active-parameter count, on their A6000-class setup, because the expert kernels were slower than the dense GEMM. That is a mechanism warning, not a 4090 constant. Do not take an MoE's active-parameter count as its decode traffic without reading the runtime's gather.</p>
+
+    <h2 class="section-h2 article-h2">What this page will not claim</h2>
+    <ul>
+      <li>No joules-per-token number for a 4090, a 5090, a 3060, or a Mac Studio running llama.cpp. The formula is here. The measured average watts are not.</li>
+      <li>No wall-meter reading invented to finish that formula. 450 W and 145 W are nameplates. 19 W and 6 W are published idle tests. 315 W is a gaming average.</li>
+      <li>No transfer of Fernandez et al.'s A6000/A100 joules onto a GeForce card.</li>
+      <li>No dollars-per-million-token API table copied from a page that was not treated as a static primary source.</li>
+      <li>No carbon factor, no grid mix, no sermon that "AI uses a lot of electricity" without local watts, seconds, and tokens.</li>
+    </ul>
+
+    <h2 class="section-h2 article-h2">Frequently asked questions</h2>
+
+    <h3 class="article-h3">So what is joules per token on a 4090?</h3>
+    <p>Unknown here. It is average decode watts on that card in your runtime, divided by decode tokens per second in the same run. This page will not substitute 450 W for the average and will not pretend the bandwidth roof is a measured tok/s. If someone quotes a single 4090 joule figure without a watt trace and a token counter from the same session, treat it as a blog constant, not a spec.</p>
+
+    <h3 class="article-h3">Is local inference cheaper than an API?</h3>
+    <p>On energy, sometimes, and the fork is daily volume versus idle plus whether the day is decode-heavy. After the hardware is sunk, generating energy at household tariffs is often a small column against a public list price, once you have a measured ratio or a nameplate sanity check. Occupancy at the published idle envelopes is tens of watt-hours per day before the rest of the machine. High-volume long generations win. Low-volume resident use loses. Open the API page you actually pay against. This page will not invent that row.</p>
+
+    <h3 class="article-h3">Why not just use the card's TFLOPS rating?</h3>
+    <p>Because batch-one decode does not hit it. Prefill can. Fernandez et al. say prefill is typically compute-bound and decode is typically memory-bound and under-utilized. TFLOPS describe the flat roof. Tokens per second on decode describe the slanted one, which is bytes moved per second divided by bytes per token.</p>
+
+    <h3 class="article-h3">Does a quieter card use fewer joules per token?</h3>
+    <p>Not automatically. If it draws fewer watts and delivers proportionally fewer tokens per second, the ratio is unchanged. If it draws fewer watts because decode never approached TGP, the real ratio is better than a nameplate sanity check. That is the usual desk-GPU situation and the reason 450 W is labeled a cap. Acoustics are not a unit of energy.</p>
+
+    <h3 class="article-h3">Should I leave the model loaded?</h3>
+    <p>For latency, yes, if the next prompt is coming now. For energy, only if the day's token count will amortize the idle envelope. Unloading a 32B so a 4090 can return toward the published 19 W desktop idle is the correct move for a machine that chats twice a day. An overnight batch that will emit for hours should load once and stay there. The <a href="/getting-started.html">getting-started path</a> will get you to a running model. This page is the argument for noticing whether you shut it off afterward.</p>
+
+    <h3 class="article-h3">Where does this sit next to VRAM and stacks?</h3>
+    <p>VRAM decides whether the file plus the window fit. Stacks decide which box you assemble. Joules per token, once measured, decide whether that box, once assembled, should run tonight or yield to a hosted call. Fit first (<a href="/vram-guide.html">VRAM guide</a>, <a href="/stacks.html">recommended stacks</a>), then energy, then taste.</p>
+
+    <h2 class="section-h2 article-h2">Sources</h2>
+    <ol class="sources-list">
+      <li>Jared Fernandez, Clara Na, Vashisth Tiwari, Yonatan Bisk, Sasha Luccioni, and Emma Strubell, "Energy Considerations of Large Language Model Inference and Efficiency Optimizations," arXiv:2504.17674, 2025. <a href="https://arxiv.org/abs/2504.17674">arxiv.org/abs/2504.17674</a>. Opened 2026-08-20. Prefill typically compute-bound. Decode typically memory-bound and under-utilized. Decode energy dominates except shortest generations. Decode energy scales with sequence length. Hardware in that paper: RTX A6000, A6000 Ada, A100 80GB PCIe, not a 4090. Mechanism only.</li>
+      <li>NVIDIA, GeForce RTX 4090 product specifications, <a href="https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/">nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/</a>. Opened 2026-08-20. Total Graphics Power 450 W (a cap), 24 GB GDDR6X, published memory bandwidth 1008 GB/s, Idle Power 19 W (desktop idle, 10 minutes), Average Gaming Power 315 W. Not a llama.cpp watt trace.</li>
+      <li>Apple, "Mac Studio power consumption and thermal output (BTU) information," <a href="https://support.apple.com/en-us/102027">support.apple.com/en-us/102027</a>. Opened 2026-08-20. Mac Studio (2025) M4 Max row: Idle 6 W, Max 145 W. Notes: wall measurement including PSU and system losses. Max is a compute-intensive processor test. Idle is Finder at default settings. Published 12 March 2025. Not an LLM-decode measurement.</li>
+      <li>Samuel Williams, Andrew Waterman, and David Patterson, "Roofline: An Insightful Visual Performance Model for Multicore Architectures," <em>Communications of the ACM</em> 52, no. 4 (April 2009): 65–76. DOI <a href="https://doi.org/10.1145/1498765.1498785">10.1145/1498765.1498785</a>. Opened via the ACM / CACM record. Used for the memory-versus-compute roofs, not for a joule constant.</li>
+      <li>NVIDIA, "Compare Current and Previous GeForce Series of Graphics Cards," <a href="https://www.nvidia.com/en-us/geforce/graphics-cards/compare/">nvidia.com/en-us/geforce/graphics-cards/compare/</a>. Opened 2026-08-20. RTX 5090 Total Graphics Power 575 W and memory bandwidth 1792 GB/s. RTX 3060 Graphics Card Power 170 W. Envelopes only.</li>
+      <li>NVIDIA, "GeForce GPU Power Primer" (FrameView), <a href="https://www.nvidia.com/content/dam/en-zz/Solutions/GeForce/technologies/frameview/Power_Primer.pdf">Power_Primer.pdf</a>. TDP versus TGP: ratings for stressful real-world applications, not live joule logs.</li>
+      <li><a href="/quantization.html">Quantization Explained</a>, <a href="/vram-guide.html">VRAM Guide</a>, and <a href="/builder.html">Stack Builder</a> on this site: 4.8-bit Q4_K_M working figure, the 24 GB / 32B fit, and tokens/s labeled as a memory-bandwidth ceiling rather than a bench.</li>
+    </ol>
+
+  </article>
+</div>
+
+<section class="related">
+  <div class="related-title reveal">Related</div>
+  <div class="related-grid reveal">
+    <a href="/vram-guide.html" class="related-card">
+      <div class="related-eyebrow">Fit</div>
+      <div class="related-name">How Much VRAM You Need</div>
+      <div class="related-desc">The sizing arithmetic that decides whether the weight file plus the window even sit on the card.</div>
+    </a>
+    <a href="/quantization.html" class="related-card">
+      <div class="related-eyebrow">Bytes</div>
+      <div class="related-name">Quantization Explained</div>
+      <div class="related-desc">Q4_K_M at 4.8 bits is the weight term in resident bytes. Going lower shrinks traffic and quality together.</div>
+    </a>
+    <a href="/builder.html" class="related-card">
+      <div class="related-eyebrow">Ceiling</div>
+      <div class="related-name">Stack Builder</div>
+      <div class="related-desc">The same bandwidth-over-file-size tokens/s roof, labeled as a theoretical upper bound, not a bench.</div>
+    </a>
+    <a href="/local-ai-server-guide.html" class="related-card">
+      <div class="related-eyebrow">Box</div>
+      <div class="related-name">Build a Local AI Server</div>
+      <div class="related-desc">Six hardware tiers. Energy is what the box costs after you have chosen one.</div>
+    </a>
+    <a href="/getting-started.html" class="related-card">
+      <div class="related-eyebrow">Start</div>
+      <div class="related-name">Run AI Locally in 5 Minutes</div>
+      <div class="related-desc">Install, pull, chat. Then decide whether tonight's volume pays the idle envelope.</div>
+    </a>
+    <a href="/stacks.html" class="related-card">
+      <div class="related-eyebrow">Hardware</div>
+      <div class="related-name">Recommended Stacks</div>
+      <div class="related-desc">Pre-vetted builds by VRAM tier, including the Mac unified-memory stack whose Studio envelope is on this page.</div>
+    </a>
+  </div>
+</section>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.08.24 &middot; 125 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="/local-ai-models.html">Models</a></li>
+      <li><a href="/sentiment.html">Community Data</a></li>
+      <li><a href="/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="/builder.html">Stack Builder</a></li>
+      <li><a href="/model-builder.html">PC Builder</a></li>
+      <li><a href="/recommend.html">Recommender</a></li>
+      <li><a href="/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="/getting-started.html">Get Started</a></li>
+      <li><a href="/guidance.html">Guidance</a></li>
+      <li><a href="/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="/joules-per-token.html">Joules Per Token</a></li>
+      <li><a href="/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="/quantization.html">Quantization</a></li>
+      <li><a href="/stacks.html">Stacks</a></li>
+      <li><a href="/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 24, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/cookies.html">Cookies</a> &middot; <a href="/accessibility.html">Accessibility</a> &middot; <a href="/about.html">About</a> &middot; <a href="/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+// Hero parallax
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+// Scroll reveal
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+/* TITLE-CLIP-FIX */
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+/* end TITLE-CLIP-FIX */
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script src="/creatures.js" defer></script>
+<script src="/creatures-v2.js" defer></script>
+</body>
+</html>
