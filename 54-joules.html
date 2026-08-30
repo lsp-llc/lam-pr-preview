@@ -26,7 +26,7 @@
   "headline": "Joules Per Token: Desk-GPU Decode Tracks Bytes Moved (2026)",
   "description": "Practitioner guide to local LLM energy: decode tracks bytes moved (weights plus KV), prefill is compute-bound, and vendor nameplates are envelopes. No invented desk-GPU joules per token.",
   "datePublished": "2026-08-20",
-  "dateModified": "2026-08-28",
+  "dateModified": "2026-08-30",
   "inLanguage": "en",
   "author": {"@type": "Person", "name": "Sundog"},
   "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"},
@@ -83,7 +83,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 @media (max-width: 900px) { .site-nav-links { display: none; } }
 
 .hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
-.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('https://local-ai-models.ai/hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
 .hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
 .breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
@@ -221,9 +221,9 @@ gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_pers
 </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503309257265974"
      crossorigin="anonymous"></script>
-<script src="https://local-ai-models.ai/consent.js" defer></script>
+<script src="/consent.js" defer></script>
 <!-- BEGIN site-chrome-css -->
-<link rel="icon" type="image/svg+xml" href="https://local-ai-models.ai/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 /* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
@@ -468,7 +468,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
     <h3 class="article-h3">Is local inference cheaper than an API?</h3>
     <p>On energy, sometimes, and the fork is daily volume versus idle plus whether the day is decode-heavy. After the hardware is sunk, generating energy at household tariffs is often a small column against a public list price, once you have a measured ratio or a nameplate sanity check. Occupancy at the published idle envelopes is tens of watt-hours per day before the rest of the machine. High-volume long generations win. Low-volume resident use loses. Open the API page you actually pay against. This page will not invent that row.</p>
 
-    <h3 class="article-h3">Why not just use the card's TFLOPS rating?</h3>
+    <h3 class="article-h3">Does the card's TFLOPS rating set joules per token?</h3>
     <p>Because batch-one decode does not hit it. Prefill can. Fernandez et al. say prefill is typically compute-bound and decode is typically memory-bound and under-utilized. TFLOPS describe the flat roof. Tokens per second on decode describe the slanted one, which is bytes moved per second divided by bytes per token.</p>
 
     <h3 class="article-h3">Does a quieter card use fewer joules per token?</h3>
