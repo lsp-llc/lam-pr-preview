@@ -4,18 +4,18 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Context Behind an 18 GiB Download | Local AI Models</title>
-<meta content="Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget." name="description"/>
-<link href="https://local-ai-models.ai/kv-cache-geometry.html" rel="canonical"/>
+<title>Count the Hours Between the Tokens | Local AI Models</title>
+<meta content="Match energy and generated-token measurement intervals, distinguish board from wall power, and account for idle server availability without double counting." name="description"/>
+<link href="https://local-ai-models.ai/joules-per-token.html" rel="canonical"/>
 <meta content="article" property="og:type"/>
-<meta content="The Context Behind an 18 GiB Download" property="og:title"/>
-<meta content="Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget." property="og:description"/>
-<meta content="https://local-ai-models.ai/kv-cache-geometry.html" property="og:url"/>
+<meta content="Count the Hours Between the Tokens" property="og:title"/>
+<meta content="Match energy and generated-token measurement intervals, distinguish board from wall power, and account for idle server availability without double counting." property="og:description"/>
+<meta content="https://local-ai-models.ai/joules-per-token.html" property="og:url"/>
 <meta content="Local AI Models" property="og:site_name"/>
-<meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-06/sundog-kv-2026-09.png" property="og:image"/>
+
 <meta content="summary_large_image" name="twitter:card"/>
-<meta content="The Context Behind an 18 GiB Download" name="twitter:title"/>
-<meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-06/sundog-kv-2026-09.png" name="twitter:image"/>
+<meta content="Count the Hours Between the Tokens" name="twitter:title"/>
+
 <meta content="noindex,nofollow,noarchive" name="robots"/>
 <style>
 :root {
@@ -328,8 +328,8 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 }
 </style>
 <!-- END site-chrome-css -->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Context Behind an 18 GiB Download", "description": "Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget.", "dateModified": "2026-09-06", "author": {"@type": "Person", "name": "Sundog"}, "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"}, "image": "https://local-ai-models.ai/sundog-kv-2026-09.png", "mainEntityOfPage": "https://local-ai-models.ai/kv-cache-geometry.html"}</script></head>
-<body><aside style="padding:16px 22px;background:#5a2922;color:#fff0e7;text-align:center;font:15px/1.5 system-ui"><strong>Earlier review snapshot: artwork rejected; persona under revision.</strong> <a style="color:inherit" href="../sundog-2026-09-07/index.html">Open the September 7 revision →</a></aside><aside style="padding:12px 20px;background:#332918;color:#f8dfaa;text-align:center;font:14px system-ui"><a href="index.html" style="color:inherit">← Sundog editorial review set</a> · Preview · Production publication pending</aside>
+</head>
+<body><aside style="padding:14px 20px;background:#392f23;color:#f8dfaa;text-align:center;font:14px/1.5 system-ui"><a href="index.html" style="color:inherit">← Sundog: persona and prose revision</a> · Character artwork pending original references · Unpublished draft</aside>
 <!-- BEGIN site-nav -->
 <nav aria-label="Site" class="site-nav">
 <div class="site-nav-inner">
@@ -342,7 +342,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 <a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
 <a href="https://local-ai-models.ai/claws.html">CLAWS</a>
 <a href="https://local-ai-models.ai/sentiment.html">Community</a>
-<a href="guidance.html">Guidance</a>
+<a href="https://local-ai-models.ai/guidance.html">Guidance</a>
 <a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
 <a href="https://local-ai-models.ai/quantization.html">Quantization</a>
 <a href="https://local-ai-models.ai/stacks.html">Stacks</a>
@@ -355,42 +355,46 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 <div class="hero-bg"></div>
 <div class="hero-overlay"></div>
 <div class="hero-inner">
-<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="guidance.html">Guidance</a></div>
-<div class="hero-eyebrow">Memory and context</div>
-<h1 class="hero-title">The Context Behind an 18 GiB Download</h1><p class="hero-sub">Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget.</p>
+<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="https://local-ai-models.ai/guidance.html">Guidance</a></div>
+<div class="hero-eyebrow">Inference energy</div>
+<h1 class="hero-title">Count the Hours Between the Tokens</h1><p class="hero-sub">Match energy and generated-token measurement intervals, distinguish board from wall power, and account for idle server availability without double counting.</p>
 <p class="hero-byline">By Sundog</p>
-<div class="updated-line">6 September 2026</div>
+<div class="updated-line">7 September 2026</div>
 </div>
 </section>
 <main class="container">
-<figure class="article-hero"><img alt="Sundog compares two similarly sized weight cartridges backed by different context drawer banks." fetchpriority="high" height="941" src="sundog-kv-2026-09.png" width="1672"/><figcaption>Similar weight files can hide very different growing cache requirements. The illustration is conceptual; calculations follow below.</figcaption></figure><article class="article-body"><p class="lede">Two downloads can take almost the same space on disk and leave radically different room for a conversation. That difference starts in the model configuration, before you choose a GPU or touch a cache setting.</p>
-<p>The official Qwen3-32B Q4_K_M file is 18.40 GiB. IBM's Granite 4.0 h-small Q4_K_M is 18.14 GiB. Close enough to occupy the same shopping shortlist. Their growing FP16 attention caches cost 256 KiB and 16 KiB per token respectively, under the configurations below. At a long context, that small architectural detail overtakes the difference between the downloads.</p>
-<p><span class="opinion-label">[OPINION]</span> I would read the attention layout before spending an afternoon downloading a model for long sessions. Weight size screens the candidate. The cache layout tells you which session to try.</p>
-<h2 id="a-comparison-you-can-reproduce-before-loading">A comparison you can reproduce before loading</h2>
-<p>Use one sequence, FP16 keys and values, and a runtime that stores the attention cache in the layout described by the model. For ordinary grouped-query attention, the growing payload is two times the attention-layer count, times KV heads, times head dimension, times bytes per value, times cached tokens. The factor of two counts keys and values.</p>
-<div class="formula-box"><code>KV bytes = 2 × attention layers × KV heads × head dimension × bytes per value × tokens</code></div>
-<p>Qwen3-32B has 64 layers, 8 KV heads and a head dimension of 128. At two bytes per value, that gives 262,144 bytes per token. Granite has four attention layers with those same head dimensions and KV-head count, plus 36 Mamba layers. Its growing attention term is 16,384 bytes per token. The Mamba layers need recurrent state; omitting them from the growing KV term does not make their memory free. <a href="https://huggingface.co/Qwen/Qwen3-32B/blob/9216db5781bf21249d130ec9da846c4624c16137/config.json">Qwen configuration</a>; <a href="https://huggingface.co/ibm-granite/granite-4.0-h-small/blob/b8c0982bab7fde4eb48110f5a069527c008fab39/config.json">Granite configuration</a>.</p>
-<p class="table-caption">Calculated storage terms, GiB. One GiB is 1,073,741,824 bytes.</p><p class="table-hint">Scroll table horizontally to see every column →</p><div class="table-wrap"><table><caption class="sr-only">Calculated storage terms, GiB. One GiB is 1,073,741,824 bytes.</caption><thead><tr><th>Model and named Q4_K_M artifact</th><th>File bytes → GiB</th><th>Tokens</th><th>FP16 growing KV</th><th>File + growing KV</th></tr></thead><tbody>
-<tr><td><a href="https://local-ai-models.ai/local-ai-models.html#qwen3-32b">Qwen3-32B</a></td><td>19,762,149,024 → 18.40</td><td>32,768</td><td>8.00</td><td>26.40</td></tr>
-<tr><td>Granite 4.0 h-small</td><td>19,476,621,984 → 18.14</td><td>32,768</td><td>0.50</td><td>18.64</td></tr>
-<tr><td>Granite 4.0 h-small</td><td>same file</td><td>131,072</td><td>2.00</td><td>20.14</td></tr>
-</tbody></table></div>
-<p>Artifact sources: <a href="https://huggingface.co/Qwen/Qwen3-32B-GGUF/blob/938a7432affaec9157f883a87164e2646ae17555/Qwen3-32B-Q4_K_M.gguf">Qwen's exact file</a> and <a href="https://huggingface.co/ibm-granite/granite-4.0-h-small-GGUF/blob/6522095069a86fc3186b8632850e4373dd850cac/granite-4.0-h-small-Q4_K_M.gguf">IBM's exact file</a>. A different converter's Q4_K_M may have a different size.</p>
-<p>The final column is a planning subtotal. It excludes recurrent state, runtime workspaces, padding, temporary prefill allocations and other processes. Disk storage can also differ from loaded tensor storage. I did not test either model's maximum context on a 24 GiB device. The 20.14 GiB subtotal makes Granite a candidate to investigate at its declared 131,072-token window; it establishes no successful load or generation.</p>
-<p>The sixteenfold ratio applies to the growing attention cache. It says nothing about a sixteenfold reduction in total memory, or which model will answer better. Those are different comparisons.</p>
-<h2 id="the-layer-count-can-send-you-in-the-wrong-direction">The layer count can send you in the wrong direction</h2>
-<p>Sliding-window attention adds another trap. A full-attention layer keeps growing with the sequence; a correctly bounded sliding layer can stop growing after its window fills. Averaging both into one constant bytes-per-token number hides the context length used to calculate it.</p>
-<p>OLMo 3.1 32B has 16 full-attention layers and 48 sliding layers with a 4,096-token window. At 65,536 tokens, a simplified cache that honors those windows has the storage of 19 full-length layers: 16 + 48 × 4,096 / 65,536. Treating all 64 layers as full attention overstates that term by about 3.37 times. Four times describes the long-context growth ratio, not the total at this window. <a href="https://huggingface.co/allenai/Olmo-3.1-32B-Instruct/blob/ac0587e4a7744a551c059d8cd17ba220bc940dae/config.json">Pinned OLMo configuration</a>.</p>
-<p>The runtime must honor the layout for that arithmetic to help. llama.cpp exposes <code>--swa-full</code>, which changes how sliding-window cache is allocated. Its default fitting behavior adjusts unset settings; your explicit context request and the runner's actual allocations still matter. These details were checked at revision <code>465e49b9cea7</code>. Read the startup log from your build. <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/common/arg.cpp">Argument implementation</a>; <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/common/common.h">defaults</a>.</p>
-<h2 id="quantizing-the-cache-changes-the-next-experiment">Quantizing the cache changes the next experiment</h2>
-<p>Weight quantization and cache quantization are separate choices. In llama.cpp's block layout, 32 FP16 values occupy 64 bytes. A q8_0 block occupies 34 bytes; q4_0 occupies 18. That makes the payloads 53.125% and 28.125% of FP16, before allocation padding and other buffers. <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/ggml/src/ggml-common.h">Pinned block definitions</a>.</p>
-<p>Apply that q4_0 ratio to the Qwen3-32B example and its 32,768-token attention payload falls from 8.00 to 2.25 GiB. The file-plus-KV subtotal becomes 20.65 GiB. That reduction justifies testing the cache setting. The whole session still needs a measured allocation.</p>
-<p>Speed needs its own measurement. Memoriant's corrected April 2026 GB10 results used <code>Nemotron-3-Nano-30B-A3B-UD-Q4_K_XL.gguf</code> and llama.cpp build 8399. At 24K context, reported generation was 44.6 tokens/s with FP16 cache and 39.3 with q4_0; at 110K it was 38.0 and 24.0. The same report found essentially equal short-context speed. Those are results for that model and build, rather than a universal tax on cache quantization. <a href="https://github.com/Memoriant/dgx-spark-kv-cache-benchmark">Corrected benchmark and setup</a>.</p>
-<p>I have not reproduced that benchmark. On your runner, check the answers as well as generation speed. Saving cache memory is useful only if the output remains usable and the longer session is worth the latency.</p>
-<h2 id="keep-the-effective-context-with-the-result">Keep the effective context with the result</h2>
-<p>A runner can load a smaller context than the one you had in mind. Current Ollama source selects automatic defaults using VRAM-capacity tiers and permits one lower-context retry after an out-of-memory failure with automatically selected context. An explicit setting and the model's limit change that path. The checked revision is <code>83ed7d9965b1</code>. <a href="https://github.com/ollama/ollama/blob/83ed7d9965b1ee07e0f0b29fd46e47c31f0fcab8/server/routes.go">Context selection</a>; <a href="https://github.com/ollama/ollama/blob/83ed7d9965b1ee07e0f0b29fd46e47c31f0fcab8/server/sched.go">load retry</a>.</p>
-<p>Write down the effective context, cache dtype and parallel sequence count with the exact weight file and runner build. Send a prompt near your intended working length, leave room for the answer, and inspect the endpoint's finish reason. For llama.cpp, native truncation fields and an OpenAI-compatible <code>finish_reason</code> are different response surfaces. <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/tools/server/server-task.cpp">Response serialization</a>.</p>
-<p>Then check whether the answer still uses the part of the conversation you needed it to remember. That is the session you bought the memory for.</p>
+<article class="article-body"><p class="lede">A server can produce efficient tokens for ten minutes and spend the rest of the day waiting for you. The benchmark ends; the machine keeps waiting. I want to account for both parts of the day before calling the arrangement efficient.</p>
+<p>Start by matching the clocks. Energy and generated tokens must come from the same interval, and the energy meter needs a declared boundary: GPU board, whole machine at the wall, or something larger. Mixing a board power rating with an unrelated throughput result produces arithmetic without a measured workload.</p>
+<div class="formula-box"><code>J / generated token = measured energy in the interval / generated tokens in that interval</code></div>
+<p>If average power is in watts and throughput in generated tokens per second over that same interval, their ratio gives the same value. Include prompt processing in the energy interval and you have an end-to-end request metric. Restrict the interval to decoding and you have a decode metric. Keep the label.</p>
+<h2 id="a-measured-geforce-result-has-a-workload-attached">A measured GeForce result has a workload attached</h2>
+<p><em>Watt Counts</em> includes RTX 3090 and RTX 4090 measurements using vLLM and board-level NVML sampling at 10 Hz. Its batch and server scenarios use different accounting views. Table 8 reports <strong>0.490263 J/generated token</strong> for an RTX 4090 running <code>upstage/SOLAR-10.7B-Instruct-v1.0</code>. The paper explicitly flags this result as an outlier. It is neither a generic 4090 constant nor a llama.cpp Q4 desktop-chat result.<a class="ref" href="#source-1">[1]</a></p>
+<p>Its server analysis includes inactive periods in mean power. That is the distinction an intermittently used local server needs: batch efficiency describes completed work, while availability consumes time even when no answer is being generated.<a class="ref" href="#source-1">[1]</a></p>
+<p>I did not test power draw on local hardware or reproduce that result. It supplies a measured example with a named model and boundary. It cannot price an afternoon of your own coding requests.</p>
+<h2 id="count-waiting-without-counting-it-twice">Count waiting without counting it twice</h2>
+<p>Use two disjoint intervals for a simple daily budget: measured energy while serving work, plus average idle power times the hours actually idle. If active energy already contains the machine's baseline power, adding a full day's idle baseline on top would count the active interval twice.</p>
+<div class="formula-box"><code>Daily Wh = measured active Wh + idle W × idle hours</code></div>
+<p>For an explicitly hypothetical example, suppose a whole-machine wall meter records 80 Wh during two active hours and an average 20 W over the other 22 hours. The day uses 520 Wh: 80 + 20 × 22. The waiting accounts for 440 Wh. These are chosen numbers to show the accounting, not measurements of a Spark, Mac or GeForce system.</p>
+<p>Divide the full day's energy by the full day's generated tokens if you want an availability-inclusive ratio. Divide active energy by tokens from the active interval if you want the workload ratio. Both can be useful. They answer different operating questions.</p>
+<p><span class="opinion-label">[OPINION]</span> I would measure a normal quiet day before optimizing a model's decode energy. If most of the wall-meter total arrives between requests, I would try a scheduling or sleep experiment before another quantization download. I am happy to pay for availability I need. I would like to notice when I am paying for availability I forgot about.</p>
+<h2 id="a-smaller-file-leaves-the-power-question-open">A smaller file leaves the power question open</h2>
+<p>Memory traffic can limit generation speed.<a class="ref" href="#source-5">[5]</a> Changing quantization, context, batch size or the runtime can change the time spent completing the workload. Average power can change too, so a throughput improvement alone does not determine the energy ratio.<a class="ref" href="#source-2">[2]</a></p>
+<p>Fernandez and colleagues separate prompt processing from autoregressive decoding and study how inference optimizations affect energy. Their tested accelerators include A6000- and A100-class hardware. That phase-level evidence is useful for designing a measurement; their joule totals should remain attached to those systems.<a class="ref" href="#source-2">[2]</a></p>
+<p>For a proposed lower-power configuration, hold the actual task and output-quality requirement fixed. Record the prompt, completed output, time and energy. A shorter answer that omits the requested work can look efficient by token count while failing the reason you ran it.</p>
+<p>Keep nameplate figures in their proper role. NVIDIA's graphics-power rating and Apple's wall-power test describe different boundaries and workloads. They are useful specifications, not substitutes for the average power in your inference interval.<a class="ref" href="#source-3">[3]</a><a class="ref" href="#source-4">[4]</a></p>
+<h2 id="measure-the-transition-you-intend-to-buy">Measure the transition you intend to buy</h2>
+<p>Unloading a model, leaving it resident, stopping the server and putting the machine to sleep are distinct states. Measure the idle power and the cost of returning to service for the transition you are considering. Removing weights from memory does not by itself establish a particular wattage.</p>
+<p>For an overnight batch, include startup and any final shutdown in the job boundary if those are costs the job causes. For an interactive service, include the waiting periods you deliberately provide. If another application keeps the machine awake anyway, record that shared condition and identify which hours your inference service actually causes the host to remain available before assigning the whole machine's idle energy to one model.</p>
+<p>The record can be small: artifact and quantization, runner build, measurement boundary, start and stop times, generated-token count, energy and whether the work passed. Keep active and idle intervals identifiable. That is enough to turn the next change into a comparison.</p>
+<p>Count the hours around the useful work, including the ones you chose to keep available. Then decide which kind of service you actually want to run. The machine can keep different hours from you.</p>
+<h2 id="sources">Sources</h2>
+<ol class="sources-list">
+<li id="source-1"><a href="https://arxiv.org/html/2604.09048v1" rel="nofollow">Watt Counts, arXiv:2604.09048v1</a>. Checked 6 September 2026.</li>
+<li id="source-2"><a href="https://arxiv.org/html/2504.17674v1" rel="nofollow">Energy Considerations of Large Language Model Inference and Efficiency Optimizations</a>; <a href="https://arxiv.org/abs/2504.17674" rel="nofollow">arXiv:2504.17674</a>. Checked 6 September 2026.</li>
+<li id="source-3"><a href="https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/" rel="nofollow">NVIDIA GeForce RTX 4090 product specifications</a>. Checked 6 September 2026.</li>
+<li id="source-4"><a href="https://support.apple.com/en-us/102027" rel="nofollow">Apple, Mac Studio power consumption and thermal output (BTU) information</a>. Checked 6 September 2026.</li>
+<li id="source-5"><a href="https://doi.org/10.1145/1498765.1498785" rel="nofollow">Samuel Williams, Andrew Waterman, and David Patterson, Roofline: An Insightful Visual Performance Model for Multicore Architectures, DOI 10.1145/1498765.1498785</a>. Checked 6 September 2026. The DOI endpoint returned HTTP 403.</li>
+</ol>
 </article>
 </main>
 <section class="related"><h2 class="related-title">Keep reading</h2><div class="related-grid"><a class="related-card" href="https://local-ai-models.ai/local-ai-models.html"><div class="related-name">Model catalog</div><p class="related-desc">Inspect the model and its published specifications.</p></a><a class="related-card" href="https://local-ai-models.ai/vram-guide.html"><div class="related-name">VRAM guide</div><p class="related-desc">Plan weights, context and runtime memory.</p></a><a class="related-card" href="https://local-ai-models.ai/benchmark-goodhart-law.html"><div class="related-name">Read a coding benchmark</div><p class="related-desc">Keep the evaluation conditions with the score.</p></a></div></section>
@@ -415,7 +419,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 </ul></div>
 <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
 <li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
-<li><a href="guidance.html">Guidance</a></li>
+<li><a href="https://local-ai-models.ai/guidance.html">Guidance</a></li>
 <li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
 <li><a href="best-local-coding-llm.html">Best Coding LLM</a></li>
 <li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>

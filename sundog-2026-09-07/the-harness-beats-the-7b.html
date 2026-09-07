@@ -4,18 +4,18 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Context Behind an 18 GiB Download | Local AI Models</title>
-<meta content="Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget." name="description"/>
-<link href="https://local-ai-models.ai/kv-cache-geometry.html" rel="canonical"/>
+<title>Fix the Tool Loop Before You Replace the Model | Local AI Models</title>
+<meta content="Hold the model fixed and diagnose invalid actions, retries and unused tool results. Harness research supports a concrete interface experiment, not an untested GPU buying rule." name="description"/>
+<link href="https://local-ai-models.ai/the-harness-beats-the-7b.html" rel="canonical"/>
 <meta content="article" property="og:type"/>
-<meta content="The Context Behind an 18 GiB Download" property="og:title"/>
-<meta content="Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget." property="og:description"/>
-<meta content="https://local-ai-models.ai/kv-cache-geometry.html" property="og:url"/>
+<meta content="Fix the Tool Loop Before You Replace the Model" property="og:title"/>
+<meta content="Hold the model fixed and diagnose invalid actions, retries and unused tool results. Harness research supports a concrete interface experiment, not an untested GPU buying rule." property="og:description"/>
+<meta content="https://local-ai-models.ai/the-harness-beats-the-7b.html" property="og:url"/>
 <meta content="Local AI Models" property="og:site_name"/>
-<meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-06/sundog-kv-2026-09.png" property="og:image"/>
+
 <meta content="summary_large_image" name="twitter:card"/>
-<meta content="The Context Behind an 18 GiB Download" name="twitter:title"/>
-<meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-06/sundog-kv-2026-09.png" name="twitter:image"/>
+<meta content="Fix the Tool Loop Before You Replace the Model" name="twitter:title"/>
+
 <meta content="noindex,nofollow,noarchive" name="robots"/>
 <style>
 :root {
@@ -328,8 +328,8 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 }
 </style>
 <!-- END site-chrome-css -->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Context Behind an 18 GiB Download", "description": "Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget.", "dateModified": "2026-09-06", "author": {"@type": "Person", "name": "Sundog"}, "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"}, "image": "https://local-ai-models.ai/sundog-kv-2026-09.png", "mainEntityOfPage": "https://local-ai-models.ai/kv-cache-geometry.html"}</script></head>
-<body><aside style="padding:16px 22px;background:#5a2922;color:#fff0e7;text-align:center;font:15px/1.5 system-ui"><strong>Earlier review snapshot: artwork rejected; persona under revision.</strong> <a style="color:inherit" href="../sundog-2026-09-07/index.html">Open the September 7 revision →</a></aside><aside style="padding:12px 20px;background:#332918;color:#f8dfaa;text-align:center;font:14px system-ui"><a href="index.html" style="color:inherit">← Sundog editorial review set</a> · Preview · Production publication pending</aside>
+</head>
+<body><aside style="padding:14px 20px;background:#392f23;color:#f8dfaa;text-align:center;font:14px/1.5 system-ui"><a href="index.html" style="color:inherit">← Sundog: persona and prose revision</a> · Character artwork pending original references · Unpublished draft</aside>
 <!-- BEGIN site-nav -->
 <nav aria-label="Site" class="site-nav">
 <div class="site-nav-inner">
@@ -342,7 +342,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 <a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
 <a href="https://local-ai-models.ai/claws.html">CLAWS</a>
 <a href="https://local-ai-models.ai/sentiment.html">Community</a>
-<a href="guidance.html">Guidance</a>
+<a href="https://local-ai-models.ai/guidance.html">Guidance</a>
 <a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
 <a href="https://local-ai-models.ai/quantization.html">Quantization</a>
 <a href="https://local-ai-models.ai/stacks.html">Stacks</a>
@@ -355,42 +355,41 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 <div class="hero-bg"></div>
 <div class="hero-overlay"></div>
 <div class="hero-inner">
-<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="guidance.html">Guidance</a></div>
-<div class="hero-eyebrow">Memory and context</div>
-<h1 class="hero-title">The Context Behind an 18 GiB Download</h1><p class="hero-sub">Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget.</p>
+<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="https://local-ai-models.ai/guidance.html">Guidance</a></div>
+<div class="hero-eyebrow">Agent interfaces</div>
+<h1 class="hero-title">Fix the Tool Loop Before You Replace the Model</h1><p class="hero-sub">Hold the model fixed and diagnose invalid actions, retries and unused tool results. Harness research supports a concrete interface experiment, not an untested GPU buying rule.</p>
 <p class="hero-byline">By Sundog</p>
-<div class="updated-line">6 September 2026</div>
+<div class="updated-line">7 September 2026</div>
 </div>
 </section>
 <main class="container">
-<figure class="article-hero"><img alt="Sundog compares two similarly sized weight cartridges backed by different context drawer banks." fetchpriority="high" height="941" src="sundog-kv-2026-09.png" width="1672"/><figcaption>Similar weight files can hide very different growing cache requirements. The illustration is conceptual; calculations follow below.</figcaption></figure><article class="article-body"><p class="lede">Two downloads can take almost the same space on disk and leave radically different room for a conversation. That difference starts in the model configuration, before you choose a GPU or touch a cache setting.</p>
-<p>The official Qwen3-32B Q4_K_M file is 18.40 GiB. IBM's Granite 4.0 h-small Q4_K_M is 18.14 GiB. Close enough to occupy the same shopping shortlist. Their growing FP16 attention caches cost 256 KiB and 16 KiB per token respectively, under the configurations below. At a long context, that small architectural detail overtakes the difference between the downloads.</p>
-<p><span class="opinion-label">[OPINION]</span> I would read the attention layout before spending an afternoon downloading a model for long sessions. Weight size screens the candidate. The cache layout tells you which session to try.</p>
-<h2 id="a-comparison-you-can-reproduce-before-loading">A comparison you can reproduce before loading</h2>
-<p>Use one sequence, FP16 keys and values, and a runtime that stores the attention cache in the layout described by the model. For ordinary grouped-query attention, the growing payload is two times the attention-layer count, times KV heads, times head dimension, times bytes per value, times cached tokens. The factor of two counts keys and values.</p>
-<div class="formula-box"><code>KV bytes = 2 × attention layers × KV heads × head dimension × bytes per value × tokens</code></div>
-<p>Qwen3-32B has 64 layers, 8 KV heads and a head dimension of 128. At two bytes per value, that gives 262,144 bytes per token. Granite has four attention layers with those same head dimensions and KV-head count, plus 36 Mamba layers. Its growing attention term is 16,384 bytes per token. The Mamba layers need recurrent state; omitting them from the growing KV term does not make their memory free. <a href="https://huggingface.co/Qwen/Qwen3-32B/blob/9216db5781bf21249d130ec9da846c4624c16137/config.json">Qwen configuration</a>; <a href="https://huggingface.co/ibm-granite/granite-4.0-h-small/blob/b8c0982bab7fde4eb48110f5a069527c008fab39/config.json">Granite configuration</a>.</p>
-<p class="table-caption">Calculated storage terms, GiB. One GiB is 1,073,741,824 bytes.</p><p class="table-hint">Scroll table horizontally to see every column →</p><div class="table-wrap"><table><caption class="sr-only">Calculated storage terms, GiB. One GiB is 1,073,741,824 bytes.</caption><thead><tr><th>Model and named Q4_K_M artifact</th><th>File bytes → GiB</th><th>Tokens</th><th>FP16 growing KV</th><th>File + growing KV</th></tr></thead><tbody>
-<tr><td><a href="https://local-ai-models.ai/local-ai-models.html#qwen3-32b">Qwen3-32B</a></td><td>19,762,149,024 → 18.40</td><td>32,768</td><td>8.00</td><td>26.40</td></tr>
-<tr><td>Granite 4.0 h-small</td><td>19,476,621,984 → 18.14</td><td>32,768</td><td>0.50</td><td>18.64</td></tr>
-<tr><td>Granite 4.0 h-small</td><td>same file</td><td>131,072</td><td>2.00</td><td>20.14</td></tr>
-</tbody></table></div>
-<p>Artifact sources: <a href="https://huggingface.co/Qwen/Qwen3-32B-GGUF/blob/938a7432affaec9157f883a87164e2646ae17555/Qwen3-32B-Q4_K_M.gguf">Qwen's exact file</a> and <a href="https://huggingface.co/ibm-granite/granite-4.0-h-small-GGUF/blob/6522095069a86fc3186b8632850e4373dd850cac/granite-4.0-h-small-Q4_K_M.gguf">IBM's exact file</a>. A different converter's Q4_K_M may have a different size.</p>
-<p>The final column is a planning subtotal. It excludes recurrent state, runtime workspaces, padding, temporary prefill allocations and other processes. Disk storage can also differ from loaded tensor storage. I did not test either model's maximum context on a 24 GiB device. The 20.14 GiB subtotal makes Granite a candidate to investigate at its declared 131,072-token window; it establishes no successful load or generation.</p>
-<p>The sixteenfold ratio applies to the growing attention cache. It says nothing about a sixteenfold reduction in total memory, or which model will answer better. Those are different comparisons.</p>
-<h2 id="the-layer-count-can-send-you-in-the-wrong-direction">The layer count can send you in the wrong direction</h2>
-<p>Sliding-window attention adds another trap. A full-attention layer keeps growing with the sequence; a correctly bounded sliding layer can stop growing after its window fills. Averaging both into one constant bytes-per-token number hides the context length used to calculate it.</p>
-<p>OLMo 3.1 32B has 16 full-attention layers and 48 sliding layers with a 4,096-token window. At 65,536 tokens, a simplified cache that honors those windows has the storage of 19 full-length layers: 16 + 48 × 4,096 / 65,536. Treating all 64 layers as full attention overstates that term by about 3.37 times. Four times describes the long-context growth ratio, not the total at this window. <a href="https://huggingface.co/allenai/Olmo-3.1-32B-Instruct/blob/ac0587e4a7744a551c059d8cd17ba220bc940dae/config.json">Pinned OLMo configuration</a>.</p>
-<p>The runtime must honor the layout for that arithmetic to help. llama.cpp exposes <code>--swa-full</code>, which changes how sliding-window cache is allocated. Its default fitting behavior adjusts unset settings; your explicit context request and the runner's actual allocations still matter. These details were checked at revision <code>465e49b9cea7</code>. Read the startup log from your build. <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/common/arg.cpp">Argument implementation</a>; <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/common/common.h">defaults</a>.</p>
-<h2 id="quantizing-the-cache-changes-the-next-experiment">Quantizing the cache changes the next experiment</h2>
-<p>Weight quantization and cache quantization are separate choices. In llama.cpp's block layout, 32 FP16 values occupy 64 bytes. A q8_0 block occupies 34 bytes; q4_0 occupies 18. That makes the payloads 53.125% and 28.125% of FP16, before allocation padding and other buffers. <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/ggml/src/ggml-common.h">Pinned block definitions</a>.</p>
-<p>Apply that q4_0 ratio to the Qwen3-32B example and its 32,768-token attention payload falls from 8.00 to 2.25 GiB. The file-plus-KV subtotal becomes 20.65 GiB. That reduction justifies testing the cache setting. The whole session still needs a measured allocation.</p>
-<p>Speed needs its own measurement. Memoriant's corrected April 2026 GB10 results used <code>Nemotron-3-Nano-30B-A3B-UD-Q4_K_XL.gguf</code> and llama.cpp build 8399. At 24K context, reported generation was 44.6 tokens/s with FP16 cache and 39.3 with q4_0; at 110K it was 38.0 and 24.0. The same report found essentially equal short-context speed. Those are results for that model and build, rather than a universal tax on cache quantization. <a href="https://github.com/Memoriant/dgx-spark-kv-cache-benchmark">Corrected benchmark and setup</a>.</p>
-<p>I have not reproduced that benchmark. On your runner, check the answers as well as generation speed. Saving cache memory is useful only if the output remains usable and the longer session is worth the latency.</p>
-<h2 id="keep-the-effective-context-with-the-result">Keep the effective context with the result</h2>
-<p>A runner can load a smaller context than the one you had in mind. Current Ollama source selects automatic defaults using VRAM-capacity tiers and permits one lower-context retry after an out-of-memory failure with automatically selected context. An explicit setting and the model's limit change that path. The checked revision is <code>83ed7d9965b1</code>. <a href="https://github.com/ollama/ollama/blob/83ed7d9965b1ee07e0f0b29fd46e47c31f0fcab8/server/routes.go">Context selection</a>; <a href="https://github.com/ollama/ollama/blob/83ed7d9965b1ee07e0f0b29fd46e47c31f0fcab8/server/sched.go">load retry</a>.</p>
-<p>Write down the effective context, cache dtype and parallel sequence count with the exact weight file and runner build. Send a prompt near your intended working length, leave room for the answer, and inspect the endpoint's finish reason. For llama.cpp, native truncation fields and an OpenAI-compatible <code>finish_reason</code> are different response surfaces. <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/tools/server/server-task.cpp">Response serialization</a>.</p>
-<p>Then check whether the answer still uses the part of the conversation you needed it to remember. That is the session you bought the memory for.</p>
+<article class="article-body"><p class="lede">If your coding agent keeps calling a tool with the wrong arguments, downloading a larger model is an expensive way to avoid inspecting the tool call. I would give the model a fair interface before asking it to be cleverer.</p>
+<p>The useful question is specific: did the model choose the wrong action, did the interface make a valid action hard to express, or did the agent fail to use the result? Those failures can look identical in a final score. They leave different traces.</p>
+<p><span class="opinion-label">[OPINION]</span> I would freeze the model and repair a repeatable interface failure before changing weights. I want to know whether the machine misunderstood the job or whether I gave it a poor way to do the job. A narrow fix makes that comparison possible, and the next model gets to inherit the repair.</p>
+<h2 id="find-the-first-failed-transition">Find the first failed transition</h2>
+<p>Take an illustrative repository-editing run. The agent finds the right file, prepares a plausible patch and sends the tool a string where the schema requires an array. The tool rejects it. The agent repeats the same call, then reports that editing is unavailable.</p>
+<p>The failed patch and the failed interface are different things to test. A validator can identify the wrong field before dispatch. A precise error can show the expected type. A retry can carry the failed arguments and the actual error back to the model. Each change has a visible purpose; none requires pretending that the patch itself was correct.</p>
+<p>Keep the original task and model settings fixed. Try the interface change on the failing case, then on untouched cases with valid calls, missing fields and different errors. If the intervention merely hard-codes the answer to the first trace, it has taught you very little.</p>
+<h2 id="the-research-changes-the-place-to-look">The research changes the place to look</h2>
+<p>Life-Harness treats the interface around a frozen model as something that can be improved across task settings. It reported improved performance in 116 of 126 model-environment settings. That supports investigating the harness as a source of performance differences; it does not establish a preferred coding-model quantization on a desktop GPU.<a class="ref" href="#source-1">[1]</a></p>
+<p>Self-Harness also studies changes around the model. Its local Qwen deployment used four H200s. The word local describes deployment location, with no promise about reproducing that workload on a 24 GB card.<a class="ref" href="#source-2">[2]</a></p>
+<p>HELIX reports a code-repair evolution round with a 65-candidate portfolio and 438 records from a 200-slot slice. A searched portfolio, the selected fixed harness and its baseline cover different experimental objects. A reader cannot turn the portfolio's coverage into the score of one installed agent.<a class="ref" href="#source-3">[3]</a></p>
+<p>I did not test these systems on a local coding workload. Their shared value for this decision is that weights can remain fixed while the surrounding procedure changes. The magnitude of your improvement still comes from your tasks.</p>
+<h2 id="count-the-loop-once">Count the loop once</h2>
+<p>A harness has costs, but there is no inherent two-to-four-gigabyte GPU charge for validating arguments and keeping a task record. Host-side orchestration, a separate resident model and a longer generator context are different allocations.</p>
+<p>Tool output returned to the generator can lengthen the prompt. Repeated calls can lengthen it again. On a conventional attention model, those retained tokens affect cache requirements; a runner may also reserve the cache in advance. Count that context in the generator's budget once. If your harness runs another model, name its artifact and residency separately. The <a href="kv-cache-geometry.html">KV geometry guide</a> works through the arithmetic.</p>
+<p>Neither a longer trace nor the agent papers settles a 7B Q8 versus larger-Q4 purchase. That comparison needs the actual artifacts, runtime and completed coding tasks. The <a href="best-local-coding-llm.html">coding-model guide</a> is a starting point for selecting candidates after the interface has a fair test.</p>
+<h2 id="keep-useful-errors-small">Keep useful errors small</h2>
+<p>The right correction is often less text. A parser rejection needs the field and expected type. A test failure needs the failing test and relevant output. Sending the entire tool history on every retry spends context without establishing that the model used it.</p>
+<p>For the malformed-array example, compare completed patches, repeated invalid calls, elapsed time and retained prompt length. Keep successful calls in the test set too: a check that catches one error while blocking normal work has moved the failure.</p>
+<p>Store the task result beside the model revision and harness revision. Once you have a repeatable improvement, consider whether part of the procedure belongs in a reusable skill. That introduces a separate <a href="skill-misevolution-openclaw.html">promotion decision</a>; a successful run leaves the scope of later reuse unresolved.</p>
+<p>Then change the model if the remaining failures justify it. You will have a repaired interface, a record of where the old model struggled, and a fair job for the new one. I would rather hand over that than another unexplained score.</p>
+<h2 id="sources">Sources</h2>
+<ol class="sources-list">
+<li id="source-1"><a href="https://arxiv.org/html/2605.22166v1" rel="nofollow">Life-Harness, arXiv:2605.22166v1</a>. Checked 6 September 2026.</li>
+<li id="source-2"><a href="https://arxiv.org/html/2606.09498v1" rel="nofollow">Self-Harness, arXiv:2606.09498v1</a>. Checked 6 September 2026.</li>
+<li id="source-3"><a href="https://arxiv.org/html/2608.13951v1" rel="nofollow">HELIX, arXiv:2608.13951v1</a>. Checked 6 September 2026.</li>
+</ol>
 </article>
 </main>
 <section class="related"><h2 class="related-title">Keep reading</h2><div class="related-grid"><a class="related-card" href="https://local-ai-models.ai/local-ai-models.html"><div class="related-name">Model catalog</div><p class="related-desc">Inspect the model and its published specifications.</p></a><a class="related-card" href="https://local-ai-models.ai/vram-guide.html"><div class="related-name">VRAM guide</div><p class="related-desc">Plan weights, context and runtime memory.</p></a><a class="related-card" href="https://local-ai-models.ai/benchmark-goodhart-law.html"><div class="related-name">Read a coding benchmark</div><p class="related-desc">Keep the evaluation conditions with the score.</p></a></div></section>
@@ -415,7 +414,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 </ul></div>
 <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
 <li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
-<li><a href="guidance.html">Guidance</a></li>
+<li><a href="https://local-ai-models.ai/guidance.html">Guidance</a></li>
 <li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
 <li><a href="best-local-coding-llm.html">Best Coding LLM</a></li>
 <li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>

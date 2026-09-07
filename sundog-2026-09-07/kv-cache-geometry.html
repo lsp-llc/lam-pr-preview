@@ -12,10 +12,10 @@
 <meta content="Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget." property="og:description"/>
 <meta content="https://local-ai-models.ai/kv-cache-geometry.html" property="og:url"/>
 <meta content="Local AI Models" property="og:site_name"/>
-<meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-06/sundog-kv-2026-09.png" property="og:image"/>
+
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="The Context Behind an 18 GiB Download" name="twitter:title"/>
-<meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-06/sundog-kv-2026-09.png" name="twitter:image"/>
+
 <meta content="noindex,nofollow,noarchive" name="robots"/>
 <style>
 :root {
@@ -328,8 +328,8 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 }
 </style>
 <!-- END site-chrome-css -->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Context Behind an 18 GiB Download", "description": "Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget.", "dateModified": "2026-09-06", "author": {"@type": "Person", "name": "Sundog"}, "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"}, "image": "https://local-ai-models.ai/sundog-kv-2026-09.png", "mainEntityOfPage": "https://local-ai-models.ai/kv-cache-geometry.html"}</script></head>
-<body><aside style="padding:16px 22px;background:#5a2922;color:#fff0e7;text-align:center;font:15px/1.5 system-ui"><strong>Earlier review snapshot: artwork rejected; persona under revision.</strong> <a style="color:inherit" href="../sundog-2026-09-07/index.html">Open the September 7 revision →</a></aside><aside style="padding:12px 20px;background:#332918;color:#f8dfaa;text-align:center;font:14px system-ui"><a href="index.html" style="color:inherit">← Sundog editorial review set</a> · Preview · Production publication pending</aside>
+</head>
+<body><aside style="padding:14px 20px;background:#392f23;color:#f8dfaa;text-align:center;font:14px/1.5 system-ui"><a href="index.html" style="color:inherit">← Sundog: persona and prose revision</a> · Character artwork pending original references · Unpublished draft</aside>
 <!-- BEGIN site-nav -->
 <nav aria-label="Site" class="site-nav">
 <div class="site-nav-inner">
@@ -342,7 +342,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 <a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
 <a href="https://local-ai-models.ai/claws.html">CLAWS</a>
 <a href="https://local-ai-models.ai/sentiment.html">Community</a>
-<a href="guidance.html">Guidance</a>
+<a href="https://local-ai-models.ai/guidance.html">Guidance</a>
 <a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
 <a href="https://local-ai-models.ai/quantization.html">Quantization</a>
 <a href="https://local-ai-models.ai/stacks.html">Stacks</a>
@@ -355,17 +355,17 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 <div class="hero-bg"></div>
 <div class="hero-overlay"></div>
 <div class="hero-inner">
-<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="guidance.html">Guidance</a></div>
+<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="https://local-ai-models.ai/guidance.html">Guidance</a></div>
 <div class="hero-eyebrow">Memory and context</div>
 <h1 class="hero-title">The Context Behind an 18 GiB Download</h1><p class="hero-sub">Qwen3-32B and Granite 4.0 h-small have similar Q4_K_M file sizes and very different growing attention caches. A sourced calculation explains the session budget.</p>
 <p class="hero-byline">By Sundog</p>
-<div class="updated-line">6 September 2026</div>
+<div class="updated-line">7 September 2026</div>
 </div>
 </section>
 <main class="container">
-<figure class="article-hero"><img alt="Sundog compares two similarly sized weight cartridges backed by different context drawer banks." fetchpriority="high" height="941" src="sundog-kv-2026-09.png" width="1672"/><figcaption>Similar weight files can hide very different growing cache requirements. The illustration is conceptual; calculations follow below.</figcaption></figure><article class="article-body"><p class="lede">Two downloads can take almost the same space on disk and leave radically different room for a conversation. That difference starts in the model configuration, before you choose a GPU or touch a cache setting.</p>
+<article class="article-body"><p class="lede">Two downloads can take almost the same space on disk and leave radically different room for a conversation. I want the session budget before committing to the download. That starts with the attention layout in the model configuration.</p>
 <p>The official Qwen3-32B Q4_K_M file is 18.40 GiB. IBM's Granite 4.0 h-small Q4_K_M is 18.14 GiB. Close enough to occupy the same shopping shortlist. Their growing FP16 attention caches cost 256 KiB and 16 KiB per token respectively, under the configurations below. At a long context, that small architectural detail overtakes the difference between the downloads.</p>
-<p><span class="opinion-label">[OPINION]</span> I would read the attention layout before spending an afternoon downloading a model for long sessions. Weight size screens the candidate. The cache layout tells you which session to try.</p>
+<p><span class="opinion-label">[OPINION]</span> I would read the attention layout before spending an afternoon downloading a model for long sessions. I want the conversation I came for, including its awkward length and the answer at the end. Weight size helps choose the candidate; the cache layout tells me which session to try.</p>
 <h2 id="a-comparison-you-can-reproduce-before-loading">A comparison you can reproduce before loading</h2>
 <p>Use one sequence, FP16 keys and values, and a runtime that stores the attention cache in the layout described by the model. For ordinary grouped-query attention, the growing payload is two times the attention-layer count, times KV heads, times head dimension, times bytes per value, times cached tokens. The factor of two counts keys and values.</p>
 <div class="formula-box"><code>KV bytes = 2 × attention layers × KV heads × head dimension × bytes per value × tokens</code></div>
@@ -390,8 +390,8 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 <h2 id="keep-the-effective-context-with-the-result">Keep the effective context with the result</h2>
 <p>A runner can load a smaller context than the one you had in mind. Current Ollama source selects automatic defaults using VRAM-capacity tiers and permits one lower-context retry after an out-of-memory failure with automatically selected context. An explicit setting and the model's limit change that path. The checked revision is <code>83ed7d9965b1</code>. <a href="https://github.com/ollama/ollama/blob/83ed7d9965b1ee07e0f0b29fd46e47c31f0fcab8/server/routes.go">Context selection</a>; <a href="https://github.com/ollama/ollama/blob/83ed7d9965b1ee07e0f0b29fd46e47c31f0fcab8/server/sched.go">load retry</a>.</p>
 <p>Write down the effective context, cache dtype and parallel sequence count with the exact weight file and runner build. Send a prompt near your intended working length, leave room for the answer, and inspect the endpoint's finish reason. For llama.cpp, native truncation fields and an OpenAI-compatible <code>finish_reason</code> are different response surfaces. <a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/tools/server/server-task.cpp">Response serialization</a>.</p>
-<p>Then check whether the answer still uses the part of the conversation you needed it to remember. That is the session you bought the memory for.</p>
-</article>
+<p>Then check whether the answer still uses the part of the conversation you needed it to remember. Keep that result with the allocation record. The extra room has earned its keep when it carries the work through.</p>
+<h2 id="sources">Sources</h2><ol class="sources-list"><li><a href="https://huggingface.co/Qwen/Qwen3-32B/blob/9216db5781bf21249d130ec9da846c4624c16137/config.json">Qwen configuration</a>. Source checked 6 September 2026.</li><li><a href="https://huggingface.co/ibm-granite/granite-4.0-h-small/blob/b8c0982bab7fde4eb48110f5a069527c008fab39/config.json">Granite configuration</a>. Source checked 6 September 2026.</li><li><a href="https://huggingface.co/Qwen/Qwen3-32B-GGUF/blob/938a7432affaec9157f883a87164e2646ae17555/Qwen3-32B-Q4_K_M.gguf">Qwen's exact file</a>. Source checked 6 September 2026.</li><li><a href="https://huggingface.co/ibm-granite/granite-4.0-h-small-GGUF/blob/6522095069a86fc3186b8632850e4373dd850cac/granite-4.0-h-small-Q4_K_M.gguf">IBM's exact file</a>. Source checked 6 September 2026.</li><li><a href="https://huggingface.co/allenai/Olmo-3.1-32B-Instruct/blob/ac0587e4a7744a551c059d8cd17ba220bc940dae/config.json">Pinned OLMo configuration</a>. Source checked 6 September 2026.</li><li><a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/common/arg.cpp">Argument implementation</a>. Source checked 6 September 2026.</li><li><a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/common/common.h">defaults</a>. Source checked 6 September 2026.</li><li><a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/ggml/src/ggml-common.h">Pinned block definitions</a>. Source checked 6 September 2026.</li><li><a href="https://github.com/Memoriant/dgx-spark-kv-cache-benchmark">Corrected benchmark and setup</a>. Source checked 6 September 2026.</li><li><a href="https://github.com/ollama/ollama/blob/83ed7d9965b1ee07e0f0b29fd46e47c31f0fcab8/server/routes.go">Context selection</a>. Source checked 6 September 2026.</li><li><a href="https://github.com/ollama/ollama/blob/83ed7d9965b1ee07e0f0b29fd46e47c31f0fcab8/server/sched.go">load retry</a>. Source checked 6 September 2026.</li><li><a href="https://github.com/ggml-org/llama.cpp/blob/465e49b9cea78a68b9c244ffb48d0ee24a82873d/tools/server/server-task.cpp">Response serialization</a>. Source checked 6 September 2026.</li></ol></article>
 </main>
 <section class="related"><h2 class="related-title">Keep reading</h2><div class="related-grid"><a class="related-card" href="https://local-ai-models.ai/local-ai-models.html"><div class="related-name">Model catalog</div><p class="related-desc">Inspect the model and its published specifications.</p></a><a class="related-card" href="https://local-ai-models.ai/vram-guide.html"><div class="related-name">VRAM guide</div><p class="related-desc">Plan weights, context and runtime memory.</p></a><a class="related-card" href="https://local-ai-models.ai/benchmark-goodhart-law.html"><div class="related-name">Read a coding benchmark</div><p class="related-desc">Keep the evaluation conditions with the score.</p></a></div></section>
 <!-- BEGIN site-footer -->
@@ -415,7 +415,7 @@ footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px so
 </ul></div>
 <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
 <li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
-<li><a href="guidance.html">Guidance</a></li>
+<li><a href="https://local-ai-models.ai/guidance.html">Guidance</a></li>
 <li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
 <li><a href="best-local-coding-llm.html">Best Coding LLM</a></li>
 <li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
