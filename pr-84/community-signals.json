@@ -1,0 +1,1063 @@
+{
+  "generated_at": "2026-09-07T13:34:09.040Z",
+  "source": "HuggingFace Hub public API (downloads, likes, id) for catalog cards in public/local-ai-models.html",
+  "count": 132,
+  "models": [
+    {
+      "slug": "bge-m3",
+      "name": "BGE-M3",
+      "id": "BAAI/bge-m3",
+      "url": "https://huggingface.co/BAAI/bge-m3",
+      "downloads": 37730552,
+      "likes": 3475
+    },
+    {
+      "slug": "qwen3-0-6b-1-7b-4b",
+      "name": "Qwen3 (0.6B / 1.7B / 4B)",
+      "id": "Qwen/Qwen3-0.6B",
+      "url": "https://huggingface.co/Qwen/Qwen3-0.6B",
+      "downloads": 30984311,
+      "likes": 2806
+    },
+    {
+      "slug": "qwen3-5-4b-9b-27b",
+      "name": "Qwen3.5 (4B / 9B / 27B)",
+      "id": "Qwen/Qwen3.5-4B",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B",
+      "downloads": 21069488,
+      "likes": 3837
+    },
+    {
+      "slug": "bge-reranker-v2-m3-gemma-based",
+      "name": "BGE Reranker v2-M3 / Gemma-based",
+      "id": "BAAI/bge-reranker-v2-m3",
+      "url": "https://huggingface.co/BAAI/bge-reranker-v2-m3",
+      "downloads": 18005080,
+      "likes": 1162
+    },
+    {
+      "slug": "qwen3-8b",
+      "name": "Qwen3 (8B)",
+      "id": "Qwen/Qwen3-8B",
+      "url": "https://huggingface.co/Qwen/Qwen3-8B",
+      "downloads": 12996307,
+      "likes": 1351
+    },
+    {
+      "slug": "kokoro-82m",
+      "name": "Kokoro-82M",
+      "id": "hexgrad/Kokoro-82M",
+      "url": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "downloads": 11464443,
+      "likes": 6825
+    },
+    {
+      "slug": "gemma-4-31b",
+      "name": "Gemma 4 (31B)",
+      "id": "google/gemma-4-31B-it",
+      "url": "https://huggingface.co/google/gemma-4-31B-it",
+      "downloads": 8553972,
+      "likes": 3734
+    },
+    {
+      "slug": "gemma-4-26b-moe-3-8b-active",
+      "name": "Gemma 4 (26B-A4B MoE / 3.8B active)",
+      "id": "google/gemma-4-26B-A4B-it",
+      "url": "https://huggingface.co/google/gemma-4-26B-A4B-it",
+      "downloads": 8409061,
+      "likes": 1482
+    },
+    {
+      "slug": "xtts-v2-coqui-tts",
+      "name": "XTTS v2 / Coqui TTS",
+      "id": "coqui/XTTS-v2",
+      "url": "https://huggingface.co/coqui/XTTS-v2",
+      "downloads": 7280641,
+      "likes": 3771
+    },
+    {
+      "slug": "gpt-oss-20b",
+      "name": "GPT-OSS (20B)",
+      "id": "openai/gpt-oss-20b",
+      "url": "https://huggingface.co/openai/gpt-oss-20b",
+      "downloads": 6493903,
+      "likes": 5003
+    },
+    {
+      "slug": "qwen3-8-27b",
+      "name": "Qwen3.8 (27B)",
+      "id": "Qwen/Qwen3.8-27B",
+      "url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+      "downloads": 6416358,
+      "likes": 14197
+    },
+    {
+      "slug": "llama-3-1-8b",
+      "name": "Llama 3.1 (8B)",
+      "id": "meta-llama/Llama-3.1-8B-Instruct",
+      "url": "https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct",
+      "downloads": 5571962,
+      "likes": 6816
+    },
+    {
+      "slug": "gpt-oss-120b-moe-5b-active",
+      "name": "GPT-OSS (120B MoE / 5B active)",
+      "id": "openai/gpt-oss-120b",
+      "url": "https://huggingface.co/openai/gpt-oss-120b",
+      "downloads": 5240073,
+      "likes": 5166
+    },
+    {
+      "slug": "qwen3-32b",
+      "name": "Qwen3 (32B)",
+      "id": "Qwen/Qwen3-32B",
+      "url": "https://huggingface.co/Qwen/Qwen3-32B",
+      "downloads": 5148913,
+      "likes": 743
+    },
+    {
+      "slug": "whisper-large-v3-v3-turbo",
+      "name": "Whisper Large V3 / V3 Turbo",
+      "id": "openai/whisper-large-v3",
+      "url": "https://huggingface.co/openai/whisper-large-v3",
+      "downloads": 5029688,
+      "likes": 6249
+    },
+    {
+      "slug": "qwen3-6-27b",
+      "name": "Qwen3.6 (27B)",
+      "id": "Qwen/Qwen3.6-27B",
+      "url": "https://huggingface.co/Qwen/Qwen3.6-27B",
+      "downloads": 5004888,
+      "likes": 2286
+    },
+    {
+      "slug": "gemma-4-e4b",
+      "name": "Gemma 4 (E4B)",
+      "id": "google/gemma-4-E4B-it",
+      "url": "https://huggingface.co/google/gemma-4-E4B-it",
+      "downloads": 4786935,
+      "likes": 1536
+    },
+    {
+      "slug": "deepseek-v4-flash-0731",
+      "name": "DeepSeek V4 Flash (0731)",
+      "id": "deepseek-ai/DeepSeek-V4-Flash-0731",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-0731",
+      "downloads": 4469466,
+      "likes": 3895
+    },
+    {
+      "slug": "qwen3-6-35b-moe-3b-active",
+      "name": "Qwen3.6 (35B MoE / 3B active)",
+      "id": "Qwen/Qwen3.6-35B-A3B",
+      "url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "downloads": 4284123,
+      "likes": 2784
+    },
+    {
+      "slug": "gemma-3-1b-4b",
+      "name": "Gemma 3 (1B / 4B)",
+      "id": "google/gemma-3-1b-it",
+      "url": "https://huggingface.co/google/gemma-3-1b-it",
+      "downloads": 4076376,
+      "likes": 2607
+    },
+    {
+      "slug": "qwen3-asr-1-7b-0-6b",
+      "name": "Qwen3-ASR (1.7B / 0.6B)",
+      "id": "Qwen/Qwen3-ASR-1.7B",
+      "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
+      "downloads": 4075057,
+      "likes": 1424
+    },
+    {
+      "slug": "gemma-4-e2b",
+      "name": "Gemma 4 (E2B)",
+      "id": "google/gemma-4-E2B-it",
+      "url": "https://huggingface.co/google/gemma-4-E2B-it",
+      "downloads": 3211180,
+      "likes": 938
+    },
+    {
+      "slug": "gemma-4-12b",
+      "name": "Gemma 4 (12B Unified)",
+      "id": "google/gemma-4-12B-it",
+      "url": "https://huggingface.co/google/gemma-4-12B-it",
+      "downloads": 3097481,
+      "likes": 1528
+    },
+    {
+      "slug": "mistral-7b-nemo-12b",
+      "name": "Mistral 7B / Nemo 12B",
+      "id": "mistralai/Mistral-7B-Instruct-v0.3",
+      "url": "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3",
+      "downloads": 2841025,
+      "likes": 4535
+    },
+    {
+      "slug": "llama-3-2-1b-3b",
+      "name": "Llama 3.2 (1B / 3B)",
+      "id": "meta-llama/Llama-3.2-1B",
+      "url": "https://huggingface.co/meta-llama/Llama-3.2-1B",
+      "downloads": 2761565,
+      "likes": 5096
+    },
+    {
+      "slug": "colbert-v2-colbertv2-0",
+      "name": "ColBERT v2 / ColBERTv2.0",
+      "id": "colbert-ir/colbertv2.0",
+      "url": "https://huggingface.co/colbert-ir/colbertv2.0",
+      "downloads": 2517586,
+      "likes": 366
+    },
+    {
+      "slug": "kimi-k3-2-8t-moe-104b-active",
+      "name": "Kimi K3 (2.8T MoE / 104B active)",
+      "id": "moonshotai/Kimi-K3",
+      "url": "https://huggingface.co/moonshotai/Kimi-K3",
+      "downloads": 2408747,
+      "likes": 11223
+    },
+    {
+      "slug": "jina-embeddings-v3-0-6b",
+      "name": "Jina Embeddings v3 (0.6B)",
+      "id": "jinaai/jina-embeddings-v3",
+      "url": "https://huggingface.co/jinaai/jina-embeddings-v3",
+      "downloads": 2297809,
+      "likes": 1154
+    },
+    {
+      "slug": "nomic-embed-text-v2",
+      "name": "Nomic Embed Text V2",
+      "id": "nomic-ai/nomic-embed-text-v2-moe",
+      "url": "https://huggingface.co/nomic-ai/nomic-embed-text-v2-moe",
+      "downloads": 2291464,
+      "likes": 498
+    },
+    {
+      "slug": "qwen3-embedding-0-6b-4b-8b",
+      "name": "Qwen3-Embedding (0.6B / 4B / 8B)",
+      "id": "Qwen/Qwen3-Embedding-8B",
+      "url": "https://huggingface.co/Qwen/Qwen3-Embedding-8B",
+      "downloads": 2167573,
+      "likes": 796
+    },
+    {
+      "slug": "musicgen-1-5b-3-3b",
+      "name": "MusicGen (1.5B / 3.3B)",
+      "id": "facebook/musicgen-medium",
+      "url": "https://huggingface.co/facebook/musicgen-medium",
+      "downloads": 1923307,
+      "likes": 167
+    },
+    {
+      "slug": "glm-4-7-flash-30b-moe-3b-active",
+      "name": "GLM-4.7-Flash (30B MoE / 3B active)",
+      "id": "zai-org/GLM-4.7-Flash",
+      "url": "https://huggingface.co/zai-org/GLM-4.7-Flash",
+      "downloads": 1900701,
+      "likes": 1832
+    },
+    {
+      "slug": "stable-diffusion-xl-sdxl-1-0",
+      "name": "Stable Diffusion XL (SDXL 1.0)",
+      "id": "stabilityai/stable-diffusion-xl-base-1.0",
+      "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0",
+      "downloads": 1838882,
+      "likes": 8119
+    },
+    {
+      "slug": "chatterbox-tts-0-4b",
+      "name": "Chatterbox TTS (0.4B)",
+      "id": "ResembleAI/chatterbox",
+      "url": "https://huggingface.co/ResembleAI/chatterbox",
+      "downloads": 1795148,
+      "likes": 1780
+    },
+    {
+      "slug": "trellis-2-4b",
+      "name": "TRELLIS.2 (4B)",
+      "id": "microsoft/TRELLIS.2-4B",
+      "url": "https://huggingface.co/microsoft/TRELLIS.2-4B",
+      "downloads": 1763875,
+      "likes": 1174
+    },
+    {
+      "slug": "qwen3-14b",
+      "name": "Qwen3 (14B)",
+      "id": "Qwen/Qwen3-14B",
+      "url": "https://huggingface.co/Qwen/Qwen3-14B",
+      "downloads": 1713494,
+      "likes": 460
+    },
+    {
+      "slug": "stable-diffusion-1-5",
+      "name": "Stable Diffusion 1.5",
+      "id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "url": "https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "downloads": 1558707,
+      "likes": 1266
+    },
+    {
+      "slug": "deepseek-v3-2-r1-671b-moe-37b-active",
+      "name": "DeepSeek V3.2 / R1 (671B MoE / 37B active)",
+      "id": "deepseek-ai/DeepSeek-V3.2",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
+      "downloads": 1553171,
+      "likes": 1474
+    },
+    {
+      "slug": "nemotron-3-5-lightning-30b-a3b",
+      "name": "Nemotron 3.5 Lightning (30B-A3B)",
+      "id": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+      "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+      "downloads": 1209509,
+      "likes": 395
+    },
+    {
+      "slug": "muse-glimmer-30b",
+      "name": "Muse Glimmer (30B)",
+      "id": "meta-models/Muse-Glimmer-30B",
+      "url": "https://huggingface.co/meta-models/Muse-Glimmer-30B",
+      "downloads": 1166235,
+      "likes": 2188
+    },
+    {
+      "slug": "glm-5-2",
+      "name": "GLM-5.2",
+      "id": "zai-org/GLM-5.2",
+      "url": "https://huggingface.co/zai-org/GLM-5.2",
+      "downloads": 983632,
+      "likes": 5077
+    },
+    {
+      "slug": "llama-3-3-70b",
+      "name": "Llama 3.3 (70B)",
+      "id": "meta-llama/Llama-3.3-70B-Instruct",
+      "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct",
+      "downloads": 844566,
+      "likes": 3006
+    },
+    {
+      "slug": "flux-1-schnell-dev",
+      "name": "FLUX.1 (Schnell / Dev)",
+      "id": "black-forest-labs/FLUX.1-dev",
+      "url": "https://huggingface.co/black-forest-labs/FLUX.1-dev",
+      "downloads": 774316,
+      "likes": 14501
+    },
+    {
+      "slug": "nemotron-3-super-120b-a12b",
+      "name": "Nemotron 3 Super (120B-A12B)",
+      "id": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4",
+      "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4",
+      "downloads": 754157,
+      "likes": 434
+    },
+    {
+      "slug": "deepseek-coder-v2-16b-236b",
+      "name": "DeepSeek Coder V2 (16B / 236B)",
+      "id": "deepseek-ai/DeepSeek-Coder-V2-Instruct",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-Coder-V2-Instruct",
+      "downloads": 742569,
+      "likes": 1353
+    },
+    {
+      "slug": "qwen3-coder-30-5b-moe-3-3b-active",
+      "name": "Qwen3-Coder (30.5B MoE / 3.3B active)",
+      "id": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      "url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      "downloads": 725096,
+      "likes": 1229
+    },
+    {
+      "slug": "deepseek-r1-distilled-7b-8b",
+      "name": "DeepSeek-R1 Distilled (7B / 8B)",
+      "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+      "downloads": 724488,
+      "likes": 1757
+    },
+    {
+      "slug": "phi-4-14b",
+      "name": "Phi-4 (14B)",
+      "id": "microsoft/phi-4",
+      "url": "https://huggingface.co/microsoft/phi-4",
+      "downloads": 709618,
+      "likes": 2295
+    },
+    {
+      "slug": "z-image-turbo",
+      "name": "Z-Image-Turbo",
+      "id": "Tongyi-MAI/Z-Image-Turbo",
+      "url": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo",
+      "downloads": 689519,
+      "likes": 5210
+    },
+    {
+      "slug": "nemotron-3-nano-30b-a3b",
+      "name": "Nemotron 3 Nano (30B-A3B)",
+      "id": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8",
+      "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8",
+      "downloads": 629123,
+      "likes": 357
+    },
+    {
+      "slug": "deepseek-v4-pro-1-6t-moe-49b-active",
+      "name": "DeepSeek V4 Pro (1.6T MoE / 49B active)",
+      "id": "deepseek-ai/DeepSeek-V4-Pro",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro",
+      "downloads": 625856,
+      "likes": 5508
+    },
+    {
+      "slug": "kimi-k2-6-1t-moe-32b-active",
+      "name": "Kimi K2.6 (1T MoE / 32B active)",
+      "id": "moonshotai/Kimi-K2.6",
+      "url": "https://huggingface.co/moonshotai/Kimi-K2.6",
+      "downloads": 584554,
+      "likes": 1602
+    },
+    {
+      "slug": "smollm3-3b",
+      "name": "SmolLM3 (3B)",
+      "id": "HuggingFaceTB/SmolLM3-3B",
+      "url": "https://huggingface.co/HuggingFaceTB/SmolLM3-3B",
+      "downloads": 575911,
+      "likes": 1026
+    },
+    {
+      "slug": "ltx-video-2b-13b",
+      "name": "LTX Video (2B / 13B)",
+      "id": "Lightricks/LTX-Video",
+      "url": "https://huggingface.co/Lightricks/LTX-Video",
+      "downloads": 570440,
+      "likes": 2289
+    },
+    {
+      "slug": "deepseek-r1",
+      "name": "DeepSeek-R1 (32B)",
+      "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+      "downloads": 540253,
+      "likes": 1609
+    },
+    {
+      "slug": "distil-whisper",
+      "name": "Distil-Whisper",
+      "id": "distil-whisper/distil-large-v3",
+      "url": "https://huggingface.co/distil-whisper/distil-large-v3",
+      "downloads": 537178,
+      "likes": 380
+    },
+    {
+      "slug": "flux-2-dev-pro-flex-klein",
+      "name": "FLUX.2 (Dev / Pro / Flex / Klein)",
+      "id": "black-forest-labs/FLUX.2-dev",
+      "url": "https://huggingface.co/black-forest-labs/FLUX.2-dev",
+      "downloads": 467788,
+      "likes": 2180
+    },
+    {
+      "slug": "ornith-1-5-397b",
+      "name": "Ornith-1.5 (397B MoE)",
+      "id": "ornith-ai/Ornith-1.5-397B",
+      "url": "https://huggingface.co/ornith-ai/Ornith-1.5-397B",
+      "downloads": 466565,
+      "likes": 85
+    },
+    {
+      "slug": "phi-4-mini-3-8b",
+      "name": "Phi-4-mini (3.8B)",
+      "id": "microsoft/Phi-4-mini-instruct",
+      "url": "https://huggingface.co/microsoft/Phi-4-mini-instruct",
+      "downloads": 455193,
+      "likes": 830
+    },
+    {
+      "slug": "kimi-k2-5",
+      "name": "Kimi K2.5",
+      "id": "moonshotai/Kimi-K2.5",
+      "url": "https://huggingface.co/moonshotai/Kimi-K2.5",
+      "downloads": 446828,
+      "likes": 2867
+    },
+    {
+      "slug": "minimax-m2-5",
+      "name": "MiniMax M2.5",
+      "id": "MiniMaxAI/MiniMax-M2.5",
+      "url": "https://huggingface.co/MiniMaxAI/MiniMax-M2.5",
+      "downloads": 421390,
+      "likes": 1507
+    },
+    {
+      "slug": "qwen3-coder-next-80b-moe-3b-active",
+      "name": "Qwen3-Coder-Next (80B MoE / 3B active)",
+      "id": "Qwen/Qwen3-Coder-Next",
+      "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
+      "downloads": 401180,
+      "likes": 1630
+    },
+    {
+      "slug": "gemma-3-27b",
+      "name": "Gemma 3 (27B)",
+      "id": "google/gemma-3-27b-it",
+      "url": "https://huggingface.co/google/gemma-3-27b-it",
+      "downloads": 374507,
+      "likes": 2023
+    },
+    {
+      "slug": "deepseek-r1-14b-distilled",
+      "name": "DeepSeek-R1 (14B distilled)",
+      "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+      "downloads": 362613,
+      "likes": 677
+    },
+    {
+      "slug": "ornith-1-5-9b",
+      "name": "Ornith-1.5 (9B)",
+      "id": "ornith-ai/Ornith-1.5-9B",
+      "url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
+      "downloads": 341455,
+      "likes": 278
+    },
+    {
+      "slug": "nemotron-3-nano-omni-30b-a3b",
+      "name": "Nemotron 3 Nano Omni (30B-A3B)",
+      "id": "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16",
+      "url": "https://huggingface.co/nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16",
+      "downloads": 331344,
+      "likes": 421
+    },
+    {
+      "slug": "ministral-3-14b",
+      "name": "Ministral 3 (14B)",
+      "id": "mistralai/Ministral-3-14B-Instruct-2512",
+      "url": "https://huggingface.co/mistralai/Ministral-3-14B-Instruct-2512",
+      "downloads": 327727,
+      "likes": 320
+    },
+    {
+      "slug": "qwen3-235b-moe-22b-active",
+      "name": "Qwen3 (235B MoE / 22B active)",
+      "id": "Qwen/Qwen3-235B-A22B",
+      "url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
+      "downloads": 321614,
+      "likes": 1110
+    },
+    {
+      "slug": "ornith-1-5-35b-a3b",
+      "name": "Ornith-1.5 (35B MoE / ~3B active)",
+      "id": "ornith-ai/Ornith-1.5-35B-A3B",
+      "url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
+      "downloads": 291053,
+      "likes": 559
+    },
+    {
+      "slug": "arctic-embed-various-sizes",
+      "name": "Arctic Embed (Various sizes)",
+      "id": "Snowflake/snowflake-arctic-embed-l",
+      "url": "https://huggingface.co/Snowflake/snowflake-arctic-embed-l",
+      "downloads": 265229,
+      "likes": 104
+    },
+    {
+      "slug": "orpheus-tts-3b",
+      "name": "Orpheus TTS (3B)",
+      "id": "canopylabs/orpheus-3b-0.1-ft",
+      "url": "https://huggingface.co/canopylabs/orpheus-3b-0.1-ft",
+      "downloads": 232547,
+      "likes": 734
+    },
+    {
+      "slug": "smollm2-135m-360m-1-7b",
+      "name": "SmolLM2 (135M / 360M / 1.7B)",
+      "id": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "downloads": 224888,
+      "likes": 754
+    },
+    {
+      "slug": "devstral-small-2-24b",
+      "name": "Devstral Small 2 (24B)",
+      "id": "mistralai/Devstral-Small-2-24B-Instruct-2512",
+      "url": "https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512",
+      "downloads": 223861,
+      "likes": 656
+    },
+    {
+      "slug": "triposr-1b",
+      "name": "TripoSR (1B)",
+      "id": "stabilityai/TripoSR",
+      "url": "https://huggingface.co/stabilityai/TripoSR",
+      "downloads": 220333,
+      "likes": 657
+    },
+    {
+      "slug": "kimi-k2-7-code-1t-moe-32b-active",
+      "name": "Kimi K2.7-Code (1T MoE / 32B active)",
+      "id": "moonshotai/Kimi-K2.7-Code",
+      "url": "https://huggingface.co/moonshotai/Kimi-K2.7-Code",
+      "downloads": 212706,
+      "likes": 1382
+    },
+    {
+      "slug": "mistral-small-3-1-24b",
+      "name": "Mistral Small 3.1 (24B)",
+      "id": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+      "url": "https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+      "downloads": 197802,
+      "likes": 1378
+    },
+    {
+      "slug": "melotts",
+      "name": "MeloTTS",
+      "id": "myshell-ai/MeloTTS-English",
+      "url": "https://huggingface.co/myshell-ai/MeloTTS-English",
+      "downloads": 189088,
+      "likes": 315
+    },
+    {
+      "slug": "qwen3-5-397b-moe-17b-active",
+      "name": "Qwen3.5 (397B MoE / 17B active)",
+      "id": "Qwen/Qwen3.5-397B-A17B",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
+      "downloads": 172401,
+      "likes": 1556
+    },
+    {
+      "slug": "llama-4-scout-109b-moe-17b-active",
+      "name": "Llama 4 Scout (109B MoE / 17B active)",
+      "id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "downloads": 162521,
+      "likes": 1343
+    },
+    {
+      "slug": "mistral-small-3-2-24b",
+      "name": "Mistral Small 3.2 (24B)",
+      "id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+      "url": "https://huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+      "downloads": 124606,
+      "likes": 610
+    },
+    {
+      "slug": "glm-4-5-air-106b-moe-12b-active",
+      "name": "GLM-4.5-Air (106B MoE / 12B active)",
+      "id": "zai-org/GLM-4.5-Air",
+      "url": "https://huggingface.co/zai-org/GLM-4.5-Air",
+      "downloads": 112295,
+      "likes": 635
+    },
+    {
+      "slug": "hunyuan3d-2-0",
+      "name": "Hunyuan3D 2.0",
+      "id": "tencent/Hunyuan3D-2",
+      "url": "https://huggingface.co/tencent/Hunyuan3D-2",
+      "downloads": 95989,
+      "likes": 1810
+    },
+    {
+      "slug": "moonshine-tiny-base",
+      "name": "Moonshine (Tiny / Base)",
+      "id": "UsefulSensors/moonshine-tiny",
+      "url": "https://huggingface.co/UsefulSensors/moonshine-tiny",
+      "downloads": 92356,
+      "likes": 96
+    },
+    {
+      "slug": "mimo-v2-flash-309b-moe-15b-active",
+      "name": "MiMo-V2-Flash (309B MoE / 15B active)",
+      "id": "XiaomiMiMo/MiMo-V2-Flash",
+      "url": "https://huggingface.co/XiaomiMiMo/MiMo-V2-Flash",
+      "downloads": 89367,
+      "likes": 750
+    },
+    {
+      "slug": "deepseek-r1-70b",
+      "name": "DeepSeek-R1 (70B)",
+      "id": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
+      "downloads": 81732,
+      "likes": 799
+    },
+    {
+      "slug": "stable-diffusion-3-5-medium-large-turbo",
+      "name": "Stable Diffusion 3.5 (Medium / Large / Turbo)",
+      "id": "stabilityai/stable-diffusion-3.5-large",
+      "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
+      "downloads": 75603,
+      "likes": 3773
+    },
+    {
+      "slug": "qwq-32b",
+      "name": "QwQ (32B)",
+      "id": "Qwen/QwQ-32B",
+      "url": "https://huggingface.co/Qwen/QwQ-32B",
+      "downloads": 73007,
+      "likes": 2963
+    },
+    {
+      "slug": "canary-qwen-2-5b-granite-speech-3-3-8b",
+      "name": "Canary Qwen 2.5B / Granite Speech 3.3 8B",
+      "id": "nvidia/canary-qwen-2.5b",
+      "url": "https://huggingface.co/nvidia/canary-qwen-2.5b",
+      "downloads": 63456,
+      "likes": 630
+    },
+    {
+      "slug": "glm-5-744b-moe-40b-active",
+      "name": "GLM-5 (744B MoE / 40B active)",
+      "id": "zai-org/GLM-5",
+      "url": "https://huggingface.co/zai-org/GLM-5",
+      "downloads": 62900,
+      "likes": 2119
+    },
+    {
+      "slug": "glm-4-7-full-355b-moe-32b-active",
+      "name": "GLM-4.7 Full (355B MoE / 32B active)",
+      "id": "zai-org/GLM-4.7",
+      "url": "https://huggingface.co/zai-org/GLM-4.7",
+      "downloads": 57701,
+      "likes": 2054
+    },
+    {
+      "slug": "qwen3-8-2-4t-moe-95b-active",
+      "name": "Qwen3.8 (2.4T MoE / 95B active)",
+      "id": "Qwen/Qwen3.8-2.4T-A95B",
+      "url": "https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B",
+      "downloads": 51967,
+      "likes": 1204
+    },
+    {
+      "slug": "starcoder2-3b-7b",
+      "name": "StarCoder2 (3B / 7B)",
+      "id": "bigcode/starcoder2-7b",
+      "url": "https://huggingface.co/bigcode/starcoder2-7b",
+      "downloads": 40778,
+      "likes": 222
+    },
+    {
+      "slug": "bark",
+      "name": "Bark",
+      "id": "suno/bark",
+      "url": "https://huggingface.co/suno/bark",
+      "downloads": 35183,
+      "likes": 1561
+    },
+    {
+      "slug": "smolvlm-256m-500m-2b",
+      "name": "SmolVLM (256M / 500M / 2B)",
+      "id": "HuggingFaceTB/SmolVLM-Instruct",
+      "url": "https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct",
+      "downloads": 34744,
+      "likes": 597
+    },
+    {
+      "slug": "molmo-7b-72b",
+      "name": "Molmo (7B / 72B)",
+      "id": "allenai/Molmo-7B-D-0924",
+      "url": "https://huggingface.co/allenai/Molmo-7B-D-0924",
+      "downloads": 32534,
+      "likes": 566
+    },
+    {
+      "slug": "mimo-7b-rl",
+      "name": "MiMo-7B-RL",
+      "id": "XiaomiMiMo/MiMo-7B-RL",
+      "url": "https://huggingface.co/XiaomiMiMo/MiMo-7B-RL",
+      "downloads": 32159,
+      "likes": 278
+    },
+    {
+      "slug": "qwen3-coder-480b-moe-35b-active",
+      "name": "Qwen3-Coder (480B MoE / 35B active)",
+      "id": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+      "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
+      "downloads": 31454,
+      "likes": 1367
+    },
+    {
+      "slug": "nemotron-nano-12b-v2-vl",
+      "name": "Nemotron Nano 12B v2 VL",
+      "id": "nvidia/NVIDIA-Nemotron-Nano-12B-v2-VL-BF16",
+      "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2-VL-BF16",
+      "downloads": 30970,
+      "likes": 90
+    },
+    {
+      "slug": "command-a-plus-218b-moe-25b-active",
+      "name": "Command A+ (218B MoE / 25B active)",
+      "id": "CohereLabs/command-a-plus-05-2026",
+      "url": "https://huggingface.co/CohereLabs/command-a-plus-05-2026",
+      "downloads": 30618,
+      "likes": 143
+    },
+    {
+      "slug": "dia-tts-1-6b",
+      "name": "Dia TTS (1.6B)",
+      "id": "nari-labs/Dia-1.6B",
+      "url": "https://huggingface.co/nari-labs/Dia-1.6B",
+      "downloads": 29423,
+      "likes": 2908
+    },
+    {
+      "slug": "granite-4-0-350m-32b-moe",
+      "name": "Granite 4.0 (350M → 32B MoE)",
+      "id": "ibm-granite/granite-4.0-h-small",
+      "url": "https://huggingface.co/ibm-granite/granite-4.0-h-small",
+      "downloads": 24224,
+      "likes": 309
+    },
+    {
+      "slug": "falcon-3-7b-10b",
+      "name": "Falcon 3 (7B / 10B)",
+      "id": "tiiuae/Falcon3-7B-Instruct",
+      "url": "https://huggingface.co/tiiuae/Falcon3-7B-Instruct",
+      "downloads": 23764,
+      "likes": 197
+    },
+    {
+      "slug": "ernie-4-5-21b-moe-3b-active",
+      "name": "ERNIE 4.5 (21B MoE / 3B active)",
+      "id": "baidu/ERNIE-4.5-21B-A3B-PT",
+      "url": "https://huggingface.co/baidu/ERNIE-4.5-21B-A3B-PT",
+      "downloads": 21793,
+      "likes": 176
+    },
+    {
+      "slug": "gemma-3n-2b-4b",
+      "name": "Gemma 3n (2B / 4B)",
+      "id": "google/gemma-3n-E4B-it",
+      "url": "https://huggingface.co/google/gemma-3n-E4B-it",
+      "downloads": 21790,
+      "likes": 920
+    },
+    {
+      "slug": "stable-audio-open-1-3b",
+      "name": "Stable Audio Open (1.3B)",
+      "id": "stabilityai/stable-audio-open-1.0",
+      "url": "https://huggingface.co/stabilityai/stable-audio-open-1.0",
+      "downloads": 20710,
+      "likes": 1596
+    },
+    {
+      "slug": "cogvideox-2b-5b",
+      "name": "CogVideoX (2B / 5B)",
+      "id": "THUDM/CogVideoX-5b",
+      "url": "https://huggingface.co/THUDM/CogVideoX-5b",
+      "downloads": 14895,
+      "likes": 686
+    },
+    {
+      "slug": "olmo-3-1-7b-32b",
+      "name": "OLMo 3.1 (7B / 32B)",
+      "id": "allenai/OLMo-3.1-32B-Instruct",
+      "url": "https://huggingface.co/allenai/OLMo-3.1-32B-Instruct",
+      "downloads": 12607,
+      "likes": 84
+    },
+    {
+      "slug": "pixart-pixart",
+      "name": "PixArt-α / PixArt-Σ",
+      "id": "PixArt-alpha/PixArt-Sigma-XL-2-1024-MS",
+      "url": "https://huggingface.co/PixArt-alpha/PixArt-Sigma-XL-2-1024-MS",
+      "downloads": 11519,
+      "likes": 105
+    },
+    {
+      "slug": "codestral-25-05-25b",
+      "name": "Codestral 25.05 (25B)",
+      "id": "mistralai/Codestral-22B-v0.1",
+      "url": "https://huggingface.co/mistralai/Codestral-22B-v0.1",
+      "downloads": 11301,
+      "likes": 1349
+    },
+    {
+      "slug": "llama-4-maverick-400b-moe-17b-active",
+      "name": "Llama 4 Maverick (400B MoE / 17B active)",
+      "id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+      "url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+      "downloads": 10442,
+      "likes": 507
+    },
+    {
+      "slug": "stable-cascade",
+      "name": "Stable Cascade",
+      "id": "stabilityai/stable-cascade",
+      "url": "https://huggingface.co/stabilityai/stable-cascade",
+      "downloads": 10407,
+      "likes": 1331
+    },
+    {
+      "slug": "fish-speech-v1-5-s1-mini",
+      "name": "Fish Speech V1.5 (S1-mini)",
+      "id": "fishaudio/fish-speech-1.5",
+      "url": "https://huggingface.co/fishaudio/fish-speech-1.5",
+      "downloads": 4151,
+      "likes": 773
+    },
+    {
+      "slug": "mochi-1-10b",
+      "name": "Mochi 1 (10B)",
+      "id": "genmo/mochi-1-preview",
+      "url": "https://huggingface.co/genmo/mochi-1-preview",
+      "downloads": 3193,
+      "likes": 1356
+    },
+    {
+      "slug": "wan-2-1-2-2-1-3b-5b-14b-27b-moe",
+      "name": "Wan 2.1 / 2.2 (1.3B / 5B / 14B / 27B MoE)",
+      "id": "Wan-AI/Wan2.2-T2V-A14B",
+      "url": "https://huggingface.co/Wan-AI/Wan2.2-T2V-A14B",
+      "downloads": 3076,
+      "likes": 555
+    },
+    {
+      "slug": "parakeet-tdt-0-6b-1-1b",
+      "name": "Parakeet TDT (0.6B / 1.1B)",
+      "id": "nvidia/parakeet-tdt-1.1b",
+      "url": "https://huggingface.co/nvidia/parakeet-tdt-1.1b",
+      "downloads": 2526,
+      "likes": 137
+    },
+    {
+      "slug": "command-a-111b-moe-28b-active",
+      "name": "Command A (111B MoE / ~28B active)",
+      "id": "CohereLabs/c4ai-command-a-03-2025",
+      "url": "https://huggingface.co/CohereLabs/c4ai-command-a-03-2025",
+      "downloads": 2290,
+      "likes": 395
+    },
+    {
+      "slug": "mistral-large-3-675b-moe",
+      "name": "Mistral Large 3 (675B MoE)",
+      "id": "mistralai/Mistral-Large-3-675B-Instruct-2512",
+      "url": "https://huggingface.co/mistralai/Mistral-Large-3-675B-Instruct-2512",
+      "downloads": 2206,
+      "likes": 248
+    },
+    {
+      "slug": "hunyuanvideo-13b",
+      "name": "HunyuanVideo (13B)",
+      "id": "tencent/HunyuanVideo",
+      "url": "https://huggingface.co/tencent/HunyuanVideo",
+      "downloads": 778,
+      "likes": 2279
+    },
+    {
+      "slug": "maskgct-0-4b",
+      "name": "MaskGCT (0.4B)",
+      "id": "amphion/MaskGCT",
+      "url": "https://huggingface.co/amphion/MaskGCT",
+      "downloads": 392,
+      "likes": 309
+    },
+    {
+      "slug": "command-r-104b",
+      "name": "Command R+ (104B)",
+      "id": "CohereLabs/c4ai-command-r-plus",
+      "url": "https://huggingface.co/CohereLabs/c4ai-command-r-plus",
+      "downloads": 179,
+      "likes": 1818
+    },
+    {
+      "slug": "hunyuan-image-1-5b-dit",
+      "name": "Hunyuan Image (17B DiT)",
+      "id": "tencent/HunyuanImage-2.1",
+      "url": "https://huggingface.co/tencent/HunyuanImage-2.1",
+      "downloads": 149,
+      "likes": 652
+    },
+    {
+      "slug": "sana-1-6b",
+      "name": "Sana (1.6B)",
+      "id": "Efficient-Large-Model/Sana_1600M_1024px_BF16",
+      "url": "https://huggingface.co/Efficient-Large-Model/Sana_1600M_1024px_BF16",
+      "downloads": 33,
+      "likes": 14
+    },
+    {
+      "slug": "qwen3-5-32b",
+      "name": "Qwen3.5 (32B)",
+      "id": "Qwen/Qwen3.5-32B",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-32B",
+      "downloads": 0,
+      "likes": 0
+    },
+    {
+      "slug": "qwen3-72b",
+      "name": "Qwen3 (72B)",
+      "id": "Qwen/Qwen3-72B",
+      "url": "https://huggingface.co/Qwen/Qwen3-72B",
+      "downloads": 0,
+      "likes": 0
+    },
+    {
+      "slug": "qwen3-coder-32b-dense",
+      "name": "Qwen3-Coder (32B Dense)",
+      "id": "Qwen/Qwen3-Coder-32B-Instruct",
+      "url": "https://huggingface.co/Qwen/Qwen3-Coder-32B-Instruct",
+      "downloads": 0,
+      "likes": 0
+    },
+    {
+      "slug": "llava-qwen2-5-vl-internvl2-5-llama-3-2-vision",
+      "name": "LLaVA / Qwen2.5-VL / InternVL2.5 / Llama 3.2-Vision",
+      "id": null,
+      "url": null,
+      "downloads": 0,
+      "likes": 0
+    },
+    {
+      "slug": "nomic-embed-text-bge-m3-snowflake-arctic-embed",
+      "name": "nomic-embed-text / bge-m3 / snowflake-arctic-embed",
+      "id": null,
+      "url": null,
+      "downloads": 0,
+      "likes": 0
+    },
+    {
+      "slug": "moonshine-gen-2-0-3b-0-5b",
+      "name": "Moonshine Gen 2 (0.3B / 0.5B)",
+      "id": null,
+      "url": null,
+      "downloads": 0,
+      "likes": 0
+    },
+    {
+      "slug": "whisper-large-v4-1-5b",
+      "name": "Whisper Large V4 (1.5B)",
+      "id": "openai/whisper-large-v4",
+      "url": "https://huggingface.co/openai/whisper-large-v4",
+      "downloads": 0,
+      "likes": 0
+    },
+    {
+      "slug": "piper-tts",
+      "name": "Piper TTS",
+      "id": "rhasspy/piper-voices",
+      "url": "https://huggingface.co/rhasspy/piper-voices",
+      "downloads": 0,
+      "likes": 697
+    },
+    {
+      "slug": "esrgan-real-esrgan-4x-ultrasharp",
+      "name": "ESRGAN / Real-ESRGAN / 4x-UltraSharp",
+      "id": null,
+      "url": null,
+      "downloads": 0,
+      "likes": 0
+    },
+    {
+      "slug": "ace-step-3-5b",
+      "name": "ACE-Step (3.5B)",
+      "id": "ACE-Step/ACE-Step-v1-3.5B",
+      "url": "https://huggingface.co/ACE-Step/ACE-Step-v1-3.5B",
+      "downloads": 0,
+      "likes": 745
+    }
+  ]
+}
