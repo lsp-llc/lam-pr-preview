@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How to Choose a Local Coding Model for Your Actual Work | Local AI Models</title>
+<meta content="Test a local coding model on a small bug fix, compare successful changes and time spent, and use research to interpret the result." name="description"/>
+<link href="https://local-ai-models.ai/best-local-coding-llm.html" rel="canonical"/>
+<meta content="article" property="og:type"/>
+<meta content="How to Choose a Local Coding Model for Your Actual Work" property="og:title"/>
+<meta content="Test a local coding model on a small bug fix, compare successful changes and time spent, and use research to interpret the result." property="og:description"/>
+<meta content="https://local-ai-models.ai/best-local-coding-llm.html" property="og:url"/>
+<meta content="Local AI Models" property="og:site_name"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="How to Choose a Local Coding Model for Your Actual Work" name="twitter:title"/>
+<meta content="noindex,nofollow,noarchive" name="robots"/>
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-byline { font-size: 0.98rem; color: var(--text-2); margin: -4px 0 16px; letter-spacing: 0.01em; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 640px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+/* PREMIUM-PATCH-V2 */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+/* end PREMIUM-PATCH-V2 */
+</style>
+<!-- ARTICLE-ONLY: long-form body, tables, sources list -->
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.plate-header, .metaphor-bends {
+  max-width: 820px;
+  margin: 0 0 48px;
+  padding: 22px 24px;
+  border: 1px solid rgba(167,139,250,0.28);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(167,139,250,0.08), rgba(6,7,10,0.2));
+}
+.plate-kicker, .metaphor-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+.plate-title, .metaphor-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.45rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+.plate-header p, .metaphor-bends p { color: var(--text-2); margin: 0; font-size: 0.98rem; }
+.plate-block {
+  max-width: 820px;
+  margin: 0 0 48px;
+}
+.plate-block img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.plate-block figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
+
+.decision-card {
+  max-width: 820px;
+  margin: 0 0 36px;
+  padding: 24px 26px;
+  border: 1px solid rgba(0,212,255,0.28);
+  border-radius: 16px;
+  background: rgba(0,212,255,0.05);
+}
+.decision-card h3 { margin-top: 0; }
+.decision-card p:last-child { margin-bottom: 0; }
+
+.checklist-card {
+  max-width: 820px;
+  margin: 8px 0 36px;
+  padding: 26px 26px 18px;
+  border: 1px solid var(--border-bright);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.checklist-card h3 { margin-top: 0; }
+.checklist-card .check-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+.checklist-card ol { list-style: none; margin: 0; padding: 0; counter-reset: chk; }
+.checklist-card li {
+  position: relative;
+  padding: 12px 0 12px 36px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+}
+.checklist-card li:first-of-type { border-top: none; }
+.checklist-card li::before { content: none; }
+.checklist-card input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 1.05em;
+  width: 18px;
+  height: 18px;
+  accent-color: #00d4ff;
+}
+.checklist-card label { cursor: pointer; display: block; }
+.checklist-foot {
+  margin-top: 16px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.ev-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.ev-primary { color: var(--green); border: 1px solid rgba(34,197,94,0.35); background: rgba(34,197,94,0.08); }
+.ev-prac { color: var(--orange); border: 1px solid rgba(255,159,28,0.35); background: rgba(255,159,28,0.08); }
+.ev-site { color: var(--purple); border: 1px solid rgba(167,139,250,0.35); background: rgba(167,139,250,0.08); }
+</style>
+<!-- BEGIN site-chrome-css -->
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "How to Choose a Local Coding Model for Your Actual Work", "description": "Test a local coding model on a small bug fix, compare successful changes and time spent, and use research to interpret the result.", "dateModified": "2026-09-13", "author": {"@type": "Person", "name": "Sundog"}, "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"}, "mainEntityOfPage": "https://local-ai-models.ai/best-local-coding-llm.html", "image": "https://local-ai-models.ai/sundog-coding-2026-09-v10.png"}</script><style id="sundog-teaching-style">
+.reader-level{font:600 .78rem/1.5 system-ui;letter-spacing:.06em;color:#d9b98a;text-transform:uppercase;margin:0 0 20px}
+.teaching-figure{margin:28px 0 36px;padding:25px;border:1px solid #476163;border-radius:12px;background:linear-gradient(135deg,#10272a,#17212b);color:#e7f0ef}
+.teaching-figure figcaption{font-size:1.1rem;line-height:1.4;margin:0 0 23px}.teaching-figure figcaption span{display:block;font-size:.86rem;font-weight:400;color:#c2ced1;margin-top:6px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0!important;margin:0!important;list-style:none!important;counter-reset:flow}
+.flow li{padding:16px!important;border:1px solid #527178;border-radius:8px;background:#172f35;margin:0!important;counter-increment:flow}.flow li::before{content:counter(flow) " /"!important;position:static!important;background:none!important;color:#ddb77c!important;display:block;width:auto!important;height:auto!important;margin-bottom:8px;font:700 .8rem system-ui}
+.flow b,.flow span{display:block}.flow span{font-size:.85rem;line-height:1.45;color:#c2d4d6;margin-top:9px}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.concept-grid>div{padding:18px;border:1px solid #506671;border-radius:8px;background:#152d34}.concept-grid b{font-size:1.05rem;color:#f1d1a0}.concept-grid p{margin:10px 0 0!important;font-size:.88rem;line-height:1.55;color:#d2e0e2!important}
+.article-body pre{background:#101a22;border:1px solid #3a505d;border-radius:8px;padding:20px;overflow:auto;max-width:100%;font:14px/1.6 Consolas,monospace;white-space:pre}.article-body pre code{border:0;background:none;padding:0;font:inherit;white-space:pre;color:#e2ecf2}
+.deep-note{border:1px solid #465357;border-radius:9px;padding:18px 22px;margin:30px 0;background:#171f22}.deep-note summary{cursor:pointer;color:#f2cf98;font-weight:600;line-height:1.5}.deep-note[open] summary{margin-bottom:22px}.deep-note h3{font-size:1.15rem;margin:20px 0 12px}
+.next-action{border-left:3px solid #d9b075;background:#1c2524;padding:2px 23px 12px;margin:35px 0}.next-action h2{font-size:1.3rem;margin-top:22px}.next-action p{font-size:1rem}
+.energy-row{margin:20px 0}.energy-label{display:flex;justify-content:space-between;gap:15px;font-size:.94rem;margin:0 0 8px}.energy-bar{height:28px;border-radius:4px;background:#263d45;overflow:hidden}.energy-bar span{display:block;height:100%;background:#e5b469}.energy-row.idle .energy-bar span{background:#7eced2}.figure-note{font-size:.86rem!important;color:#c4d1d5!important;margin:18px 0 0!important}
+.article-body .sources-list{overflow-wrap:anywhere}.article-body ul,.article-body ol{padding-left:24px}.article-body li{margin:10px 0}.article-body .inline-note{font-size:.88rem;color:#becbd0;padding:14px 18px;border-left:2px solid #647984;background:#182228}
+@media(max-width:640px){.flow{grid-template-columns:1fr 1fr}.concept-grid{grid-template-columns:1fr}.teaching-figure{padding:20px 17px}.flow li{padding:13px!important}.article-body pre{font-size:12.5px;padding:16px}.deep-note{padding:17px}.energy-label{font-size:.85rem}.teaching-figure figcaption{font-size:1rem}}
+</style><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-13-coding-pilot/sundog-coding-2026-09-v10.png" property="og:image"/><meta content="Sundog diagnoses a case-sensitive local coding change at a rain-lit repair arcade." property="og:image:alt"/><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-13-coding-pilot/sundog-coding-2026-09-v10.png" name="twitter:image"/><meta content="Sundog diagnoses a case-sensitive local coding change at a rain-lit repair arcade." name="twitter:image:alt"/></head>
+<body><aside aria-label="Preview status" class="review-notice" style="padding:10px 20px;background:#17222d;color:#cddde8;text-align:center;font:13px/1.6 system-ui;border-bottom:1px solid #314452">Writing review: coding article revised September 13. Approved Cyberpunk V10 images. The other seven articles retain their previous text. <a href="best-local-coding-llm.html" style="color:#9de7ff;text-decoration:underline">Read the coding rewrite</a></aside>
+<!-- BEGIN site-nav -->
+<nav aria-label="Site" class="site-nav">
+<div class="site-nav-inner">
+<a aria-label="Local AI Models home" class="site-nav-brand" href="https://local-ai-models.ai/"><svg aria-hidden="true" class="brand-dot" height="10" viewbox="0 0 10 10" width="10"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+<div class="site-nav-links">
+<a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+<a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+<a href="https://local-ai-models.ai/model-builder.html">PC Builder</a>
+<a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+<a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+<a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+<a href="https://local-ai-models.ai/sentiment.html">Community</a>
+<a href="guidance.html">Guidance</a>
+<a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
+<a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+<a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+<a href="https://local-ai-models.ai/updates.html">Updates</a>
+</div>
+</div>
+</nav>
+<!-- END site-nav -->
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
+<div class="hero-inner">
+<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="guidance.html">Guidance</a></div>
+<div class="hero-eyebrow">Local coding</div>
+<h1 class="hero-title">How to Choose a Local Coding Model for Your Actual Work</h1><p class="hero-sub">Test a local coding model on a small bug fix, compare successful changes and time spent, and use research to interpret the result.</p>
+<p class="hero-byline">By Sundog</p>
+<div class="updated-line">Writing revised 13 September 2026</div>
+</div>
+</section>
+<main class="container">
+<figure class="article-hero"><a aria-label="Open full-size illustration: Sundog diagnoses a case-sensitive local coding change at a rain-lit repair arcade." href="sundog-coding-2026-09-v10.png" title="Open full-size illustration"><img alt="Sundog diagnoses a case-sensitive local coding change at a rain-lit repair arcade." decoding="async" fetchpriority="high" height="941" src="sundog-coding-2026-09-v10.png" width="1672"/></a><figcaption>The illustrative task accepts .CSV and .csv and rejects .png. Compare the proposed change with those requirements, then run the checks. Illustration: Sundog, created with AI.</figcaption></figure><article class="article-body">
+<p class="reader-level">A practical comparison for people who can read a small amount of Python</p>
+<p class="lede">You want a local AI model that can help fix bugs, change a script, or add a feature. A high coding score is useful information, but you still need to know whether the model can make the changes you need on your computer. Give two models the same small job, with a result you can check. Then compare the working code, the time it took, and how often you had to step in.</p>
+<p>We will use a filename filter with a simple bug: it accepts <code>report.csv</code> but rejects <code>REPORT.CSV</code>. The example shows how to define success, catch an incomplete fix, and build a comparison that tells you more than how quickly a model produces text. You can try it in a chat window by copying the code yourself; an application that edits files automatically is optional.</p>
+<h2 id="one-small-change">Give the model a task with an answer you can check</h2>
+<p>Suppose a Python script imports files whose names end in <code>.csv</code>. Its filter currently looks like this:</p>
+<pre><code>def is_csv(name):
+    return name.endswith(".csv")</code></pre>
+<p>The function expects a string and returns <code>True</code> or <code>False</code>. It is checking the filename only; it does not inspect the file's contents. Paste the function into your chat window with this request:</p>
+<blockquote><p>Change this function so it accepts a .csv extension regardless of capitalization. Keep rejecting other extensions. Preserve the function name and return type. Explain the change briefly.</p></blockquote>
+<p>Before reading the answer, decide what the result must do:</p>
+<div class="table-wrap"><table><caption>Checks for our illustrative bug fix</caption><thead><tr><th>Input</th><th>Required result</th><th>Why it matters</th></tr></thead><tbody><tr><td><code>report.csv</code></td><td><code>True</code></td><td>The behavior that already worked must survive.</td></tr><tr><td><code>REPORT.CSV</code></td><td><code>True</code></td><td>This is the reported bug.</td></tr><tr><td><code>photo.png</code></td><td><code>False</code></td><td>The filter must still reject other extensions.</td></tr><tr><td><code>report.csv.exe</code></td><td><code>False</code></td><td>Containing “.csv” is different from ending in “.csv”.</td></tr></tbody></table></div>
+<p>A suitable fix for these requirements is:</p>
+<pre><code>def is_csv(name):
+    return name.lower().endswith(".csv")</code></pre>
+<p>Converting the name to lowercase makes the suffix comparison insensitive to capitalization. By contrast, <code>return ".csv" in name.lower()</code> looks plausible but accepts <code>report.csv.exe</code>. A fluent explanation of that second answer would not repair its behavior.</p>
+<p>You can run the checks with Python. Put the proposed function above these statements in a file:</p>
+<pre><code>assert is_csv("report.csv") is True
+assert is_csv("REPORT.CSV") is True
+assert is_csv("photo.png") is False
+assert is_csv("report.csv.exe") is False
+print("All four checks passed")</code></pre>
+<p>Save the function and checks together as <code>filename_check.py</code>. In a terminal opened in that folder, run <code>python filename_check.py</code> (or <code>py filename_check.py</code> with the Windows Python launcher). A failed assertion stops the script at the unmet check. The success message appears only after all four assertions pass. This assumes Python is already installed.</p>
+<p>These are illustrative examples, not results from a coding-model comparison. We executed the original function, the corrected function, and the overly broad alternative: the original and the overly broad version each pass three of these four checks; the corrected version passes all four. That establishes this example's behavior, not the general quality of any AI model.</p>
+<p>For a real project, also inspect the code changes and run the project's existing tests. Four checks can establish four requirements; they cannot cover everything an application might do. Add another capitalization pattern, such as <code>Quarterly.CsV</code>, and an unrelated filename such as <code>csv_notes.txt</code> to check that the change handles the rule rather than only the examples.</p>
+<h2 id="research">What coding research adds to a small test</h2>
+<p><strong>Agentless</strong>, by Xia and colleagues, organizes software repair into three stages: locate the relevant code, propose a repair, and validate candidate patches. Its experiments use GPT-4o and SWE-bench software issues. The transferable idea is to inspect these stages separately. If the relevant function never reaches the model, changing the model is only one possible remedy. If a proposed fix fails the checks, a convincing explanation does not make it a successful repair. The paper does not establish how a particular local model will perform. <a class="ref" href="#source-agentless">[1]</a></p>
+<p>The paper also examines a weakness in generated tests: reproducing a bug is not enough. A useful test must recognize when a correct repair resolves it. The authors check generated tests against the benchmark's reference repairs and find that many fail this second requirement. That is why our example includes expected results written before accepting the proposed fix. Tests are evidence whose quality matters, not an automatic guarantee of correctness. <a class="ref" href="#source-agentless">[1]</a></p>
+<p><strong>SWE-Effi</strong>, by Fan and colleagues, asks what changes when coding systems are evaluated under resource limits. It studies five software workflows paired with three API-hosted models on 50 SWE-bench Verified issues. The study considers task resolution alongside tokens, computation, and inference time. A workflow that finishes more tasks may also spend substantial resources generating candidates, running tests, or pursuing failures. Its findings motivate recording the whole attempt, including unsuccessful work. <a class="ref" href="#source-efficiency">[2]</a></p>
+<p>The experimental boundary matters. SWE-Effi's models were accessed through APIs; its normalized inference-time calculation is fitted to API logs. Those numbers are not predictions for your GPU. Our proposed local comparison below uses your observed task time and checks. It borrows the question about useful work per resource, without treating the paper's rankings as local hardware results. <a class="ref" href="#source-efficiency">[2]</a></p>
+<h2 id="fair-comparison">Compare the same work under conditions you record</h2>
+<p>One easy fix is a useful first check. It is a poor basis for declaring a model the best at programming. Build a small set from the work you actually do: a bug fix, a change to a data transformation, a feature with several requirements, or a repair that needs information from two files. Define the expected behavior before running the comparison.</p>
+<p>Give each candidate a fresh copy of the same starting code, the same request, and the same checks. Set the same time limit and assistance policy. If you explain an error to one model, either give the other model the same opportunity or record the difference. Keep failed attempts in the record.</p>
+<figure class="teaching-figure"><figcaption><strong>Follow a change from request to checked result</strong><span>A useful comparison includes the work between the first answer and the finished task.</span></figcaption><div class="concept-grid"><div><b>Define</b><p>Same starting files, requirements, and time allowance.</p></div><div><b>Attempt</b><p>Record generated changes, errors, retries, and help.</p></div><div><b>Check</b><p>Run the requirements and existing tests; inspect the change.</p></div></div></figure>
+<p>If you use a coding application that reads files and runs commands, keep that application and its tools consistent where possible. The language model proposes the code or action; the application carries out supported actions and returns their results. The software running the local model must also support the requested tool-call format. A model's ability to chat does not establish that this complete setup works. The llama.cpp function-calling documentation describes the relevant model and template support. <a class="ref" href="#source-tools">[3]</a></p>
+<p>Sometimes two candidates need different applications or formats. You can still compare the complete setups, but say what changed. Otherwise, an application difference can be mistaken for a model difference.</p>
+<h2 id="useful-math">Measure success and the effort needed to get there</h2>
+<p>For each task, record whether all required checks passed, whether the existing tests still passed, how much time elapsed, and how much assistance you supplied. Decide in advance whether success must come from the first answer or may include revisions within a fixed allowance. Those are different comparisons.</p>
+<p>A simple descriptive measure is:</p>
+<pre><code>Task success rate = successful tasks / attempted tasks</code></pre>
+<p>If eight of ten tasks succeed, the result is 80% for those ten tasks under those conditions. It is not an estimate that every future task has exactly an 80% chance of success. The choice and difficulty of tasks matter, and ten tasks are too few to support a sweeping ranking.</p>
+<p>Now include the effort spent on failures as well as successes:</p>
+<pre><code>Minutes spent per successful task
+    = total minutes spent on all attempts / successful tasks</code></pre>
+<div class="table-wrap"><table><caption>Hypothetical comparison, not measured model performance</caption><thead><tr><th>Configuration</th><th>Tasks completed</th><th>Total time, including failed attempts</th><th>Minutes spent per success</th></tr></thead><tbody><tr><td>A</td><td>8 of 10</td><td>42 minutes</td><td>42 / 8 = 5.25</td></tr><tr><td>B</td><td>9 of 10</td><td>75 minutes</td><td>75 / 9 ≈ 8.33</td></tr></tbody></table></div>
+<p>B completes one more task in this invented example, but requires more total time. That tradeoff could be worthwhile if the additional task is important. A could be more useful for frequent, low-stakes edits. You need both columns to make the choice. If no task succeeds, report zero successes; the time-per-success ratio is undefined.</p>
+<p>For this example, total time means sequential elapsed time from each submitted request until success or the time limit, including retries and review within that attempt. Record active human assistance separately. This prevents a fast model that needs constant correction from appearing equivalent to a setup that works with little supervision. Also inspect the result task by task: a higher aggregate score can hide failure on the particular kind of change you need.</p>
+<details class="deep-note"><summary>A closer look: why a time budget changes the comparison</summary><p>The resource-budget idea in SWE-Effi can be explored with this simplified, original example. Give each of three tasks at most ten minutes. Suppose two succeed after two and eight minutes, while the third fails. Define <code>R(t)</code> as the fraction of all three tasks successfully completed within <code>t</code> minutes. It is zero before two minutes, one-third from two to eight minutes, and two-thirds from eight to ten minutes. All time values in the calculation are in minutes.</p><pre><code>Mean success fraction over the budget
+    = area under R(t) / 10 minutes
+    = [(6 × 1/3) + (2 × 2/3)] / 10
+    = 1/3</code></pre><p>The final success rate is two-thirds, but the average across the available budgets is one-third. The second measure rewards completing useful work earlier. This is a teaching example of a budget curve, not a reproduction of the paper's implementation or a measured model result. It also does not charge directly for time wasted on the failed task; the total-time record above still matters. Choose the measurement that answers your actual constraint.</p></details>
+<p><span class="opinion-label">[OPINION]</span> I would choose the smallest comparison that resembles my work, keep the failures visible, and make the decision from that record. A model that saves me ten seconds generating an answer but costs me ten minutes repairing it has not saved time.</p>
+<h2 id="diagnose">When a task fails, check what actually failed</h2>
+<p>A failed task does not immediately tell you to download a different model. Read the output and inspect the change. Did the model misunderstand the requirement, run out of room to finish its answer, miss a relevant file, or fail to use a tool?</p>
+<div class="table-wrap"><table><caption>Observations that help choose the next change</caption><thead><tr><th>What you observe</th><th>What to investigate</th></tr></thead><tbody><tr><td>A complete patch violates a requirement.</td><td>The instruction, relevant examples, and the model's reasoning about the code. Inspect the failing test.</td></tr><tr><td>The answer ends halfway through the patch.</td><td>The output limit and the response's stop information.</td></tr><tr><td>The model cannot use information from a supplied file.</td><td>Whether the application actually included that file and retained it in the request.</td></tr><tr><td>A file-reading or test command is repeatedly rejected.</td><td>The application’s tool support, requested argument format, and returned error.</td></tr><tr><td>The setup is correct but each answer takes too long.</td><td>The separate timing and hardware questions in the bandwidth article.</td></tr></tbody></table></div>
+<p>The amount of text available to a model at once is its <strong>context</strong>. Allocating more context may help when the work needs more source material, but it also changes memory requirements. Ollama documents how to inspect allocated context and processor placement with <code>ollama ps</code>. Use the effective setting shown by the running software, rather than assuming that the model's advertised maximum is what your application is using. <a class="ref" href="#source-context">[4]</a></p>
+<p>Change one relevant setting at a time and repeat the same task. Keep the detailed memory calculation in <a href="kv-cache-geometry.html">Why a Longer Chat Needs More Memory</a>, the speed investigation in <a href="memory-bandwidth-tokens-per-second.html">Why a Model Can Fit and Still Feel Slow</a>, and repeated action errors in <a href="the-harness-beats-the-7b.html">Fix the Tool Loop Before You Replace the Model</a>.</p>
+<aside class="next-action"><h2 id="first-comparison">Start with two candidates and one useful task</h2><p>Choose two models that your software supports and that can run on your machine. Give each the same small change and check the result. Save the model name and exact downloaded version, its quantization, the application and version, relevant settings, starting files, request, checks, elapsed time, and interventions. Then add a few different tasks before drawing a broader conclusion.</p><p>The first result you need is a working comparison you can repeat. It will show you which candidate deserves more testing and which part of the setup needs attention.</p></aside>
+<h2 id="sources">Sources and useful references</h2>
+<ol class="sources-list">
+<li id="source-agentless"><a href="https://arxiv.org/abs/2407.01489v2">Xia, Deng, Dunn, and Zhang: Agentless: Demystifying LLM-based Software Engineering Agents</a> (2024, v2). Sections 3 and 5.1.3 explain the repair workflow and generated-test limitations. Discovered through the Code4AI library; claims checked against the paper.</li>
+<li id="source-efficiency"><a href="https://arxiv.org/abs/2509.09853v2">Fan et al.: SWE-Effi: Re-Evaluating Software AI Agent System Effectiveness Under Resource Constraints</a> (2025, v2 preprint). Sections 3–4 define resource metrics and the experiment; sections 5–6 discuss findings and limitations. Discovered through the Code4AI library; claims checked against the paper.</li>
+<li id="source-tools"><a href="https://github.com/ggml-org/llama.cpp/blob/master/docs/function-calling.md">llama.cpp: Function Calling</a>. Model, format, and template support; accessed 13 September 2026.</li>
+<li id="source-context"><a href="https://docs.ollama.com/context-length">Ollama: Context length</a>. Configuring and inspecting context; accessed 13 September 2026.</li>
+</ol>
+</article>
+</main>
+<section class="related"><h2 class="related-title">Keep reading</h2><div class="related-grid"><a class="related-card" href="kv-cache-geometry.html"><div class="related-name">Why a Longer Chat Needs More Memory</div><p class="related-desc">Understand weights, KV cache and runtime allocations; follow one calculation and check the context your model actually loaded.</p></a><a class="related-card" href="the-harness-beats-the-7b.html"><div class="related-name">Fix the Tool Loop Before You Replace the Model</div><p class="related-desc">Trace a malformed tool request through validation, execution and feedback, then change the step that actually failed.</p></a></div></section>
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+<div class="sf-grid">
+<div class="sf-brand-col">
+<div class="sf-brand"><svg aria-hidden="true" height="9" viewbox="0 0 10 10" width="9"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg> LOCAL-AI-MODELS</div>
+<p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+<div class="sf-meta">dataset 2026.08.31 · 132 models · 59 frameworks</div>
+</div>
+<div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+<li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+<li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+<li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+<li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+<li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+<li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+<li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+<li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+<li><a href="guidance.html">Guidance</a></li>
+<li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+<li><a href="best-local-coding-llm.html">Best Coding LLM</a></li>
+<li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+<li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+<li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+<li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+</ul></div>
+</div>
+<div class="sf-bottom">
+<span>Data refreshed August 31, 2026</span>
+<span>Single-file architecture · No accounts, no tracking beyond ads</span>
+</div>
+<p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> · <a href="https://local-ai-models.ai/terms.html">Terms</a> · <a href="https://local-ai-models.ai/cookies.html">Cookies</a> · <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> · <a href="https://local-ai-models.ai/about.html">About</a> · <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script defer="" src="creatures.js"></script>
+<script defer="" src="creatures-v2.js"></script>
+<style>
+.hero{min-height:0!important}.hero-bg,.hero-overlay{display:none!important}.hero-inner{max-width:1000px;padding:64px 24px 36px}.hero-title{font-size:clamp(2.05rem,5vw,3.65rem)!important;line-height:1.12!important}.hero-eyebrow{margin-bottom:22px}.hero-sub{max-width:740px}.hero-byline{margin:22px 0 8px}.container{max-width:1040px;padding:28px 24px 70px}.article-body{max-width:820px;margin:auto;font-size:18px;line-height:1.8;overflow-wrap:anywhere}.article-body>p{margin:0 0 1.35em}.article-body .lede{font-size:1.25rem;max-width:none;margin:0 0 1.6em;color:#e4e7ed}.article-body h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin:2.1em 0 .85em;color:#f6f7f9}.article-body h3{line-height:1.35}.article-body a{color:#9de7ff;text-decoration:underline;text-underline-offset:3px}.article-body code{font-size:.88em;overflow-wrap:anywhere}.article-hero{margin:0 auto 38px;max-width:992px}.article-hero img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #30343a}.article-hero figcaption{font-size:.86rem;line-height:1.55;color:#adb6c5;max-width:820px;margin:12px auto 0}.table-wrap{overflow-x:auto;max-width:100%;margin:28px 0;border:1px solid #333a47;border-radius:8px}.article-body table{width:100%;border-collapse:collapse;min-width:570px;font-size:.86rem;line-height:1.5;background:#10141c}.article-body table a,.article-body table a:visited{color:#f6f7f9}.article-body th,.article-body td{padding:14px 16px;border-bottom:1px solid #333a47;text-align:left;vertical-align:top;color:#e0e6f0}.article-body th{color:#fff;background:#1b2330}.article-body caption{padding:14px 16px;text-align:left;color:#ccd7e5;background:#141c28}.formula-box,.calculation{padding:20px;background:#101a27;border:1px solid #284059;border-radius:8px;margin:25px 0;overflow-x:auto}.formula-box code{white-space:normal;color:#d9efff}.decision-card{padding:24px;border:1px solid #38536a;background:#101c27;border-radius:10px;margin:28px 0}.opinion-label{font-family:var(--font-mono);font-size:.72em;color:#f3c876;font-weight:600}.article-body .sources-list{font-size:.82rem;line-height:1.65;margin:20px 0 0;padding-left:26px}.sources-list li{padding:8px 0}.ref{font-size:.73em;vertical-align:super;margin-left:3px}.related{max-width:1040px;margin:auto;padding:36px 24px 70px}.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.related-card{display:block;border:1px solid #30343a;border-radius:10px;padding:20px}.related-name{font-size:1rem}.related-desc{font-size:.9rem}.updated-line{font-size:.8rem;color:#9faabb}.site-nav-links{min-width:0}.site-nav{max-width:100%}@media(max-width:600px){.hero-inner{padding:36px 20px 20px}.container{padding:20px 18px 45px}.article-body{font-size:17px;line-height:1.75}.article-body .lede{font-size:1.14rem}.article-hero{margin-bottom:28px}.article-hero figcaption{font-size:.8rem}.related-grid{grid-template-columns:1fr}.decision-card{padding:18px}.article-body table{min-width:540px}.hero-title{letter-spacing:-.03em!important}}
+
+.article-body table{min-width:740px}.article-body th,.article-body td{overflow-wrap:normal;word-break:normal}.table-caption{margin:26px 0 8px!important;font-size:.9rem;color:#ced9e7}.table-hint{display:none;font-size:.77rem;color:#aab9cb;margin:0 0 8px!important}.table-caption~.table-wrap{margin-top:8px}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}@media(max-width:780px){.table-hint{display:block}}</style><style>.article-body table th[scope="row"],.article-body table td:nth-child(n+2){white-space:nowrap}.sources-list li::before{content:none!important}.article-body .sources-list li{list-style:decimal!important}</style></body>
+</html>
