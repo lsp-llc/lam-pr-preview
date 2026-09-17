@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PR #96 preview — getting-started related Browse 132 (not production)</title>
+<meta name="description" content="Step-by-step guide to running open-weight AI models on your own hardware. Install Ollama, pull a model, add a UI, scale up. Plus the 8 frontend tools worth knowing. Updated September 14, 2026.">
+<meta name="keywords" content="install ollama, run LLM locally, local AI tutorial, ollama vs lm studio, open webui, ComfyUI, AnythingLLM, getting started local AI">
+<link rel="canonical" href="https://lsp-llc.github.io/lam-pr-preview/pr-96/getting-started.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Get Started — Run AI Locally in 5 Minutes">
+<meta property="og:description" content="Install Ollama, pull a model, add a UI, scale up. The opinionated 4-step path.">
+<meta property="og:url" content="https://local-ai-models.ai/getting-started.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta property="og:image" content="https://local-ai-models.ai/hero-getting-started.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Get Started — Run AI Locally in 5 Minutes">
+<meta name="robots" content="noindex,nofollow,noarchive">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Run open-weight AI models locally in under 5 minutes",
+  "description": "The opinionated path from zero to running local LLMs on your own hardware via Ollama plus a web UI.",
+  "totalTime": "PT5M",
+  "supply": [{"@type":"HowToSupply","name":"Computer with at least 8GB RAM"},{"@type":"HowToSupply","name":"Internet connection (one-time, for model download)"}],
+  "tool": [{"@type":"HowToTool","name":"Ollama"},{"@type":"HowToTool","name":"Open WebUI (optional)"}],
+  "step": [
+    {"@type":"HowToStep","position":1,"name":"Install Ollama","text":"Download from ollama.com or run the install script. Handles model downloading, GPU detection, quantization, and an OpenAI-compatible API on localhost:11434."},
+    {"@type":"HowToStep","position":2,"name":"Pull your first model","text":"Run 'ollama run llama3.2:3b'. Auto-selects the best quantization for your hardware. ~2 GB download, chatting in under a minute."},
+    {"@type":"HowToStep","position":3,"name":"Add a web UI","text":"Run Open WebUI in Docker. ChatGPT-like interface running on your machine, multi-user, document upload, RAG, plugins."},
+    {"@type":"HowToStep","position":4,"name":"Scale up","text":"Pull bigger models (Qwen3 32B, Llama 3.3 70B), add RAG with your documents, or set up image/video generation."}
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-getting-started.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 600px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+/* STEPS */
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.steps { display: flex; flex-direction: column; gap: 18px; margin-bottom: 90px; }
+.step { position: relative; display: grid; grid-template-columns: 80px 1fr; gap: 28px; padding: 32px; background: linear-gradient(180deg, var(--surface) 0%, var(--bg-2) 100%); border-radius: 20px; transition: all 350ms var(--ease); overflow: hidden; }
+.step::before { content: ''; position: absolute; inset: 0; border-radius: 20px; padding: 1px; background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; transition: opacity 350ms var(--ease); }
+.step::after { content: ''; position: absolute; inset: -1px; border-radius: 20px; padding: 1px; background: conic-gradient(from var(--ang, 0deg), var(--accent), var(--purple), var(--pink), var(--accent)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity 350ms var(--ease); pointer-events: none; animation: ang 8s linear infinite; }
+@property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes ang { to { --ang: 360deg; } }
+.step:hover { transform: translateY(-4px); }
+.step:hover::after { opacity: 0.7; }
+.step-num { font-family: var(--font); font-size: 4rem; font-weight: 600; line-height: 1; letter-spacing: -0.04em; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.step-content { display: flex; flex-direction: column; gap: 12px; }
+.step-title { font-family: var(--font); font-size: 1.5rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); }
+.step-desc { color: var(--text-2); font-size: 0.98rem; line-height: 1.55; }
+.step-cmd { font-family: var(--font-mono); font-size: 0.88rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; color: var(--accent); cursor: pointer; transition: all 220ms var(--ease); position: relative; word-break: break-all; }
+.step-cmd::before { content: '>'; color: var(--text-muted); margin-right: 10px; }
+.step-cmd::after { content: 'COPY'; position: absolute; top: 14px; right: 14px; font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-muted); letter-spacing: 1px; opacity: 0; transition: opacity 220ms var(--ease); }
+.step-cmd:hover { border-color: var(--accent); background: rgba(0,212,255,0.04); }
+.step-cmd:hover::after { opacity: 1; }
+.step-cmd.copied::after { content: 'COPIED ✓'; color: var(--green); opacity: 1; }
+.step-note { font-size: 0.84rem; color: var(--text-muted); font-style: italic; }
+@media (max-width: 700px) { .step { grid-template-columns: 1fr; padding: 24px; gap: 16px; } .step-num { font-size: 3rem; } }
+
+/* TOOLS GRID */
+.tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (max-width: 800px) { .tools-grid { grid-template-columns: 1fr; } }
+.tool { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: all 350ms var(--ease); position: relative; overflow: hidden; }
+.tool:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.tool-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+.tool-name { font-family: var(--font); font-size: 1.2rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+.tool-tag { font-family: var(--font-mono); font-size: 0.62rem; padding: 4px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; white-space: nowrap; }
+.tag-essential { background: rgba(34,197,94,0.10); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.tag-popular { background: rgba(0,212,255,0.08); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+.tag-rag { background: rgba(167,139,250,0.10); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+.tag-creative { background: rgba(236,72,153,0.10); color: var(--pink); border: 1px solid rgba(236,72,153,0.3); }
+.tag-power { background: rgba(255,159,28,0.10); color: var(--orange); border: 1px solid rgba(255,159,28,0.3); }
+.tool-desc { color: var(--text-2); font-size: 0.92rem; line-height: 1.55; margin-bottom: 12px; }
+.tool-use { font-size: 0.85rem; color: var(--text-dim); padding-top: 12px; border-top: 1px solid var(--border); }
+.tool-use strong { color: var(--text); font-weight: 600; }
+
+/* RELATED */
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+/* FOOTER */
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+/* SCROLL REVEAL */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-stagger > * { opacity: 0; transform: translateY(20px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+.reveal-stagger.visible > * { opacity: 1; transform: translateY(0); }
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 60ms; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 130ms; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 200ms; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 270ms; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 340ms; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 410ms; }
+.reveal-stagger.visible > *:nth-child(7) { transition-delay: 480ms; }
+.reveal-stagger.visible > *:nth-child(8) { transition-delay: 550ms; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal, .reveal-stagger > * { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+/* Universal premium fixes (applied via premium-patch.js) */
+/* 1. Display weight refinements — 700 was too heavy */
+h1, h2, .section-heading, .section-title, .hero-title, .stack-title, .scenario-title, .chart-title, .update-title, .step-title, .tool-name, .tool-card-name, .stack-card .stack-title { font-weight: 600 !important; letter-spacing: -0.025em; }
+/* 2. Contrast bumps for muted text — was failing WCAG AA */
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, .stack-note, .verdict, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+/* 3. Touch targets ≥44px on nav links and buttons */
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .topnav-links a, .btn, .hero-btn, .preset-btn, .filter-btn, .filter-pill, .iv-pill, .tier-pill, .step-dot, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+/* 4. Accessible focus rings — never remove default outline without a custom one */
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+/* 5. Animation grammar — width/height/top/left transitions get cheaper alternatives */
+.scanline, .gauge-fill, .stacked-bar-fill, .bar-fill, [class*="-fill"]:not(.iv-vram-fill):not(.cn-modal) { will-change: transform; }
+/* 6. Body text minimum 16px on key surfaces (was 0.85rem in some cards) */
+.card-desc, .stack-note, .scenario p, .scenario li, .breaks-note { font-size: 0.95rem; line-height: 1.55; }
+/* 7. prefers-reduced-motion safety */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+
+/* PREMIUM-PATCH-V2 */
+/* Patch v2 — targets remaining critique gaps */
+
+/* 1. Broader body text floor — 0.95rem minimum on text-bearing card content */
+.catalog-desc, .hub-desc, .dest-desc, .primer-desc, .matrix-why, .edu-text,
+.fit-card-meta, .stack-desc, .scenario-text, .tool-desc, .tool-use,
+.update-desc, .breaks-note, .step-desc, .step-note, .quant-prose,
+.card-desc-inner, .card-grid li, .card-grid p, .related-desc,
+.foot-tagline, .pf-tagline, .hero-sub, .lede {
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.6;
+}
+
+/* 2. Vertical breathing room — bump common section selectors */
+.section, section.section, .quant-guide, .stacks-guide, .hub,
+.philosophy, .final-cta, .related, .container > section,
+.tools-grid + *, .stacks-grid + *,
+section[class*='-section'] {
+  padding-top: 96px !important;
+  padding-bottom: 96px !important;
+}
+@media (max-width: 700px) {
+  .section, section.section, .quant-guide, .stacks-guide, .hub,
+  .philosophy, .final-cta, .related, .container > section,
+  section[class*='-section'] {
+    padding-top: 56px !important;
+    padding-bottom: 56px !important;
+  }
+}
+
+/* 3. Width-animation kill — anything with -fill class becomes transform-only */
+.bench-bar-fill, .gauge-fill, .stacked-bar-fill, .bar-fill, .progress-bar,
+.iv-vram-fill, .threshold-fill {
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* 4. Tighter letter-spacing on small uppercase UI */
+.section-eyebrow, .hub-section-eyebrow, .breadcrumb,
+.foot-col-title, .pf-col-title, .hero-eyebrow,
+.dest-icon, .hub-icon, .iv-fab-tip, .step-dot .step-label,
+.usecase-card .step-label, .filter-pill, .filter-btn,
+.iv-pill, .pillish, .scenario-hw, .stack-hw,
+[class*='-eyebrow'], [class*='-tag'][class*='tool'] {
+  letter-spacing: 1px !important;
+}
+.section-heading, .section-title, h2.section-heading {
+  letter-spacing: -0.02em !important;
+}
+
+/* 5. Surface luminance ordering — force ramp on common var conflicts */
+:root {
+  --surface-fixed-1: #131416;
+  --surface-fixed-2: #1c1d20;
+  --surface-fixed-3: #25272a;
+}
+
+/* 6. Hide unused fonts (Instrument Serif when not used by .italic / .accent / serif content) */
+/* — leaving as-is; removal would change layout subtly. Browsers can lazy-load. */
+
+/* end PREMIUM-PATCH-V2 */
+
+</style>
+<!-- Schema: Organization (publisher trust signal for AEO) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="https://local-ai-models.ai/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+
+<style>
+.preview-mark {
+  background: rgba(245,197,24,0.28);
+  color: inherit;
+  outline: 2px solid #f5c518;
+  outline-offset: 2px;
+  padding: 0 0.12em;
+}
+</style>
+
+</head>
+<body>
+<p class="preview-banner" style="margin:0;padding:10px 16px;background:#1a1a1a;color:#f5c518;font:14px/1.45 Inter,system-ui,sans-serif;text-align:center;position:relative;z-index:200;">Preview of <a href="https://github.com/lsp-llc/local-ai-models/pull/96" style="color:#f5c518;">lsp-llc/local-ai-models#96</a> — leftover 125→132 chrome restamp, head <code>16ff7eb</code>. Draft. Do not merge. Not Firebase. ads.txt not touched. <a href="./" style="color:#f5c518;">#96 pages</a> · <a href="../index.html" style="color:#f5c518;">all previews</a> · <a href="#browse-132" style="color:#f5c518;">Browse 132</a></p>
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="https://local-ai-models.ai/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+      <a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+      <a href="https://local-ai-models.ai/model-builder.html">PC Builder</a>
+      <a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+      <a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+      <a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+      <a href="https://local-ai-models.ai/sentiment.html">Community</a>
+      <a href="https://local-ai-models.ai/guidance.html">Guidance</a>
+      <a href="https://local-ai-models.ai/getting-started.html" class="active" aria-current="page">Get Started</a>
+      <a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+      <a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+      <a href="https://local-ai-models.ai/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="https://local-ai-models.ai/local-ai-models.html">Home</a><span class="sep">/</span><span>Get Started</span></div>
+    <div class="hero-eyebrow">5 minutes · zero to running</div>
+    <h1 class="hero-title">From zero to <span class="accent">running</span></h1>
+    <p class="hero-sub">Every model on this site can be running on your machine in under five minutes. Here's the opinionated path most people take — and the eight tools worth knowing.</p>
+  </div>
+</section>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+  <p class="lede reveal">Local AI is <em>simpler than it looks</em>. Four steps below get you from nothing to chatting with a real LLM on your own hardware. No accounts or API keys are required for the local setup itself.</p>
+
+  <div class="section-eyebrow">The Path</div>
+  <h2 class="section-h2">Four steps. <span class="accent">Five minutes.</span></h2>
+  <p class="section-sub">Click any command to copy it. Each step builds on the previous one — start at #1 and stop whenever you have what you need.</p>
+  <p class="section-sub">Security note: terminal commands and install scripts run on your own machine. Verify the source, inspect scripts before executing them, and use backups or an isolated environment when appropriate.</p>
+
+  <div class="steps reveal-stagger">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Install Ollama</div>
+        <div class="step-desc">One installer, all platforms. Handles model downloading, GPU detection, quantization, and an OpenAI-compatible API on <code>localhost:11434</code>. The single dependency for the rest of this guide.</div>
+        <div class="step-cmd" data-cmd="curl -fsSL https://ollama.com/install.sh | sh">curl -fsSL https://ollama.com/install.sh | sh</div>
+        <div class="step-note">Or download from ollama.com for Windows/Mac.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Pull your first model</div>
+        <div class="step-desc">One command downloads and runs it. Ollama auto-selects the best quantization for your hardware. Llama 3.2 3B is a good starter — small, fast, and still very capable.</div>
+        <div class="step-cmd" data-cmd="ollama run llama3.2:3b">ollama run llama3.2:3b</div>
+        <div class="step-note">~2 GB download. You're chatting in under a minute.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Add a web UI</div>
+        <div class="step-desc">Ollama's CLI works, but a web interface makes it actually enjoyable. Open WebUI is the community standard — ChatGPT-like with multi-user, document upload, RAG, web search, and plugins.</div>
+        <div class="step-cmd" data-cmd="docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway ghcr.io/open-webui/open-webui:main">docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway ghcr.io/open-webui/open-webui:main</div>
+        <div class="step-note">Open localhost:3000. ChatGPT-like interface, your machine.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Scale up</div>
+        <div class="step-desc">Ready for more? Pull bigger models, add RAG with your documents, or set up image/video generation. Browse the catalog to find what fits your GPU.</div>
+        <div class="step-cmd" data-cmd="ollama pull qwen3:32b">ollama pull qwen3:32b</div>
+        <div class="step-note">For 24GB GPUs. Or hit the model index to compare options.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-eyebrow">Frontend Tools</div>
+  <h2 class="section-h2">Your <span class="accent">steering wheel</span></h2>
+  <p class="section-sub">Models are engines. These tools are how you actually drive them. Most people end up using 2–3.</p>
+
+  <div class="tools-grid reveal-stagger">
+
+    <div class="tool">
+      <div class="tool-head"><span class="tool-name">Ollama</span><span class="tool-tag tag-essential">Essential</span></div>
+      <div class="tool-desc">The foundation. CLI tool that downloads, manages, and serves LLMs locally. Built on llama.cpp. OpenAI-compatible API on port 11434 means everything else can plug into it.</div>
+      <div class="tool-use"><strong>Best for:</strong> Backend engine, API integration, developers who live in the terminal. Pairs with every UI below.</div>
+    </div>
+
+    <div class="tool">
+      <div class="tool-head"><span class="tool-name">Open WebUI</span><span class="tool-tag tag-popular">Most Popular</span></div>
+      <div class="tool-desc">ChatGPT-like web interface for Ollama. Multi-user support, document upload, RAG, web search, plugins, and conversation history. 45K+ GitHub stars as of early 2026. Docker deploy.</div>
+      <div class="tool-use"><strong>Best for:</strong> Daily driver chat UI. Teams sharing a local AI server. Anyone who wants the ChatGPT experience privately.</div>
+    </div>
+
+    <div class="tool">
+      <div class="tool-head"><span class="tool-name">LM Studio</span><span class="tool-tag tag-popular">Beginner Friendly</span></div>
+      <div class="tool-desc">Desktop app with built-in model browser and one-click downloads from Hugging Face. No Docker or CLI needed. Excellent Apple Silicon optimization. MCP tool support.</div>
+      <div class="tool-use"><strong>Best for:</strong> Non-technical users, Mac users, people who want zero CLI. Also provides a local API server.</div>
+    </div>
+
+    <div class="tool">
+      <div class="tool-head"><span class="tool-name">AnythingLLM</span><span class="tool-tag tag-rag">RAG Focused</span></div>
+      <div class="tool-desc">Desktop + server app built around document Q&amp;A. Drag-and-drop file ingestion, workspace-based chat, built-in vector store, and no-code agent builder. Connects to Ollama or cloud APIs.</div>
+      <div class="tool-use"><strong>Best for:</strong> Chatting with your own documents. Consulting firms with multiple client knowledge bases. RAG without writing code.</div>
+    </div>
+
+    <div class="tool">
+      <div class="tool-head"><span class="tool-name">ComfyUI</span><span class="tool-tag tag-creative">Creative</span></div>
+      <div class="tool-desc">Node-based visual workflow editor for image and video generation. The standard tool for Stable Diffusion, FLUX, Wan, and HunyuanVideo. Handles model loading, LoRA stacking, and pipeline orchestration.</div>
+      <div class="tool-use"><strong>Best for:</strong> All image/video generation on this site. Visual pipelines. LoRA workflows. The creative production stack.</div>
+    </div>
+
+    <div class="tool">
+      <div class="tool-head"><span class="tool-name">Jan / GPT4All / LobeChat</span><span class="tool-tag tag-popular">Alternatives</span></div>
+      <div class="tool-desc">Jan: zero-config desktop app, bundles everything, no Ollama needed. GPT4All: Nomic's lightweight chat app with LocalDocs for file Q&amp;A. LobeChat: polished mobile-first PWA with voice and multimodal support.</div>
+      <div class="tool-use"><strong>Best for:</strong> Jan for non-technical family/colleagues. GPT4All for simple local file chat. LobeChat for mobile-first users.</div>
+    </div>
+
+    <div class="tool">
+      <div class="tool-head"><span class="tool-name">Pinokio</span><span class="tool-tag tag-essential">One-Click</span></div>
+      <div class="tool-desc">The "Steam for AI." Browser-based launcher that one-click installs and manages local AI apps — ComfyUI, Ollama, Open WebUI, Stable Diffusion, text-generation-webui, and dozens more. No terminal, no Python environments, no dependency conflicts.</div>
+      <div class="tool-use"><strong>Best for:</strong> Absolute beginners who want to skip all setup. Artists and creators who just want to generate. Installing multiple AI tools without breaking your system.</div>
+    </div>
+
+    <div class="tool">
+      <div class="tool-head"><span class="tool-name">Text Generation WebUI</span><span class="tool-tag tag-power">Power User</span></div>
+      <div class="tool-desc">Oobabooga's feature-rich web interface. Multiple backends (llama.cpp, transformers, ExLlama2, AutoGPTQ, AWQ). LoRA loading, fine-grained parameter control, extensions system, multimodal support. Zero telemetry, full privacy.</div>
+      <div class="tool-use"><strong>Best for:</strong> Advanced users who want maximum control over inference parameters. LoRA experimentation. Running models in formats beyond GGUF (GPTQ, AWQ, safetensors).</div>
+    </div>
+
+  </div>
+
+  <div class="qa">
+    <div class="section-eyebrow">Choosing a Runtime</div>
+    <h2 class="section-h2">Ollama or LM Studio: which should a beginner start with?</h2>
+    <div class="prose reveal">
+      <p>Start with LM Studio if you want a working chat window today and would rather not open a terminal. Start with Ollama if you are comfortable in a terminal, or if you already know you want other tools talking to your model over an API. Most people who stay with local AI end up running both.</p>
+      <p>LM Studio is a desktop application with a built-in model browser: search, click download, start chatting, without ever choosing a quantization or a file path. It is well optimized for Apple Silicon, it supports MCP tools, and it can expose a local API server. The tradeoff is that it is a graphical app, excellent at getting one person chatting on one machine and less natural as the always-on engine behind other software.</p>
+      <p>Ollama is a command-line tool and a background service. It downloads models, picks a sensible quantization for your hardware, and serves an OpenAI-compatible API on <code>localhost:11434</code>. That API is why Ollama sits underneath so much else on this site: Open WebUI, AnythingLLM, and most of the agent frameworks in the <a href="https://local-ai-models.ai/claws.html">CLAWS catalog</a> expect exactly that endpoint. It runs on llama.cpp, so it uses the same GGUF files everything else does.</p>
+      <ul>
+        <li><strong>LM Studio first</strong> on a Mac, or if the phrase "install script" makes you want to close the tab.</li>
+        <li><strong>Ollama first</strong> if you want a web UI in front of your model, if you will wire a model into an editor or an agent framework, or if the machine is headless.</li>
+        <li><strong>Both</strong>, once you know you are staying. LM Studio is a good model browser and scratchpad; Ollama is a good service.</li>
+      </ul>
+      <p>Neither choice locks you in. Both run GGUF quantizations of the same models, so switching means re-downloading a file, not relearning the field.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="section-eyebrow">The Whole Loop</div>
+    <h2 class="section-h2">How do you run AI models locally as a beginner?</h2>
+    <div class="prose reveal">
+      <p>Install a runtime, download one small model, and talk to it. That is the whole loop, and on normal broadband it takes about five minutes. The four-step path at the top of this page is the version most people follow; this is what is happening underneath it.</p>
+      <p><strong>A local model is a file plus a program that reads it.</strong> The file is the weights, usually GGUF format, usually a few gigabytes. The program is the runtime: Ollama, LM Studio, or llama.cpp. The runtime loads the weights into memory, ideally your GPU's VRAM, and generates text one token at a time. Nothing leaves your machine, and after the download nothing needs an internet connection.</p>
+      <p><strong>Your hardware sets the ceiling, not your skill.</strong> The one number that decides what you can run is how much VRAM your GPU has, or on an Apple Silicon Mac, how much unified memory the machine has. A model that fits in VRAM feels responsive. A model that does not fit gets split between GPU and system RAM, and gets slow in a way no setting will fix.</p>
+      <p><strong>Quantization is how you make a model fit.</strong> Every VRAM figure on this site assumes Q4_K_M, the community default, which stores each weight at roughly 4.8 bits instead of 16 and stays close to full quality. Ollama picks for you, so you can start without understanding it, and the <a href="https://local-ai-models.ai/quantization.html">quantization guide</a> explains the trade once you outgrow the default.</p>
+      <p><strong>Start smaller than you think you need.</strong> A 3B model that answers instantly teaches you more in the first hour than a 32B model that takes a minute per reply.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="section-eyebrow">The Ladder</div>
+    <h2 class="section-h2">Your first three models</h2>
+    <div class="prose reveal">
+      <p>Pull these in order. Each is in the <a href="https://local-ai-models.ai/local-ai-models.html">catalog</a> with full details, and each VRAM figure below is the catalog's own at the site's default quantization.</p>
+      <p><strong>1. Llama 3.2 3B, roughly 1.5 to 3.6 GB, 128K context, Meta Community license.</strong> The model the four-step path uses, and the right first pull for almost everyone: a two gigabyte download, runs on effectively any GPU made in the last several years, and acceptable on CPU. Its job is to prove your setup works.</p>
+      <div class="step-cmd" data-cmd="ollama run llama3.2:3b">ollama run llama3.2:3b</div>
+      <p><strong>2. Qwen3 8B, roughly 6 to 7 GB, 128K context, Apache 2.0, tool use supported.</strong> Your first genuinely capable daily driver. It fits comfortably on an 8 GB card, it is permissively licensed, and it supports tool calling, which agent frameworks need. On 8 GB of VRAM this is your ceiling model rather than your starter.</p>
+      <div class="step-cmd" data-cmd="ollama pull qwen3:8b">ollama pull qwen3:8b</div>
+      <p><strong>3. Phi-4 14B, roughly 11 GB, 128K context, MIT.</strong> The step up, and the first model here that needs real hardware: 12 GB is tight, 16 GB is comfortable. Unusually strong at reasoning and math for its size, and MIT licensing makes it the least encumbered option in its class. Qwen3 14B lands in the same place at roughly 10.7 GB under Apache 2.0.</p>
+      <div class="step-cmd" data-cmd="ollama pull phi4:14b">ollama pull phi4:14b</div>
+      <p>Two additions once those work. Add <strong>nomic-embed-text</strong> (under 1 GB) when you want the model to answer questions about your own documents, because retrieval needs an embedding model alongside the chat model. On a 24 GB card, <strong>Qwen3 32B at roughly 22 GB</strong> is the natural end of this ladder, and what <a href="https://local-ai-models.ai/stacks.html">Recommended Stacks</a> builds its 24 GB configuration around.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="section-eyebrow">No Graphics Card</div>
+    <h2 class="section-h2">Can you run an LLM locally without a GPU?</h2>
+    <div class="prose reveal">
+      <p>Yes. Every runtime on this page runs on CPU alone, and llama.cpp was built to do exactly that. The catch is speed: with the model in VRAM, practitioners generally report 15 to 50 tokens per second on consumer GPUs, and when the model has to run out of system RAM instead, that can fall to roughly 1 to 2 tokens per second. Those are reported ranges, not measurements taken on this site.</p>
+      <p>CPU-only inference is usable if you match the model to the situation. It works for short prompts, for batch jobs you are not watching, for classification and extraction over a queue of documents, and for anything where a fifteen second answer is fine. It does not work for interactive chat with a large model, or for coding assistance where you are waiting on the cursor.</p>
+      <p>The memory math does not change when you drop the GPU, it moves. A model needs the same total space whether that space is VRAM or system RAM, so a model listed at 6 GB still wants roughly 6 GB free, plus room for your operating system. Check free RAM, not installed RAM.</p>
+      <p>Worth trying on a CPU-only machine, all from this site's catalog:</p>
+      <ul>
+        <li><strong>SmolLM2 (135M / 360M / 1.7B)</strong>, 0.3 to 1.5 GB, Apache 2.0. The smallest thing here that still holds a conversation.</li>
+        <li><strong>Llama 3.2 (1B / 3B)</strong>, 1.5 to 3.6 GB, 128K context. The 1B is the realistic CPU chat option.</li>
+        <li><strong>Qwen3 (0.6B / 1.7B / 4B)</strong>, 1 to 4 GB, Apache 2.0, with tool use.</li>
+        <li><strong>Phi-4-mini (3.8B)</strong>, around 3 GB, MIT, strong for its size on structured tasks.</li>
+        <li><strong>Moonshine (Tiny / Base)</strong>, under 0.5 GB, if what you want is speech to text rather than chat.</li>
+      </ul>
+      <p>One exception: Apple Silicon Macs have no discrete GPU but are not CPU-only machines. Unified memory is shared between CPU and GPU, so a 32 GB or 64 GB Mac holds models that would need a professional card on a PC. Size against total unified memory instead.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="section-eyebrow">When It Goes Wrong</div>
+    <h2 class="section-h2">Troubleshooting your first run</h2>
+    <div class="prose reveal">
+      <p>Six failures account for most first-day frustration. All of them look like a broken install and none of them are.</p>
+
+      <h3 class="qa-h3">The model downloaded, then the answers crawl</h3>
+      <p>Not a bug. The model did not fit in VRAM, so the runtime split it between GPU and system RAM. Offloaded layers run roughly three to ten times slower than layers on the GPU, so a half-offloaded model is dramatically slower, not slightly slower. The fix is a smaller model or a lower quantization, not a setting.</p>
+
+      <h3 class="qa-h3">It will not load at all, or it crashes on load</h3>
+      <p>Same cause, further along: the model plus its overhead exceeded what was available, and the runtime gave up instead of degrading. Budget roughly 1.2 to 1.5 times the stated model size to cover KV cache, activations, and overhead. And remember your display is already using VRAM. A 12 GB card driving two monitors does not have 12 GB free.</p>
+
+      <h3 class="qa-h3">Something else is already using the port</h3>
+      <p>Ollama serves on port 11434, and the Open WebUI container publishes on port 3000. If either is taken, the service refuses to start or the browser shows something unrelated. Port 3000 is the default for half the web tooling in existence, so publish the UI elsewhere by changing the left-hand number in the Docker port mapping. If port 11434 is occupied, find out what holds it before reassigning it, because the answer is often a second copy of Ollama already running fine.</p>
+
+      <h3 class="qa-h3">It worked for short prompts, then died on a long document</h3>
+      <p>Context length is the hidden VRAM cost. The KV cache grows with conversation length, so a session that started comfortably can run out of memory ten messages later, or the moment you paste in a long file. The <a href="https://local-ai-models.ai/quantization.html">quantization guide</a> carries the per-model-size figures for that cost. A model advertising a 128K window will not give you 128K on a small card: the window is a property of the model, affording it is a property of your hardware. Reduce context until the session is stable. In the Ollama REPL, <code>/set parameter num_ctx 4096</code> sets it per session, and <code>OLLAMA_CONTEXT_LENGTH</code> sets a service default. One catch: a <code>num_ctx</code> value baked into a model's Modelfile overrides that environment variable, so a model built with its own context length keeps it until the Modelfile changes.</p>
+
+      <h3 class="qa-h3">The quantization tags are confusing</h3>
+      <p><code>ollama pull llama3.3</code> gives you Q4_K_M, the community default, and for most people that ends the decision. Confusion starts with tags like <code>70b-instruct-q8_0</code> or <code>70b-instruct-q2_K</code>. The number is bits per weight, so <code>q8_0</code> is closer to the original than <code>q4_K_M</code>, which is closer than <code>q2_K</code>, and higher quality costs VRAM in roughly the proportion you would expect. Do not chase a higher quantization of a model that barely fits: a smaller model at a higher quantization usually beats a larger model at a lower one, especially for code.</p>
+
+      <h3 class="qa-h3">The web UI cannot see Ollama</h3>
+      <p>Open WebUI runs in a container, and inside that container <code>localhost</code> means the container, not your machine. That is the purpose of the <code>--add-host=host.docker.internal:host-gateway</code> flag in the install command above, and it is the flag people drop when retyping from memory. If the UI loads but shows no models, check that flag first, then confirm Ollama is running by requesting <code>localhost:11434</code> on the host.</p>
+    </div>
+  </div>
+</div>
+
+<section class="related">
+  <div class="related-title reveal">— Related</div>
+  <div class="related-grid reveal">
+    <a href="https://local-ai-models.ai/local-ai-models.html" class="related-card">
+      <div class="related-eyebrow">Catalog</div>
+      <div class="related-name"><mark class="preview-mark" id="browse-132">Browse 132 Models</mark></div>
+      <div class="related-desc">Pick what to pull next. Filter by VRAM, license, family, and use case.</div>
+    </a>
+    <a href="https://local-ai-models.ai/quantization.html" class="related-card">
+      <div class="related-eyebrow">Learn</div>
+      <div class="related-name">Quantization Explained</div>
+      <div class="related-desc">Why Q4_K_M is the default and what changes when you go higher or lower.</div>
+    </a>
+    <a href="https://local-ai-models.ai/stacks.html" class="related-card">
+      <div class="related-eyebrow">Hardware</div>
+      <div class="related-name">Recommended Stacks</div>
+      <div class="related-desc">Pre-vetted complete setups by hardware tier.</div>
+    </a>
+    <a href="https://local-ai-models.ai/local-ai-server-guide.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">Build a Local AI Server</div>
+      <div class="related-desc">The long-form hardware guide: six budget tiers and what each one unlocks.</div>
+    </a>
+    <a href="https://local-ai-models.ai/vram-guide.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">How Much VRAM Do You Need?</div>
+      <div class="related-desc">Worked sizing math from 3B to 70B, quantization tradeoffs, and Mac unified memory.</div>
+    </a>
+    <a href="https://local-ai-models.ai/best-local-coding-llm.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">Best Local LLM for Coding</div>
+      <div class="related-desc">What actually runs on 8, 16, and 24 GB of VRAM, grounded in published benchmarks.</div>
+    </a>
+  </div>
+</section>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.09.14 &middot; 132 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+      <li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+      <li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+      <li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+      <li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+      <li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+      <li><a href="https://local-ai-models.ai/guidance.html">Guidance</a></li>
+      <li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="https://local-ai-models.ai/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+      <li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+      <li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed September 14, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> &middot; <a href="https://local-ai-models.ai/terms.html">Terms</a> &middot; <a href="https://local-ai-models.ai/cookies.html">Cookies</a> &middot; <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> &middot; <a href="https://local-ai-models.ai/about.html">About</a> &middot; <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+// Hero parallax
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+// Scroll reveal
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ io.observe(el); });
+})();
+
+// Click-to-copy on commands
+document.querySelectorAll('.step-cmd').forEach(function(el){
+  el.addEventListener('click', function(){
+    var cmd = el.dataset.cmd || el.textContent;
+    navigator.clipboard.writeText(cmd).then(function(){
+      el.classList.add('copied');
+      setTimeout(function(){ el.classList.remove('copied'); }, 1800);
+    });
+  });
+});
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+/* TITLE-CLIP-FIX — italic descenders + gradient-clipped text need padding & overflow:visible */
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2, .final-cta-title, .philosophy-quote { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+.section-h2 .accent, .final-cta-title .italic, .philosophy-quote .gt, .philosophy-quote .gradient-text { display: inline-block; padding: 0 0.12em 0.06em 0; margin-right: -0.06em; overflow: visible; }
+/* end TITLE-CLIP-FIX */
+
+</style>
+<style>
+/* QA-PROSE-V1 (question sections, first-models block, troubleshooting) */
+.qa { margin-top: 88px; max-width: 840px; }
+.qa .section-h2 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); margin-bottom: 18px; }
+.prose p { color: var(--text-2); font-size: clamp(0.98rem, 1.6vw, 1.06rem); line-height: 1.7; margin-bottom: 18px; }
+.prose p strong, .prose li strong { color: var(--text); font-weight: 600; }
+.prose ul { margin: 0 0 20px 0; padding-left: 22px; color: var(--text-2); font-size: clamp(0.98rem, 1.6vw, 1.06rem); line-height: 1.7; }
+.prose li { margin-bottom: 8px; }
+.prose a { color: var(--accent); }
+.prose code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.35); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; color: var(--accent); word-break: break-word; }
+.prose .step-cmd { margin: 0 0 22px; }
+.qa-h3 { font-family: var(--font); font-size: 1.14rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text); margin: 32px 0 10px; }
+@media (max-width: 700px) { .qa { margin-top: 56px; } }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+</body>
+</html>

@@ -1,0 +1,2208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PR #96 preview — model-builder.html 125→132 (not production)</title>
+<meta name="description" content="Build a complete local AI workstation from real parts at real April 2026 prices. CPU, GPU, RAM, storage, PSU — see total cost and which of the 132 models you can run. PCPartPicker for AI.">
+<meta name="keywords" content="AI workstation builder, local LLM PC build, RTX 5090 build, AI PC parts, LLM hardware, build AI server, PCPartPicker AI, threadripper AI workstation">
+<link rel="canonical" href="https://lsp-llc.github.io/lam-pr-preview/pr-96/model-builder.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Workstation Builder — Real Parts, Real April 2026 Prices">
+<meta property="og:description" content="PCPartPicker for local AI. Pick CPU/GPU/RAM/PSU from real parts, see total cost, see which models fit.">
+<meta property="og:url" content="https://local-ai-models.ai/model-builder.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Workstation Builder — Real Parts, Real Prices">
+<meta name="robots" content="noindex,nofollow,noarchive">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AI Workstation Builder",
+  "url": "https://local-ai-models.ai/model-builder.html",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "description": "Interactive PC parts picker for local AI workstations. Real parts, real April 2026 prices, real model-fit data."
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-primary: #0a0e1a;
+  --bg: #0a0e1a;
+  --bg-card: rgba(17, 24, 39, 0.7);
+  --bg-elevated: rgba(13, 18, 36, 0.8);
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: rgba(30, 41, 59, 0.8);
+  --border-light: rgba(51, 65, 85, 0.8);
+  --border-hover: rgba(0, 212, 255, 0.4);
+  --text: #e2e8f0;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-dim: #64748b;
+  --text-muted: #475569;
+  --accent: #00d4ff;
+  --accent-secondary: #818cf8;
+  --accent-glow: rgba(0, 212, 255, 0.3);
+  --accent-dim: rgba(0, 212, 255, 0.10);
+  --green: #22c55e;
+  --green-dim: rgba(34, 197, 94, 0.12);
+  --orange: #ff9f1c;
+  --orange-dim: rgba(255, 159, 28, 0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239, 68, 68, 0.12);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96, 165, 250, 0.12);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167, 139, 250, 0.12);
+  --yellow: #fbbf24;
+  --yellow-dim: rgba(251, 191, 36, 0.12);
+  --radius: 12px;
+  --font-display: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg-primary);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* SITE NAV */
+.site-nav {
+  position: sticky; top: 0;
+  background: rgba(10,14,26,0.85);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100; padding: 10px 0;
+}
+.site-nav-inner {
+  max-width: 1400px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.site-nav-brand {
+  font-family: var(--font-mono); font-weight: 700; font-size: 0.82rem;
+  color: var(--accent); text-decoration: none; letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.site-nav-brand .accent2 { color: var(--text); }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a {
+  font-family: var(--font-mono); font-size: 0.74rem;
+  color: var(--text-dim); text-decoration: none;
+  padding: 6px 12px; border-radius: 4px;
+  transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+.site-nav-links a:hover { color: var(--accent); background: var(--accent-dim); border-color: rgba(0,212,255,0.2); }
+.site-nav-links a.active { color: var(--accent); background: var(--accent-dim); border-color: rgba(0,212,255,0.3); }
+
+/* HERO */
+.hero-section {
+  position: relative;
+  min-height: 44vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.30; }
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,14,26,0.6) 0%, rgba(10,14,26,0.95) 100%);
+}
+.hero-content { position: relative; z-index: 1; text-align: center; max-width: 880px; padding: 50px 20px; }
+.hero-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 3px;
+  color: var(--green); margin-bottom: 16px;
+}
+.status-dot {
+  width: 8px; height: 8px; background: var(--green); border-radius: 50%;
+  animation: hero-pulse 2s infinite;
+  box-shadow: 0 0 8px rgba(34,197,94,0.5);
+}
+@keyframes hero-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 700; color: var(--text-primary);
+  margin: 0 0 12px; letter-spacing: -0.03em; line-height: 1.05;
+}
+.hero-accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-subtitle {
+  font-size: 1.0rem; color: var(--text-secondary);
+  line-height: 1.55; margin-bottom: 0; max-width: 720px; margin-left: auto; margin-right: auto;
+}
+
+/* BUILDER LAYOUT */
+.builder-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  padding: 36px 0;
+}
+@media (max-width: 1100px) {
+  .builder-layout { grid-template-columns: 1fr; }
+}
+
+/* PRESETS */
+.presets-bar {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+}
+.presets-label {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px;
+}
+.preset-btn {
+  font-family: var(--font-mono); font-size: 0.74rem;
+  padding: 8px 14px; border-radius: 4px;
+  background: var(--bg-elevated); border: 1px solid var(--border-light);
+  color: var(--text-primary); cursor: pointer;
+  transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.preset-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+/* COMPONENT PICKER */
+.components { display: flex; flex-direction: column; gap: 14px; }
+.component-row {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: 130px 1fr 130px;
+  gap: 16px; align-items: center;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.component-row:hover { border-color: var(--border-hover); box-shadow: 0 0 16px var(--accent-dim); }
+.component-row.warn { border-color: rgba(255,159,28,0.4); }
+.component-row.warn::before { content: '⚠'; color: var(--orange); }
+.component-label {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.component-label .lbl-icon {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  color: var(--accent); background: var(--accent-dim);
+  padding: 3px 10px; border-radius: 3px;
+  border: 1px solid rgba(0,212,255,0.25);
+  letter-spacing: 1px; text-transform: uppercase;
+  align-self: flex-start;
+}
+.component-label .lbl-name {
+  font-family: var(--font-mono); font-size: 0.85rem;
+  color: var(--text-primary); font-weight: 600; margin-top: 4px;
+}
+.component-label .lbl-sub {
+  font-size: 0.72rem; color: var(--text-dim); margin-top: 2px;
+}
+.component-select {
+  font-family: var(--font-display); font-size: 0.92rem;
+  background: var(--bg-elevated); border: 1px solid var(--border-light);
+  color: var(--text-primary); padding: 11px 14px; border-radius: 6px;
+  outline: none; transition: border-color 0.2s;
+  width: 100%;
+}
+.component-select:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-dim); }
+.component-price {
+  font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700;
+  color: var(--accent); text-align: right;
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+.component-price .price-meta {
+  display: block; font-size: 0.65rem; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-top: 2px; font-weight: 600;
+}
+@media (max-width: 700px) {
+  .component-row { grid-template-columns: 1fr; gap: 10px; }
+  .component-price { text-align: left; }
+}
+
+/* MULTI-GPU */
+.multi-gpu-row {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.multi-gpu-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px;
+}
+.multi-gpu-header h4 {
+  font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;
+  color: var(--text-primary); text-transform: uppercase; letter-spacing: 1.5px;
+  display: flex; gap: 10px; align-items: center;
+}
+.multi-gpu-header .lbl-icon {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  color: var(--accent); background: var(--accent-dim);
+  padding: 3px 10px; border-radius: 3px;
+  border: 1px solid rgba(0,212,255,0.25);
+  letter-spacing: 1px;
+}
+.gpu-count-controls {
+  display: flex; gap: 0; align-items: center;
+}
+.gpu-count-btn {
+  font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;
+  width: 32px; height: 32px;
+  background: var(--bg-elevated); border: 1px solid var(--border-light);
+  color: var(--text-primary); cursor: pointer;
+  transition: all 0.2s;
+}
+.gpu-count-btn:hover { color: var(--accent); border-color: var(--accent); }
+.gpu-count-btn:first-child { border-radius: 4px 0 0 4px; }
+.gpu-count-btn:last-child { border-radius: 0 4px 4px 0; }
+.gpu-count-display {
+  font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700;
+  width: 44px; height: 32px; line-height: 32px;
+  background: var(--bg-elevated); border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);
+  text-align: center; color: var(--accent);
+}
+.gpu-rows { display: flex; flex-direction: column; gap: 10px; }
+.gpu-pick-row {
+  display: grid; grid-template-columns: 80px 1fr 130px;
+  gap: 14px; align-items: center;
+}
+.gpu-pick-num {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px;
+}
+@media (max-width: 700px) {
+  .gpu-pick-row { grid-template-columns: 1fr; }
+}
+
+/* SUMMARY PANEL */
+.summary-panel {
+  position: sticky; top: 80px;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 22px;
+  align-self: start;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.summary-panel::before {
+  content: ''; display: block; height: 3px; margin: -24px -22px 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+}
+.summary-title {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-dim);
+}
+.summary-total {
+  font-family: var(--font-mono); font-size: 2.6rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1;
+}
+.summary-total-meta {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-top: 6px;
+}
+.summary-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  padding-top: 16px; border-top: 1px solid var(--border);
+}
+.summary-stat {
+  background: var(--bg-elevated); border-radius: 6px;
+  padding: 12px 14px;
+}
+.summary-stat-label {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px;
+}
+.summary-stat-value {
+  font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700;
+  color: var(--accent); margin-top: 4px;
+}
+.summary-stat-value.warn { color: var(--orange); }
+.summary-stat-value.bad { color: var(--red); }
+
+.summary-warnings {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.warning {
+  font-family: var(--font-mono); font-size: 0.78rem;
+  padding: 10px 12px; border-radius: 4px;
+  background: var(--orange-dim); color: var(--orange);
+  border-left: 2px solid var(--orange);
+  line-height: 1.4;
+}
+.warning.bad { background: var(--red-dim); color: var(--red); border-left-color: var(--red); }
+.warning.good { background: var(--green-dim); color: var(--green); border-left-color: var(--green); }
+
+.summary-actions {
+  display: flex; gap: 8px; padding-top: 14px; border-top: 1px solid var(--border);
+}
+.btn {
+  font-family: var(--font-mono); font-size: 0.74rem;
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 11px 16px; border-radius: 4px;
+  cursor: pointer; transition: all 0.2s;
+  border: 1px solid var(--border-light);
+  background: var(--bg-elevated); color: var(--text-primary);
+  flex: 1;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); font-weight: 700; }
+.btn-primary:hover { background: transparent; color: var(--accent); }
+
+/* MODELS-FIT SECTION */
+.section { padding: 48px 0 24px; border-top: 1px solid var(--border); }
+.section-title {
+  font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-primary);
+  display: flex; align-items: center; gap: 14px; margin-bottom: 8px;
+}
+.section-title::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%);
+}
+.section-num {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  color: var(--accent); background: var(--accent-dim);
+  padding: 4px 10px; border-radius: 3px;
+  border: 1px solid rgba(0,212,255,0.25); letter-spacing: 1px;
+}
+.section-sub {
+  font-size: 0.92rem; color: var(--text-secondary);
+  margin-bottom: 22px; max-width: 760px;
+}
+
+.fit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.fit-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  transition: border-color 0.3s;
+  position: relative; overflow: hidden;
+}
+.fit-card.fits { border-left: 3px solid var(--green); }
+.fit-card.fits-tight { border-left: 3px solid var(--yellow); }
+.fit-card.no-fit { border-left: 3px solid var(--red); opacity: 0.55; }
+.fit-card-name {
+  font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 4px;
+}
+.fit-card-meta {
+  font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--text-dim); margin-bottom: 8px;
+}
+.fit-card-status {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  display: flex; align-items: center; gap: 6px; margin-top: 8px;
+}
+.fit-card.fits .fit-card-status { color: var(--green); }
+.fit-card.fits-tight .fit-card-status { color: var(--yellow); }
+.fit-card.no-fit .fit-card-status { color: var(--red); }
+.fit-card-tps {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  color: var(--text-dim); margin-top: 4px;
+}
+
+/* DISCLAIMER */
+.disclaimer {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin: 22px 0;
+  font-size: 0.82rem; color: var(--text-secondary);
+  line-height: 1.55;
+  border-left: 3px solid var(--accent);
+}
+.disclaimer strong { color: var(--accent); }
+
+/* AD SLOT */
+.ad-slot {
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 24px 0; text-align: center;
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);
+  min-height: 90px; display: flex; align-items: center; justify-content: center;
+}
+
+/* FOOTER */
+footer {
+  padding: 36px 0 24px; margin-top: 32px;
+  border-top: 1px solid var(--border);
+  text-align: center; font-size: 0.85rem; color: var(--text-dim);
+}
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+footer .footer-meta { font-size: 0.75rem; margin-top: 8px; }
+
+/* SCROLL FADE */
+.fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 700px) {
+  .container { padding: 0 16px; }
+  .builder-layout { padding: 24px 0; gap: 16px; }
+  .summary-panel { position: static; padding: 18px; }
+  .summary-total { font-size: 2.0rem; }
+}
+
+/* PREMIUM-PATCH-V1 */
+/* Universal premium fixes (applied via premium-patch.js) */
+/* 1. Display weight refinements — 700 was too heavy */
+h1, h2, .section-heading, .section-title, .hero-title, .stack-title, .scenario-title, .chart-title, .update-title, .step-title, .tool-name, .tool-card-name, .stack-card .stack-title { font-weight: 600 !important; letter-spacing: -0.025em; }
+/* 2. Contrast bumps for muted text — was failing WCAG AA */
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, .stack-note, .verdict, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+/* 3. Touch targets ≥44px on nav links and buttons */
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .topnav-links a, .btn, .hero-btn, .preset-btn, .filter-btn, .filter-pill, .iv-pill, .tier-pill, .step-dot, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+/* 4. Accessible focus rings — never remove default outline without a custom one */
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+/* 5. Animation grammar — width/height/top/left transitions get cheaper alternatives */
+.scanline, .gauge-fill, .stacked-bar-fill, .bar-fill, [class*="-fill"]:not(.iv-vram-fill):not(.cn-modal) { will-change: transform; }
+/* 6. Body text minimum 16px on key surfaces (was 0.85rem in some cards) */
+.card-desc, .stack-note, .scenario p, .scenario li, .breaks-note { font-size: 0.95rem; line-height: 1.55; }
+/* 7. prefers-reduced-motion safety */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+
+/* PREMIUM-PATCH-V2 */
+/* Patch v2 — targets remaining critique gaps */
+
+/* 1. Broader body text floor — 0.95rem minimum on text-bearing card content */
+.catalog-desc, .hub-desc, .dest-desc, .primer-desc, .matrix-why, .edu-text,
+.fit-card-meta, .stack-desc, .scenario-text, .tool-desc, .tool-use,
+.update-desc, .breaks-note, .step-desc, .step-note, .quant-prose,
+.card-desc-inner, .card-grid li, .card-grid p, .related-desc,
+.foot-tagline, .pf-tagline, .hero-sub, .lede {
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.6;
+}
+
+/* 2. Vertical breathing room — bump common section selectors */
+.section, section.section, .quant-guide, .stacks-guide, .hub,
+.philosophy, .final-cta, .related, .container > section,
+.tools-grid + *, .stacks-grid + *,
+section[class*='-section'] {
+  padding-top: 96px !important;
+  padding-bottom: 96px !important;
+}
+@media (max-width: 700px) {
+  .section, section.section, .quant-guide, .stacks-guide, .hub,
+  .philosophy, .final-cta, .related, .container > section,
+  section[class*='-section'] {
+    padding-top: 56px !important;
+    padding-bottom: 56px !important;
+  }
+}
+
+/* 3. Width-animation kill — anything with -fill class becomes transform-only */
+.bench-bar-fill, .gauge-fill, .stacked-bar-fill, .bar-fill, .progress-bar,
+.iv-vram-fill, .threshold-fill {
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* 4. Tighter letter-spacing on small uppercase UI */
+.section-eyebrow, .hub-section-eyebrow, .breadcrumb,
+.foot-col-title, .pf-col-title, .hero-eyebrow,
+.dest-icon, .hub-icon, .iv-fab-tip, .step-dot .step-label,
+.usecase-card .step-label, .filter-pill, .filter-btn,
+.iv-pill, .pillish, .scenario-hw, .stack-hw,
+[class*='-eyebrow'], [class*='-tag'][class*='tool'] {
+  letter-spacing: 1px !important;
+}
+.section-heading, .section-title, h2.section-heading {
+  letter-spacing: -0.02em !important;
+}
+
+/* 5. Surface luminance ordering — force ramp on common var conflicts */
+:root {
+  --surface-fixed-1: #131416;
+  --surface-fixed-2: #1c1d20;
+  --surface-fixed-3: #25272a;
+}
+
+/* 6. Hide unused fonts (Instrument Serif when not used by .italic / .accent / serif content) */
+/* — leaving as-is; removal would change layout subtly. Browsers can lazy-load. */
+
+/* end PREMIUM-PATCH-V2 */
+
+</style>
+<!-- Schema: Organization (publisher trust signal for AEO) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="https://local-ai-models.ai/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+
+<style>
+.preview-mark {
+  background: rgba(245,197,24,0.28);
+  color: inherit;
+  outline: 2px solid #f5c518;
+  outline-offset: 2px;
+  padding: 0 0.12em;
+}
+</style>
+
+</head>
+<body>
+<p class="preview-banner" style="margin:0;padding:10px 16px;background:#1a1a1a;color:#f5c518;font:14px/1.45 Inter,system-ui,sans-serif;text-align:center;position:relative;z-index:200;">Preview of <a href="https://github.com/lsp-llc/local-ai-models/pull/96" style="color:#f5c518;">lsp-llc/local-ai-models#96</a> — leftover 125→132 chrome restamp, head <code>16ff7eb</code>. Draft. Do not merge. Not Firebase. ads.txt not touched. <a href="./" style="color:#f5c518;">#96 pages</a> · <a href="../index.html" style="color:#f5c518;">all previews</a> · <a href="#hero-132" style="color:#f5c518;">132 cataloged</a></p>
+
+<!-- SITE NAV -->
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="https://local-ai-models.ai/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+      <a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+      <a href="https://local-ai-models.ai/model-builder.html" class="active" aria-current="page">PC Builder</a>
+      <a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+      <a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+      <a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+      <a href="https://local-ai-models.ai/sentiment.html">Community</a>
+      <a href="https://local-ai-models.ai/guidance.html">Guidance</a>
+      <a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
+      <a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+      <a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+      <a href="https://local-ai-models.ai/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<!-- HERO -->
+<div class="hero-section">
+  <div class="hero-bg">
+    <img class="hero-img" src="https://local-ai-models.ai/hero-bg.png" alt="" loading="eager">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-status"><span class="status-dot"></span>BUILDER · APRIL 2026 PRICES</div>
+    <h1 class="hero-title">AI Workstation <span class="hero-accent">Builder</span></h1>
+    <p class="hero-subtitle">PCPartPicker for local AI. Real parts, real April 2026 prices, real model-fit data. Pick your CPU/GPU/RAM/PSU/case — see total cost, total VRAM, and exactly which of the <mark class="preview-mark" id="hero-132">132 cataloged models</mark> you can run on what you just configured.</p>
+  </div>
+</div>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+
+<!-- SIZING PRIMER -->
+<div class="siz-primer">
+  <div class="siz-primer-eyebrow">Sizing Guide</div>
+  <p>Before you buy parts, size the GPU first: on a local-AI box the model's weights and working memory have to fit in VRAM, and the CPU, system RAM, power supply, and cooling all exist to keep that GPU fed.</p>
+</div>
+
+<div class="builder-layout">
+
+  <!-- LEFT: Component picker -->
+  <div>
+    <div class="presets-bar">
+      <span class="presets-label">Quick Presets:</span>
+      <button class="preset-btn" data-preset="budget" type="button">Budget · 7B</button>
+      <button class="preset-btn" data-preset="enthusiast" type="button">Enthusiast · 32B</button>
+      <button class="preset-btn" data-preset="pro" type="button">Pro · 70B</button>
+      <button class="preset-btn" data-preset="frontier" type="button">Frontier · 4× GPU</button>
+      <button class="preset-btn" data-preset="reset" type="button" aria-label="Reset workstation build">↺ Reset</button>
+    </div>
+
+    <div class="components" id="components">
+
+      <div class="component-row" data-comp="cpu">
+        <div class="component-label">
+          <span class="lbl-icon">CPU</span>
+          <span class="lbl-name">Processor</span>
+          <span class="lbl-sub">Cores, threads, IO lanes</span>
+        </div>
+        <select class="component-select" id="cpuSelect" aria-label="Processor"></select>
+        <div class="component-price"><span id="cpuPrice">$0</span><span class="price-meta">est. street</span></div>
+      </div>
+
+      <div class="component-row" data-comp="mb">
+        <div class="component-label">
+          <span class="lbl-icon">MB</span>
+          <span class="lbl-name">Motherboard</span>
+          <span class="lbl-sub">Socket, PCIe lanes, RAM slots</span>
+        </div>
+        <select class="component-select" id="mbSelect" aria-label="Motherboard"></select>
+        <div class="component-price"><span id="mbPrice">$0</span><span class="price-meta">est. street</span></div>
+      </div>
+
+      <!-- MULTI-GPU -->
+      <div class="multi-gpu-row">
+        <div class="multi-gpu-header">
+          <h4><span class="lbl-icon">GPU</span> Graphics Cards</h4>
+          <div class="gpu-count-controls">
+            <button class="gpu-count-btn" id="gpuMinus" type="button" aria-label="Decrease GPU count">−</button>
+            <div class="gpu-count-display" id="gpuCount">1</div>
+            <button class="gpu-count-btn" id="gpuPlus" type="button" aria-label="Increase GPU count">+</button>
+          </div>
+        </div>
+        <div class="gpu-rows" id="gpuRows"></div>
+      </div>
+
+      <div class="component-row" data-comp="ram">
+        <div class="component-label">
+          <span class="lbl-icon">RAM</span>
+          <span class="lbl-name">System Memory</span>
+          <span class="lbl-sub">DDR5 typical</span>
+        </div>
+        <select class="component-select" id="ramSelect" aria-label="System memory"></select>
+        <div class="component-price"><span id="ramPrice">$0</span><span class="price-meta">est. street</span></div>
+      </div>
+
+      <div class="component-row" data-comp="storage">
+        <div class="component-label">
+          <span class="lbl-icon">SSD</span>
+          <span class="lbl-name">Storage</span>
+          <span class="lbl-sub">NVMe for model weights</span>
+        </div>
+        <select class="component-select" id="storageSelect" aria-label="Storage"></select>
+        <div class="component-price"><span id="storagePrice">$0</span><span class="price-meta">est. street</span></div>
+      </div>
+
+      <div class="component-row" data-comp="psu">
+        <div class="component-label">
+          <span class="lbl-icon">PSU</span>
+          <span class="lbl-name">Power Supply</span>
+          <span class="lbl-sub">Watts, 80+ rating</span>
+        </div>
+        <select class="component-select" id="psuSelect" aria-label="Power supply"></select>
+        <div class="component-price"><span id="psuPrice">$0</span><span class="price-meta">est. street</span></div>
+      </div>
+
+      <div class="component-row" data-comp="case">
+        <div class="component-label">
+          <span class="lbl-icon">Case</span>
+          <span class="lbl-name">Chassis</span>
+          <span class="lbl-sub">GPU clearance, airflow</span>
+        </div>
+        <select class="component-select" id="caseSelect" aria-label="Chassis"></select>
+        <div class="component-price"><span id="casePrice">$0</span><span class="price-meta">est. street</span></div>
+      </div>
+
+      <div class="component-row" data-comp="cooling">
+        <div class="component-label">
+          <span class="lbl-icon">CPU</span>
+          <span class="lbl-name">CPU Cooling</span>
+          <span class="lbl-sub">AIO or air</span>
+        </div>
+        <select class="component-select" id="coolingSelect" aria-label="CPU cooling"></select>
+        <div class="component-price"><span id="coolingPrice">$0</span><span class="price-meta">est. street</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: Live summary -->
+  <aside class="summary-panel">
+    <div class="summary-title">Build Summary</div>
+    <div>
+      <div class="summary-total">$<span id="totalPrice">0</span></div>
+      <div class="summary-total-meta">Estimated total · April 2026</div>
+    </div>
+
+    <div class="summary-stats">
+      <div class="summary-stat">
+        <div class="summary-stat-label">Total VRAM</div>
+        <div class="summary-stat-value" id="totalVram">0 GB</div>
+      </div>
+      <div class="summary-stat">
+        <div class="summary-stat-label">Power Draw</div>
+        <div class="summary-stat-value" id="totalPower">0 W</div>
+      </div>
+      <div class="summary-stat">
+        <div class="summary-stat-label">PSU Headroom</div>
+        <div class="summary-stat-value" id="psuHeadroom">—</div>
+      </div>
+      <div class="summary-stat">
+        <div class="summary-stat-label">Models That Fit</div>
+        <div class="summary-stat-value" id="modelsFit">Select parts</div>
+      </div>
+    </div>
+
+    <div class="summary-warnings" id="warnings"></div>
+
+    <div class="summary-actions">
+      <button class="btn" id="copyBuild">Copy Build</button>
+      <a href="#section-fits" class="btn btn-primary" style="text-align:center; text-decoration:none;">See Models</a>
+    </div>
+  </aside>
+
+</div>
+
+<!-- AD SLOT -->
+<div class="ad-slot" id="ad-mid">
+  <div>Ad · Support this free resource</div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <strong>About these prices:</strong> all part prices are MSRP or typical street prices observed in early-to-mid April 2026 from manufacturer pages and major retailers (Newegg, Micro Center, B&amp;H). They will drift — sometimes dramatically (datacenter GPUs, scarcity premiums on RTX 50-series). Treat the totals as a planning estimate, not a quote. Click "Copy Build" to take the parts list to PCPartPicker for live pricing.
+</div>
+
+<!-- MODELS THAT FIT -->
+<section class="section fade-up" id="section-fits">
+  <h2 class="section-title"><span class="section-num">02</span> Models That Fit Your Build</h2>
+  <p class="section-sub"><mark class="preview-mark">Mapped against the 132 models</mark> in our index. Green = comfortably fits at Q4_K_M with 8K context · Yellow = tight fit, may need lower quantization · Red = won't fit.</p>
+
+  <div class="fit-grid" id="fitGrid"></div>
+</section>
+
+<!-- SOURCES -->
+<section class="section fade-up" id="section-sources">
+  <h2 class="section-title"><span class="section-num">03</span> Price &amp; Spec Sources</h2>
+  <p class="section-sub">Every part in the picker links to a real product. Prices reference these primary sources.</p>
+  <div class="disclaimer" style="border-left-color: var(--text-dim);">
+    <ul style="list-style: none; padding: 0; line-height: 1.9;">
+      <li><a href="https://www.nvidia.com/en-us/geforce/graphics-cards/" target="_blank" rel="noopener" style="color:var(--accent);">NVIDIA GeForce / Workstation</a> · official MSRP for RTX 4090, 5090, 6000 Ada, A6000</li>
+      <li><a href="https://www.amd.com/en/products/processors/desktops/ryzen.html" target="_blank" rel="noopener" style="color:var(--accent);">AMD Ryzen / Threadripper</a> · official launch pricing</li>
+      <li><a href="https://www.newegg.com" target="_blank" rel="noopener" style="color:var(--accent);">Newegg</a> · live street pricing for memory, storage, PSU, case, cooling</li>
+      <li><a href="https://www.microcenter.com" target="_blank" rel="noopener" style="color:var(--accent);">Micro Center</a> · CPU/motherboard combo pricing reference</li>
+      <li><a href="https://pcpartpicker.com" target="_blank" rel="noopener" style="color:var(--accent);">PCPartPicker</a> · cross-retailer compatibility checking</li>
+      <li><a href="https://www.tomshardware.com" target="_blank" rel="noopener" style="color:var(--accent);">Tom's Hardware reviews</a> · power-draw measurements per GPU under sustained inference load</li>
+    </ul>
+  </div>
+</section>
+
+<!-- HOW TO SIZE A LOCAL-AI WORKSTATION (reference) -->
+<section class="section fade-up" id="section-sizing">
+  <h2 class="section-title"><span class="section-num">04</span> How to Size a Local-AI Workstation</h2>
+  <p class="section-sub">A parts list is downstream of one decision: which models you want to run, and at what context length. Get that right and the rest of the build follows. This is an evergreen primer on the reasoning; use it alongside the picker above and the <a href="https://local-ai-models.ai/recommend.html">recommender</a> for exact, per-model numbers.</p>
+
+  <div class="siz-prose">
+    <h3>VRAM is the binding constraint</h3>
+    <p>For local inference, the model's weights and its working memory have to live in memory the accelerator can read at full speed. On a discrete GPU that memory is <strong>VRAM</strong>. When the weights fit in VRAM, the GPU streams through them at its native bandwidth and generation is fast. When they do not, layers spill over the PCIe bus into system RAM and onto the CPU, which are far slower, and throughput collapses. That is why capacity, not raw compute, is usually the first thing that decides whether a model runs well: teraflops set <em>how fast</em> a model that already fits will run, while VRAM capacity sets <em>whether it fits at all</em>. Choose the GPU to hold your target model first, then optimize for speed.</p>
+
+    <h3>Model size and quantization set the footprint</h3>
+    <p>Two numbers drive how much VRAM the weights need: the <strong>parameter count</strong> and the <strong>precision</strong> each parameter is stored at. At full 16-bit precision every parameter is about two bytes, so an 8-billion-parameter model's weights alone are on the order of 16 GB. <strong>Quantization</strong> stores each weight in fewer bits, shrinking the footprint in exchange for a small, usually acceptable quality cost. A widely used rule of thumb, best treated as approximate: <strong>4-bit quantization uses roughly half a gigabyte of VRAM per billion parameters</strong> for the weights, plus overhead for the KV cache, activations, and the runtime itself. So a 7-8B model at 4-bit lands around 5-6 GB, and larger models scale up from there. These are ballpark figures; the exact number moves with the quant scheme, the context length, and the runtime. For a precise per-model figure, lean on the site's tools rather than a memorized value: the <a href="https://local-ai-models.ai/quantization.html">quantization guide</a> explains the trade-offs, and the <a href="https://local-ai-models.ai/recommend.html">recommender</a> and <a href="https://local-ai-models.ai/local-ai-models.html">model index</a> report fit against real hardware.</p>
+
+    <h3>Every other part exists to feed the GPU</h3>
+    <p>Once VRAM is settled, the rest of the build is about keeping that GPU fed and stable under a long, steady load. Here is how the supporting parts earn their place.</p>
+  </div>
+
+  <div class="siz-points">
+    <div class="siz-point">
+      <span class="siz-point-tag">Primary</span>
+      <h4>The GPU</h4>
+      <p>Does the matrix math and holds the weights. VRAM capacity gates the model size you can load; memory bandwidth gates how many tokens per second you get out. It is the one part worth choosing first and spending the most on.</p>
+    </div>
+    <div class="siz-point">
+      <span class="siz-point-tag">Support</span>
+      <h4>CPU &amp; System RAM</h4>
+      <p>The CPU handles loading, tokenization, sampling, and orchestration; system RAM stages the model file and runs the OS and everything else. Aim to exceed the model file size comfortably, especially if you plan to offload part of a model to the CPU when it will not quite fit VRAM. CPU-only inference works, but it is far slower than the GPU.</p>
+    </div>
+    <div class="siz-point">
+      <span class="siz-point-tag">Headroom</span>
+      <h4>Power Supply</h4>
+      <p>Must supply the sustained draw of the GPU or GPUs plus the CPU and the rest, with margin for transient spikes. An undersized or low-quality unit causes shutdowns under load. Multi-GPU builds especially want a generous, high-quality PSU; this is not the place to cut corners.</p>
+    </div>
+    <div class="siz-point">
+      <span class="siz-point-tag">Sustained</span>
+      <h4>Cooling &amp; Airflow</h4>
+      <p>Inference is a long, steady load, not the short bursts a game produces, so the GPU and CPU sit hot for minutes at a time. Adequate CPU cooling and case airflow keep clocks from throttling and hardware healthy across long sessions. Plan thermals for continuous load, not a momentary peak.</p>
+    </div>
+    <div class="siz-point">
+      <span class="siz-point-tag">Architecture</span>
+      <h4>Unified Memory vs Discrete GPU</h4>
+      <p>Apple Silicon shares one high-bandwidth memory pool between CPU and GPU, so a large share of system memory acts as VRAM: a capacity-friendly, low-power way to hold big models. Discrete Nvidia and AMD GPUs give dedicated VRAM with very high bandwidth and the strongest raw throughput, but capacity is fixed per card and you scale by adding cards. If you are capacity-bound, unified memory stretches further per watt; if you are speed-bound, discrete GPUs pull ahead.</p>
+    </div>
+    <div class="siz-point">
+      <span class="siz-point-tag">KV Cache</span>
+      <h4>Context Headroom</h4>
+      <p>Weights are not the whole story: the KV cache grows with context length and with concurrent requests, and it lives in VRAM too. A model that just fits at short context may not fit at long context. Size VRAM for the weights plus the context window you actually intend to use, and leave headroom. The <a href="https://local-ai-models.ai/token-simulator.html">token simulator</a> helps you reason about context and throughput.</p>
+    </div>
+  </div>
+
+  <ul class="siz-fit">
+    <li><span class="siz-fit-tier">Entry · single mainstream GPU</span> Small models around 7-8B at 4-bit fit comfortably with room for modest context. Plenty for chat, coding assistants, and retrieval over a handful of documents. <span class="siz-fit-note">A sensible first local-AI box.</span></li>
+    <li><span class="siz-fit-tier">Mid-range · higher single-card VRAM</span> Opens up mid-size models, roughly the 13-14B class and toward 30B, at 4-bit, with more context headroom for longer prompts and documents.</li>
+    <li><span class="siz-fit-tier">High-end · top single card or dual GPUs</span> Brings the 30B-to-70B class into reach at 4-bit, depending on quant level and context length. Watch cooling and PSU headroom as you add cards.</li>
+    <li><span class="siz-fit-tier">Frontier · very large / mixture-of-experts</span> 70B-plus dense models and large MoE models generally want multiple GPUs or a large unified-memory machine.</li>
+    <li><span class="siz-fit-note">These tiers are rules of thumb, not guarantees. Exact fit depends on quantization and context length, so confirm against the <a href="https://local-ai-models.ai/model-builder.html">workstation builder</a> above and the <a href="https://local-ai-models.ai/recommend.html">recommender</a> before you buy.</span></li>
+  </ul>
+
+  <div class="siz-faq">
+    <details>
+      <summary>How much VRAM do I actually need?</summary>
+      <div class="siz-faq-a">
+        <p>It depends on the model size, the quantization level, and the context length you plan to use. As an approximate rule of thumb, 4-bit quantization needs roughly half a gigabyte per billion parameters for the weights, plus overhead for the KV cache and runtime, so a 7-8B model lands around 5-6 GB and larger models scale up from there. Add headroom for longer context, since the KV cache also lives in VRAM.</p>
+        <p>Rather than commit to one number, check the exact fit for a specific model with the <a href="https://local-ai-models.ai/recommend.html">recommender</a>, the <a href="https://local-ai-models.ai/model-builder.html">workstation builder</a>, and the <a href="https://local-ai-models.ai/quantization.html">quantization guide</a>.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Do I need a top-end GPU?</summary>
+      <div class="siz-faq-a">
+        <p>Not necessarily. The right GPU is the one whose VRAM holds the largest model and context you actually intend to run, at a speed you are happy with. Many genuinely useful models run well on mainstream cards.</p>
+        <p>Flagship cards earn their price when you need big models, long context, high throughput, or several concurrent users. Match VRAM to your target model rather than to the top of the product stack, then use the <a href="https://local-ai-models.ai/model-builder.html">workstation builder</a> and <a href="https://local-ai-models.ai/builder.html">stack builder</a> to sanity-check the rest of the parts.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Can I run big models on system RAM?</summary>
+      <div class="siz-faq-a">
+        <p>Technically yes, through CPU offload or full CPU inference, but it is far slower than running on the GPU because system RAM bandwidth and CPU compute are much lower than a GPU's. It is reasonable for occasional use, or for nudging a model that only just overflows VRAM by offloading a few layers, but not for responsive interactive use of large models.</p>
+        <p>Unified-memory machines such as Apple Silicon are a different case: their shared memory is high-bandwidth and directly GPU-accessible, so what looks like system RAM there behaves much more like VRAM.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Nvidia vs AMD vs Apple Silicon for local AI?</summary>
+      <div class="siz-faq-a">
+        <p>There is no single winner; it depends on what you value. Nvidia has the most mature software ecosystem and the broadest tool support, which usually means the smoothest setup. AMD works and keeps improving, and some cards offer strong VRAM per dollar, though the software path can take more effort. Apple Silicon's unified memory delivers large capacity in a quiet, low-power package and is well supported by popular local runtimes, while its raw compute and bandwidth differ from top discrete GPUs.</p>
+        <p>Pick based on the software you plan to run, the model sizes you are targeting, and how much setup effort you will tolerate.</p>
+      </div>
+    </details>
+    <details>
+      <summary>How much does a starter build cost?</summary>
+      <div class="siz-faq-a">
+        <p>It genuinely depends, so any figure quoted here would be misleading. Cost is driven mostly by the GPU you choose, whether you buy new or used, and current market conditions, since GPU prices in particular move around a lot. The other parts matter far less to the total.</p>
+        <p>Instead of a fixed number, assemble real parts in the <a href="https://local-ai-models.ai/model-builder.html">workstation builder</a> above to see an estimated total for your exact configuration, and use the <a href="https://local-ai-models.ai/builder.html">stack builder</a> for the software side. Spend where it counts, which is VRAM.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="siz-links">
+    <a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+    <a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+    <a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+    <a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+    <a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a>
+  </div>
+</section>
+
+<!-- AD SLOT BOTTOM -->
+<div class="ad-slot" id="ad-bottom">
+  <div>Ad · Support this free resource</div>
+</div>
+
+<!-- SIZING REFERENCE STYLES (siz-*): page-scoped, added for the How-to-Size section -->
+<style>
+.siz-primer{
+  border-left:3px solid var(--accent);
+  background:linear-gradient(90deg, var(--accent-dim), transparent 72%);
+  padding:14px 20px; border-radius:0 var(--radius) var(--radius) 0;
+  margin:0 0 22px;
+}
+.siz-primer-eyebrow{
+  font-family:var(--font-mono); font-size:0.66rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:2px; color:var(--accent);
+  margin-bottom:6px;
+}
+.siz-primer p{ color:var(--text-secondary); font-size:0.95rem; line-height:1.6; margin:0; }
+
+.siz-prose{ max-width:820px; margin-bottom:26px; }
+.siz-prose h3{
+  font-family:var(--font-mono); font-size:0.92rem; font-weight:700;
+  color:var(--text-primary); text-transform:uppercase; letter-spacing:1px;
+  margin:22px 0 8px;
+}
+.siz-prose h3:first-child{ margin-top:0; }
+.siz-prose p{ color:var(--text-secondary); font-size:0.96rem; line-height:1.7; margin:0 0 12px; }
+.siz-prose strong{ color:var(--text-primary); }
+.siz-prose em{ color:var(--accent); font-style:normal; }
+.siz-prose a{ color:var(--accent); text-decoration:none; }
+.siz-prose a:hover{ text-decoration:underline; }
+
+#section-sizing .section-sub a, .siz-fit a{ color:var(--accent); text-decoration:none; }
+#section-sizing .section-sub a:hover, .siz-fit a:hover{ text-decoration:underline; }
+
+.siz-points{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:12px; margin:8px 0 28px;
+}
+.siz-point{
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px 18px;
+  transition:border-color 0.3s;
+}
+.siz-point:hover{ border-color:var(--border-hover); }
+.siz-point-tag{
+  display:inline-block; font-family:var(--font-mono); font-size:0.6rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:1.2px; color:var(--accent);
+  background:var(--accent-dim); border:1px solid rgba(0,212,255,0.25);
+  padding:3px 9px; border-radius:3px; margin-bottom:10px;
+}
+.siz-point h4{
+  font-family:var(--font-mono); font-size:0.9rem; font-weight:700;
+  color:var(--text-primary); margin:0 0 6px; letter-spacing:0.2px;
+}
+.siz-point p{ color:var(--text-secondary); font-size:0.88rem; line-height:1.6; margin:0; }
+
+.siz-fit{
+  background:var(--bg-card); border:1px solid var(--border);
+  border-left:3px solid var(--green); border-radius:var(--radius);
+  padding:6px 22px; margin:0 0 28px; list-style:none;
+}
+.siz-fit li{ padding:11px 0; border-bottom:1px solid var(--border); font-size:0.92rem; color:var(--text-secondary); line-height:1.6; }
+.siz-fit li:last-child{ border-bottom:none; }
+.siz-fit-tier{
+  font-family:var(--font-mono); font-size:0.72rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px; color:var(--accent);
+  display:block; margin-bottom:3px;
+}
+.siz-fit-note{ color:var(--text-dim); font-size:0.86rem; }
+
+.siz-faq{ max-width:860px; margin:0 0 24px; display:flex; flex-direction:column; gap:10px; }
+.siz-faq details{
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:0 18px; overflow:hidden;
+}
+.siz-faq details[open]{ border-color:var(--border-hover); }
+.siz-faq summary{
+  cursor:pointer; list-style:none; padding:15px 0;
+  font-family:var(--font-mono); font-size:0.9rem; font-weight:600;
+  color:var(--text-primary); display:flex; align-items:center; gap:10px;
+}
+.siz-faq summary::-webkit-details-marker{ display:none; }
+.siz-faq summary::before{
+  content:'+'; font-family:var(--font-mono); color:var(--accent);
+  font-weight:700; font-size:1.1rem; flex-shrink:0; width:16px; text-align:center;
+}
+.siz-faq details[open] summary::before{ content:'\2212'; }
+.siz-faq-a{ padding:0 0 16px 26px; color:var(--text-secondary); font-size:0.92rem; line-height:1.65; }
+.siz-faq-a p{ margin:0 0 10px; }
+.siz-faq-a p:last-child{ margin:0; }
+.siz-faq-a a{ color:var(--accent); text-decoration:none; }
+.siz-faq-a a:hover{ text-decoration:underline; }
+
+.siz-links{ display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; }
+.siz-links a{
+  font-family:var(--font-mono); font-size:0.74rem; text-transform:uppercase; letter-spacing:0.5px;
+  color:var(--text-primary); text-decoration:none;
+  background:var(--bg-elevated); border:1px solid var(--border-light);
+  padding:9px 14px; border-radius:4px; transition:all 0.2s;
+}
+.siz-links a:hover{ color:var(--accent); border-color:var(--accent); background:var(--accent-dim); }
+
+@media (max-width: 700px){
+  .siz-prose, .siz-faq{ max-width:100%; }
+}
+</style>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.09.14 &middot; 132 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+      <li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+      <li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+      <li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+      <li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+      <li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+      <li><a href="https://local-ai-models.ai/guidance.html">Guidance</a></li>
+      <li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="https://local-ai-models.ai/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+      <li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+      <li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed September 14, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> &middot; <a href="https://local-ai-models.ai/terms.html">Terms</a> &middot; <a href="https://local-ai-models.ai/cookies.html">Cookies</a> &middot; <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> &middot; <a href="https://local-ai-models.ai/about.html">About</a> &middot; <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+</div><!-- /container -->
+
+<script>
+// ===== PARTS DATABASE =====
+// All prices are MSRP or typical April 2026 street prices from manufacturers + Newegg/Micro Center.
+// power = sustained inference draw (W). vram in GB for GPUs.
+
+var PARTS = {
+  cpu: [
+    { id: 'r5_7600', name: 'AMD Ryzen 5 7600 (6c)', price: 199, power: 105, socket: 'AM5', lanes: 24 },
+    { id: 'r7_7700x', name: 'AMD Ryzen 7 7700X (8c)', price: 250, power: 105, socket: 'AM5', lanes: 24 },
+    { id: 'r9_7950x', name: 'AMD Ryzen 9 7950X (16c)', price: 540, power: 170, socket: 'AM5', lanes: 24 },
+    { id: 'r9_9950x', name: 'AMD Ryzen 9 9950X (16c, Zen 5)', price: 650, power: 170, socket: 'AM5', lanes: 24 },
+    { id: 'i7_14700k', name: 'Intel Core i7-14700K (20c hybrid)', price: 410, power: 125, socket: 'LGA1700', lanes: 20 },
+    { id: 'i9_14900k', name: 'Intel Core i9-14900K (24c hybrid)', price: 400, power: 125, socket: 'LGA1700', lanes: 20 },
+    { id: 'tr_7960x', name: 'AMD Threadripper 7960X (24c, HEDT)', price: 1500, power: 350, socket: 'sTR5', lanes: 88 },
+    { id: 'tr_7980x', name: 'AMD Threadripper 7980X (64c, HEDT)', price: 5000, power: 350, socket: 'sTR5', lanes: 88 },
+    { id: 'tr_pro_7995wx', name: 'AMD Threadripper Pro 7995WX (96c, WS)', price: 10000, power: 350, socket: 'sWRX9', lanes: 128 },
+    { id: 'xeon_w7_3565x', name: 'Intel Xeon w7-3565X (32c, WS)', price: 2900, power: 270, socket: 'LGA4677', lanes: 112 }
+  ],
+  mb: [
+    { id: 'b650', name: 'ASRock B650M PG (AM5, 1× PCIe 5)', price: 180, socket: 'AM5', maxRam: 192, gpuSlots: 1 },
+    { id: 'x670e', name: 'ASUS ProArt X670E-Creator (AM5, 2× PCIe 5)', price: 470, socket: 'AM5', maxRam: 192, gpuSlots: 2 },
+    { id: 'z790_proart', name: 'ASUS ProArt Z790-Creator (LGA1700)', price: 460, socket: 'LGA1700', maxRam: 192, gpuSlots: 2 },
+    { id: 'trx50_pro', name: 'ASUS Pro WS TRX50-SAGE (sTR5)', price: 990, socket: 'sTR5', maxRam: 1024, gpuSlots: 4 },
+    { id: 'wrx90_sage', name: 'ASUS Pro WS WRX90E-SAGE SE (sWRX9)', price: 1500, socket: 'sWRX9', maxRam: 2048, gpuSlots: 7 },
+    { id: 'w790_ace', name: 'Asus Pro WS W790-ACE (LGA4677, Xeon W)', price: 1100, socket: 'LGA4677', maxRam: 2048, gpuSlots: 4 }
+  ],
+  gpu: [
+    { id: 'rtx5070', name: 'NVIDIA RTX 5070 (12 GB)', price: 650, vram: 12, power: 250 },
+    { id: 'rtx5070ti', name: 'NVIDIA RTX 5070 Ti (16 GB)', price: 1000, vram: 16, power: 300 },
+    { id: 'rtx4090', name: 'NVIDIA RTX 4090 (24 GB)', price: 2750, vram: 24, power: 450 },
+    { id: 'rtx5080', name: 'NVIDIA RTX 5080 (16 GB)', price: 1300, vram: 16, power: 360 },
+    { id: 'rtx5090', name: 'NVIDIA RTX 5090 (32 GB)', price: 3700, vram: 32, power: 575 },
+    { id: 'a6000', name: 'NVIDIA RTX A6000 (48 GB)', price: 5700, vram: 48, power: 300 },
+    { id: 'rtx6000ada', name: 'NVIDIA RTX 6000 Ada (48 GB)', price: 6800, vram: 48, power: 300 },
+    { id: 'l40s', name: 'NVIDIA L40S (48 GB datacenter)', price: 8500, vram: 48, power: 350 },
+    { id: 'h100_80', name: 'NVIDIA H100 80 GB PCIe', price: 30000, vram: 80, power: 350 },
+    { id: 'h200_141', name: 'NVIDIA H200 141 GB SXM', price: 40000, vram: 141, power: 700 },
+    { id: 'rx7900xtx', name: 'AMD Radeon RX 7900 XTX (24 GB)', price: 1450, vram: 24, power: 355 },
+    { id: 'mi300x', name: 'AMD Instinct MI300X (192 GB datacenter)', price: 15000, vram: 192, power: 750 }
+  ],
+  ram: [
+    { id: 'ddr5_32', name: '32 GB DDR5-6000 kit (2×16)', price: 350, capacity: 32, type: 'DDR5' },
+    { id: 'ddr5_64', name: '64 GB DDR5-6000 kit (2×32)', price: 700, capacity: 64, type: 'DDR5' },
+    { id: 'ddr5_128', name: '128 GB DDR5-5600 kit (4×32)', price: 450, capacity: 128, type: 'DDR5' },
+    { id: 'ddr5_192', name: '192 GB DDR5-5600 kit (4×48)', price: 700, capacity: 192, type: 'DDR5' },
+    { id: 'rdimm_256', name: '256 GB DDR5 RDIMM ECC (8×32)', price: 1200, capacity: 256, type: 'RDIMM' },
+    { id: 'rdimm_512', name: '512 GB DDR5 RDIMM ECC (8×64)', price: 2800, capacity: 512, type: 'RDIMM' },
+    { id: 'rdimm_1024', name: '1 TB DDR5 RDIMM ECC (16×64)', price: 5800, capacity: 1024, type: 'RDIMM' }
+  ],
+  storage: [
+    { id: 'nvme_2tb', name: '2 TB Samsung 990 Pro NVMe', price: 450, capacity: 2 },
+    { id: 'nvme_4tb', name: '4 TB Samsung 990 Pro NVMe', price: 900, capacity: 4 },
+    { id: 'nvme_4tb_wd', name: '4 TB WD Black SN850X NVMe', price: 650, capacity: 4 },
+    { id: 'nvme_8tb', name: '8 TB Sabrent Rocket Q NVMe', price: 1500, capacity: 8 },
+    { id: 'enterprise_8tb', name: '8 TB Solidigm D7-PS1010 (enterprise)', price: 1200, capacity: 8 },
+    { id: 'enterprise_15tb', name: '15.36 TB Micron 7500 PRO U.2', price: 2200, capacity: 15.36 }
+  ],
+  psu: [
+    { id: 'psu_750', name: 'Corsair RM750x 750W 80+ Gold', price: 150, watts: 750 },
+    { id: 'psu_1000', name: 'Corsair RM1000x 1000W 80+ Gold', price: 200, watts: 1000 },
+    { id: 'psu_1200', name: 'Corsair HX1200i 1200W 80+ Platinum', price: 320, watts: 1200 },
+    { id: 'psu_1500', name: 'Corsair AX1500i 1500W 80+ Titanium', price: 580, watts: 1500 },
+    { id: 'psu_1600', name: 'Corsair AX1600i 1600W 80+ Titanium', price: 600, watts: 1600 },
+    { id: 'psu_2000', name: 'Super Flower Leadex Titanium 2000W', price: 700, watts: 2000 },
+    { id: 'psu_redun', name: 'FSP Twins Pro 2× 900W (redundant)', price: 480, watts: 900 }
+  ],
+  case: [
+    { id: 'meshify', name: 'Fractal Design Meshify 2 (mid-tower)', price: 160, slots: 2 },
+    { id: 'o11_xl', name: 'Lian Li O11 Dynamic XL (full-tower)', price: 250, slots: 4 },
+    { id: 'define7xl', name: 'Fractal Define 7 XL (full-tower)', price: 240, slots: 4 },
+    { id: 'phanteks_enthoo', name: 'Phanteks Enthoo Pro 2 Server Edition', price: 200, slots: 5 },
+    { id: 'sliger_sf', name: 'Sliger CX4712 4U rackmount', price: 380, slots: 4 },
+    { id: 'rosewill_4u', name: 'Rosewill RSV-L4500U 4U server chassis', price: 250, slots: 7 }
+  ],
+  cooling: [
+    { id: 'air_d15', name: 'Noctua NH-D15 (dual-tower air)', price: 150, tdp: 220 },
+    { id: 'aio_240', name: 'Arctic Liquid Freezer III 240mm', price: 90, tdp: 250 },
+    { id: 'aio_360', name: 'Arctic Liquid Freezer III 360mm', price: 100, tdp: 350 },
+    { id: 'aio_420', name: 'Arctic Liquid Freezer III 420mm', price: 100, tdp: 400 },
+    { id: 'custom_loop', name: 'Custom loop (CPU block + radiator + reservoir)', price: 600, tdp: 500 }
+  ]
+};
+
+// ===== MODEL CATALOG (for fit checking) =====
+// VRAM at Q4_K_M with 8K context. Sourced from llama.cpp / Ollama community.
+var MODELS = [
+  { name: 'Llama 3.2 1B',       params: 1,   vram: 1.5,  category: 'LLM' },
+  { name: 'Llama 3.2 3B',       params: 3,   vram: 3.5,  category: 'LLM' },
+  { name: 'Phi-4 mini 3.8B',    params: 3.8, vram: 4.0,  category: 'LLM' },
+  { name: 'Qwen3 7B',           params: 7,   vram: 6.5,  category: 'LLM' },
+  { name: 'Llama 3.1 8B',       params: 8,   vram: 7.0,  category: 'LLM' },
+  { name: 'Mistral 7B v0.3',    params: 7,   vram: 6.5,  category: 'LLM' },
+  { name: 'Phi-4 14B',          params: 14,  vram: 11.0, category: 'LLM' },
+  { name: 'Qwen3 14B',          params: 14,  vram: 11.0, category: 'LLM' },
+  { name: 'Mistral Small 22B',  params: 22,  vram: 16.0, category: 'LLM' },
+  { name: 'Qwen3 32B',          params: 32,  vram: 22.0, category: 'LLM' },
+  { name: 'Yi 34B',             params: 34,  vram: 23.5, category: 'LLM' },
+  { name: 'Mixtral 8x7B',       params: 47,  vram: 28.0, category: 'MoE' },
+  { name: 'Llama 3.3 70B',      params: 70,  vram: 45.0, category: 'LLM' },
+  { name: 'Qwen3 72B',          params: 72,  vram: 46.0, category: 'LLM' },
+  { name: 'Mixtral 8x22B',      params: 141, vram: 85.0, category: 'MoE' },
+  { name: 'Nemotron 3 Super',   params: 120, vram: 75.0, category: 'MoE' },
+  { name: 'GLM-4.5 106B',       params: 106, vram: 65.0, category: 'LLM' },
+  { name: 'Llama 4 Scout 109B', params: 109, vram: 68.0, category: 'MoE' },
+  { name: 'DeepSeek V3.2 671B', params: 671, vram: 380.0, category: 'MoE' },
+  { name: 'GLM-5 744B',         params: 744, vram: 420.0, category: 'MoE' },
+  { name: 'FLUX.1 dev (image)', params: 12,  vram: 24.0, category: 'Image' },
+  { name: 'Qwen2-VL 72B',       params: 72,  vram: 48.0, category: 'Vision' },
+  { name: 'Whisper Large v3',   params: 1.5, vram: 4.0,  category: 'STT' }
+];
+
+// ===== STATE =====
+var state = {
+  cpu: 'r9_7950x', mb: 'x670e', ram: 'ddr5_64', storage: 'nvme_4tb',
+  psu: 'psu_1200', case: 'o11_xl', cooling: 'aio_360',
+  gpus: ['rtx4090']
+};
+
+var PRESETS = {
+  budget: { cpu: 'r5_7600', mb: 'b650', gpus: ['rtx5070ti'], ram: 'ddr5_32', storage: 'nvme_2tb', psu: 'psu_750', case: 'meshify', cooling: 'aio_240' },
+  enthusiast: { cpu: 'r9_9950x', mb: 'x670e', gpus: ['rtx4090'], ram: 'ddr5_64', storage: 'nvme_4tb', psu: 'psu_1000', case: 'o11_xl', cooling: 'aio_360' },
+  pro: { cpu: 'tr_7960x', mb: 'trx50_pro', gpus: ['rtx6000ada'], ram: 'ddr5_192', storage: 'nvme_8tb', psu: 'psu_1500', case: 'define7xl', cooling: 'aio_420' },
+  frontier: { cpu: 'tr_pro_7995wx', mb: 'wrx90_sage', gpus: ['h100_80','h100_80','h100_80','h100_80'], ram: 'rdimm_512', storage: 'enterprise_15tb', psu: 'psu_2000', case: 'rosewill_4u', cooling: 'custom_loop' },
+  reset: { cpu: 'r9_7950x', mb: 'x670e', gpus: ['rtx4090'], ram: 'ddr5_64', storage: 'nvme_4tb', psu: 'psu_1200', case: 'o11_xl', cooling: 'aio_360' }
+};
+
+// ===== POPULATE SELECTS =====
+function fillSelect(id, parts, current) {
+  var sel = document.getElementById(id);
+  sel.innerHTML = '';
+  parts.forEach(function(p){
+    var opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name + ' — $' + p.price.toLocaleString();
+    if (p.id === current) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+function findPart(cat, id) {
+  return PARTS[cat].find(function(p){ return p.id === id; }) || PARTS[cat][0];
+}
+
+function renderGpuRows() {
+  var wrap = document.getElementById('gpuRows');
+  wrap.innerHTML = '';
+  state.gpus.forEach(function(gpuId, i){
+    var row = document.createElement('div');
+    row.className = 'gpu-pick-row';
+    row.innerHTML =
+      '<span class="gpu-pick-num">GPU ' + (i+1) + '</span>' +
+      '<select class="component-select" data-gpu-idx="' + i + '" aria-label="Graphics card ' + (i+1) + '"></select>' +
+      '<div class="component-price"><span data-gpu-price="' + i + '">$0</span><span class="price-meta">est. street</span></div>';
+    wrap.appendChild(row);
+    var sel = row.querySelector('select');
+    PARTS.gpu.forEach(function(g){
+      var opt = document.createElement('option');
+      opt.value = g.id;
+      opt.textContent = g.name + ' — $' + g.price.toLocaleString();
+      if (g.id === gpuId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', function(e){
+      state.gpus[i] = e.target.value;
+      recompute();
+    });
+  });
+  document.getElementById('gpuCount').textContent = state.gpus.length;
+}
+
+function initSelects() {
+  fillSelect('cpuSelect', PARTS.cpu, state.cpu);
+  fillSelect('mbSelect', PARTS.mb, state.mb);
+  fillSelect('ramSelect', PARTS.ram, state.ram);
+  fillSelect('storageSelect', PARTS.storage, state.storage);
+  fillSelect('psuSelect', PARTS.psu, state.psu);
+  fillSelect('caseSelect', PARTS.case, state.case);
+  fillSelect('coolingSelect', PARTS.cooling, state.cooling);
+  renderGpuRows();
+}
+
+['cpu','mb','ram','storage','psu','case','cooling'].forEach(function(cat){
+  var elId = cat + 'Select';
+  document.getElementById(elId).addEventListener('change', function(e){
+    state[cat] = e.target.value;
+    recompute();
+  });
+});
+
+document.getElementById('gpuPlus').addEventListener('click', function(){
+  if (state.gpus.length < 4) {
+    state.gpus.push(state.gpus[state.gpus.length - 1] || 'rtx4090');
+    renderGpuRows();
+    recompute();
+  }
+});
+document.getElementById('gpuMinus').addEventListener('click', function(){
+  if (state.gpus.length > 1) {
+    state.gpus.pop();
+    renderGpuRows();
+    recompute();
+  }
+});
+
+document.querySelectorAll('.preset-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var p = btn.dataset.preset;
+    var preset = PRESETS[p];
+    if (!preset) return;
+    Object.keys(preset).forEach(function(k){
+      if (k === 'gpus') state.gpus = preset.gpus.slice();
+      else state[k] = preset[k];
+    });
+    initSelects();
+    recompute();
+  });
+});
+
+// ===== RECOMPUTE =====
+function recompute() {
+  var cpu = findPart('cpu', state.cpu);
+  var mb = findPart('mb', state.mb);
+  var ram = findPart('ram', state.ram);
+  var storage = findPart('storage', state.storage);
+  var psu = findPart('psu', state.psu);
+  var caseP = findPart('case', state.case);
+  var cooling = findPart('cooling', state.cooling);
+  var gpus = state.gpus.map(function(id){ return findPart('gpu', id); });
+
+  // Update individual prices
+  document.getElementById('cpuPrice').textContent = '$' + cpu.price.toLocaleString();
+  document.getElementById('mbPrice').textContent = '$' + mb.price.toLocaleString();
+  document.getElementById('ramPrice').textContent = '$' + ram.price.toLocaleString();
+  document.getElementById('storagePrice').textContent = '$' + storage.price.toLocaleString();
+  document.getElementById('psuPrice').textContent = '$' + psu.price.toLocaleString();
+  document.getElementById('casePrice').textContent = '$' + caseP.price.toLocaleString();
+  document.getElementById('coolingPrice').textContent = '$' + cooling.price.toLocaleString();
+  gpus.forEach(function(g, i){
+    var el = document.querySelector('[data-gpu-price="' + i + '"]');
+    if (el) el.textContent = '$' + g.price.toLocaleString();
+  });
+
+  // Totals
+  var gpuTotal = gpus.reduce(function(s,g){ return s + g.price; }, 0);
+  var gpuPower = gpus.reduce(function(s,g){ return s + g.power; }, 0);
+  var gpuVram = gpus.reduce(function(s,g){ return s + g.vram; }, 0);
+  var totalPrice = cpu.price + mb.price + ram.price + storage.price + psu.price + caseP.price + cooling.price + gpuTotal;
+  var totalPower = cpu.power + gpuPower + 50; // +50 baseline (drives, fans, mb)
+
+  document.getElementById('totalPrice').textContent = totalPrice.toLocaleString();
+  document.getElementById('totalVram').textContent = gpuVram + ' GB';
+  document.getElementById('totalPower').textContent = totalPower + ' W';
+  var headroom = psu.watts - totalPower;
+  var headroomEl = document.getElementById('psuHeadroom');
+  headroomEl.textContent = (headroom > 0 ? '+' : '') + headroom + ' W';
+  headroomEl.className = 'summary-stat-value' + (headroom < 0 ? ' bad' : (headroom < 100 ? ' warn' : ''));
+
+  // Warnings
+  var warns = [];
+  if (cpu.socket !== mb.socket) {
+    warns.push({ type: 'bad', text: '✗ Socket mismatch — ' + cpu.name + ' (' + cpu.socket + ') won\'t fit ' + mb.name + ' (' + mb.socket + ')' });
+  }
+  if (gpus.length > mb.gpuSlots) {
+    warns.push({ type: 'bad', text: '✗ ' + gpus.length + ' GPUs but motherboard only has ' + mb.gpuSlots + ' GPU slots' });
+  }
+  if (gpus.length > caseP.slots) {
+    warns.push({ type: 'warn', text: '⚠ Case has ' + caseP.slots + ' GPU slots — squeezing ' + gpus.length + ' may need riser cables' });
+  }
+  if (headroom < 100 && headroom >= 0) {
+    warns.push({ type: 'warn', text: '⚠ PSU headroom < 100 W — transient spikes from GPUs can trip overcurrent protection' });
+  }
+  if (headroom < 0) {
+    warns.push({ type: 'bad', text: '✗ PSU is undersized by ' + Math.abs(headroom) + ' W — system will crash under load' });
+  }
+  if (cooling.tdp < cpu.power) {
+    warns.push({ type: 'warn', text: '⚠ ' + cooling.name + ' rated ' + cooling.tdp + ' W TDP — ' + cpu.name + ' draws ' + cpu.power + ' W and will throttle' });
+  }
+  if (ram.capacity > mb.maxRam) {
+    warns.push({ type: 'warn', text: '⚠ ' + ram.capacity + ' GB exceeds motherboard max of ' + mb.maxRam + ' GB' });
+  }
+  if (warns.length === 0) {
+    warns.push({ type: 'good', text: '✓ Build is compatible — no socket, slot, or power issues detected' });
+  }
+
+  var warnEl = document.getElementById('warnings');
+  warnEl.innerHTML = '';
+  warns.forEach(function(w){
+    var d = document.createElement('div');
+    d.className = 'warning' + (w.type === 'bad' ? ' bad' : (w.type === 'good' ? ' good' : ''));
+    d.textContent = w.text;
+    warnEl.appendChild(d);
+  });
+
+  // Models that fit
+  var fitGrid = document.getElementById('fitGrid');
+  fitGrid.innerHTML = '';
+  var fitsCount = 0;
+  MODELS.forEach(function(m){
+    var card = document.createElement('div');
+    var ratio = gpuVram / m.vram;
+    var status, statusText, tps = '';
+    if (ratio >= 1.3) {
+      card.className = 'fit-card fits';
+      status = '✓ Fits comfortably';
+      fitsCount++;
+    } else if (ratio >= 0.95) {
+      card.className = 'fit-card fits-tight';
+      status = '⚠ Tight fit — consider Q3 quant';
+      fitsCount++;
+    } else {
+      card.className = 'fit-card no-fit';
+      status = '✗ Will not fit at Q4_K_M';
+    }
+    // Estimate tok/s for fitting models — rough: depends on best GPU bandwidth
+    if (ratio >= 0.95) {
+      var bestGpu = gpus.reduce(function(b, g){ return g.vram > b.vram ? g : b; }, gpus[0]);
+      // Speed proxy by GPU class (rough — proper estimator on token-simulator page)
+      var speedMap = { 'rtx5070': 30, 'rtx5070ti': 50, 'rtx5080': 60, 'rtx4090': 90, 'rtx5090': 130, 'a6000': 70, 'rtx6000ada': 100, 'l40s': 95, 'h100_80': 220, 'h200_141': 260, 'rx7900xtx': 50, 'mi300x': 200 };
+      var base = speedMap[bestGpu.id] || 60;
+      // Scale by params (7B baseline)
+      var paramFactor = Math.min(1.6, 7 / Math.max(7, m.params));
+      var est = Math.round(base * paramFactor * gpus.length * 0.7);
+      tps = '~' + est + ' tok/s estimated';
+    }
+
+    card.innerHTML =
+      '<div class="fit-card-name">' + m.name + '</div>' +
+      '<div class="fit-card-meta">' + m.params + 'B · ' + m.vram + ' GB VRAM · ' + m.category + '</div>' +
+      '<div class="fit-card-status">' + status + '</div>' +
+      (tps ? '<div class="fit-card-tps">' + tps + '</div>' : '');
+    fitGrid.appendChild(card);
+  });
+  document.getElementById('modelsFit').textContent = fitsCount + ' / ' + MODELS.length;
+}
+
+// ===== COPY BUILD =====
+document.getElementById('copyBuild').addEventListener('click', function(){
+  var cpu = findPart('cpu', state.cpu), mb = findPart('mb', state.mb);
+  var ram = findPart('ram', state.ram), storage = findPart('storage', state.storage);
+  var psu = findPart('psu', state.psu), caseP = findPart('case', state.case);
+  var cooling = findPart('cooling', state.cooling);
+  var gpus = state.gpus.map(function(id){ return findPart('gpu', id); });
+  var total = [cpu, mb, ram, storage, psu, caseP, cooling].reduce(function(s,p){ return s + p.price; }, 0) + gpus.reduce(function(s,g){ return s + g.price; }, 0);
+  var lines = [
+    'AI Workstation Build (April 2026 prices)',
+    '─────────────────────────────────────',
+    'CPU:      ' + cpu.name + ' — $' + cpu.price.toLocaleString(),
+    'MB:       ' + mb.name + ' — $' + mb.price.toLocaleString()
+  ];
+  gpus.forEach(function(g, i){ lines.push('GPU ' + (i+1) + ':    ' + g.name + ' — $' + g.price.toLocaleString()); });
+  lines = lines.concat([
+    'RAM:      ' + ram.name + ' — $' + ram.price.toLocaleString(),
+    'SSD:      ' + storage.name + ' — $' + storage.price.toLocaleString(),
+    'PSU:      ' + psu.name + ' — $' + psu.price.toLocaleString(),
+    'Case:     ' + caseP.name + ' — $' + caseP.price.toLocaleString(),
+    'Cooling:  ' + cooling.name + ' — $' + cooling.price.toLocaleString(),
+    '─────────────────────────────────────',
+    'TOTAL:    $' + total.toLocaleString(),
+    '',
+    'Configured at: https://local-ai-models.ai/model-builder.html'
+  ]);
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
+    var btn = document.getElementById('copyBuild');
+    var orig = btn.textContent;
+    btn.textContent = '✓ Copied';
+    setTimeout(function(){ btn.textContent = orig; }, 1800);
+  });
+});
+
+// ===== SCROLL FADE =====
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+  });
+}, { threshold: 0 });
+document.querySelectorAll('.fade-up').forEach(function(el){ io.observe(el); });
+
+// Init
+initSelects();
+recompute();
+</script>
+
+<script>
+/* ===== Premium polish overlay v1 — unified design system =====
+   Idempotent. Safe to inject across multiple pages.
+   Adds: refined typography, custom scrollbar, focus rings, smoother transitions,
+   card hover lift, hero parallax, premium multi-column footer, mobile touch targets. */
+(function(){
+  if (window.__polishApplied) return;
+  window.__polishApplied = true;
+
+  var css = ''
+    + 'html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}'
+    + 'body{font-feature-settings:"cv02","cv03","cv04","cv11";text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}'
+    + '::selection{background:rgba(0,212,255,0.25);color:#fff;text-shadow:0 0 8px rgba(0,212,255,0.4)}'
+    + '::-webkit-scrollbar{width:10px;height:10px}'
+    + '::-webkit-scrollbar-track{background:rgba(10,14,26,0.4)}'
+    + '::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.18);border-radius:5px;transition:background .2s}'
+    + '::-webkit-scrollbar-thumb:hover{background:rgba(0,212,255,0.45)}'
+    + '*{scrollbar-width:thin;scrollbar-color:rgba(0,212,255,0.25) transparent}'
+    + '*:focus-visible{outline:2px solid rgba(0,212,255,0.85);outline-offset:2px;border-radius:4px;box-shadow:0 0 0 4px rgba(0,212,255,0.18);transition:box-shadow .18s,outline-offset .18s}'
+    + 'button:focus-visible,a:focus-visible{outline-offset:3px}'
+    + 'a,button,[role="button"],input,select,textarea,summary,'
+    + '.model-card,.primer-card,.catalog-card,.matrix-card,.edu-card,.pane,.fit-card,.stack-card,.source-card,.chart-section,'
+    + '.btn,.hero-btn,.preset-btn,.filter-pill,.site-nav-links a,.cmd-copy,.link-btn,.suggest-submit{'
+    + 'transition-property:transform,box-shadow,border-color,background-color,color,opacity,filter;'
+    + 'transition-duration:220ms;transition-timing-function:cubic-bezier(0.22,1,0.36,1)}'
+    + '.model-card:hover,.primer-card:hover,.catalog-card:hover,.matrix-card:hover,.edu-card:hover,.pane:hover,.fit-card.fits:hover,.fit-card.fits-tight:hover,.stack-card:hover,.source-card:hover{'
+    + 'transform:translateY(-3px);'
+    + 'box-shadow:0 20px 40px -16px rgba(0,212,255,0.22),0 8px 24px -8px rgba(0,0,0,0.4),0 0 0 1px rgba(0,212,255,0.28)}'
+    + 'button:active,.btn:active,.hero-btn:active,.preset-btn:active,.filter-pill:active{transform:translateY(1px) scale(0.98);transition-duration:80ms}'
+    + 'footer a,.sources a,.source-grid a,.pf-col a{position:relative}'
+    + 'footer a:not(.pf-col a)::after,.sources a::after{content:"";position:absolute;left:50%;bottom:-2px;width:0;height:1px;background:currentColor;transition:width .25s cubic-bezier(0.22,1,0.36,1),left .25s cubic-bezier(0.22,1,0.36,1)}'
+    + 'footer a:not(.pf-col a):hover::after,.sources a:hover::after{width:100%;left:0}'
+    + '.hero-img{will-change:transform;transition:transform 60ms linear}'
+    + '@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:1ms!important;animation-duration:1ms!important}.hero-img{transform:none!important}}'
+    + '@media(max-width:700px){button,.btn,.hero-btn,.preset-btn,.filter-pill,.site-nav-links a{min-height:44px}.site-nav-links a{padding-top:11px;padding-bottom:11px}}'
+    /* Premium footer */
+    + 'footer.premium-footer{padding:56px 0 28px;margin-top:64px;border-top:1px solid rgba(0,212,255,0.18);background:linear-gradient(180deg,transparent 0%,rgba(0,212,255,0.03) 100%);text-align:left}'
+    + '.pf-grid{max-width:1300px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px 28px}'
+    + '@media(max-width:800px){.pf-grid{grid-template-columns:1fr 1fr;gap:28px 20px}}'
+    + '@media(max-width:480px){.pf-grid{grid-template-columns:1fr}}'
+    + '.pf-brand{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:0.95rem;color:#00d4ff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}'
+    + '.pf-tagline{font-size:0.85rem;color:#94a3b8;line-height:1.55;max-width:340px;margin-bottom:16px}'
+    + '.pf-meta{font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:#64748b;letter-spacing:1px;text-transform:uppercase}'
+    + '.pf-col-title{font-family:"JetBrains Mono",monospace;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:#94a3b8;margin-bottom:14px}'
+    + '.pf-col ul{list-style:none;padding:0;margin:0}'
+    + '.pf-col li{margin-bottom:8px}'
+    + '.pf-col a{font-size:0.85rem;color:#cbd5e1;text-decoration:none;display:inline-block;transition:color .2s,transform .2s;border:none}'
+    + '.pf-col a:hover{color:#00d4ff;transform:translateX(2px)}'
+    + '.pf-bottom{max-width:1300px;margin:36px auto 0;padding:18px 24px 0;border-top:1px solid rgba(30,41,59,0.7);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-family:"JetBrains Mono",monospace;font-size:0.7rem;color:#64748b;letter-spacing:1px;text-transform:uppercase}'
+    + '.pf-pulse{display:inline-flex;align-items:center;gap:8px;color:#22c55e}'
+    + '.pf-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;box-shadow:0 0 6px rgba(34,197,94,0.6);animation:pf-pulse 2s ease-in-out infinite}'
+    + '@keyframes pf-pulse{0%,100%{opacity:1}50%{opacity:0.4}}'
+    /* Skeleton shimmer (utility) */
+    + '.skeleton{background:linear-gradient(90deg,rgba(30,41,59,0.5) 0%,rgba(51,65,85,0.5) 50%,rgba(30,41,59,0.5) 100%);background-size:200% 100%;animation:skeleton-shimmer 1.4s ease-in-out infinite;border-radius:4px}'
+    + '@keyframes skeleton-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}';
+  var s = document.createElement('style');
+  s.id = 'polish-overlay';
+  s.textContent = css;
+  document.head.appendChild(s);
+
+  /* ---- Hero parallax (subtle, GPU-accelerated, rAF-throttled) ---- */
+  var heroImgs = document.querySelectorAll('.hero-img');
+  if (heroImgs.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var ticking = false;
+    var onScroll = function(){
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function(){
+        var y = window.scrollY;
+        heroImgs.forEach(function(img){
+          var rect = img.getBoundingClientRect();
+          if (rect.bottom > 0 && rect.top < window.innerHeight) {
+            img.style.transform = 'translate3d(0,' + (y * 0.18) + 'px,0) scale(1.06)';
+          }
+        });
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  /* ---- Premium footer replacement (idempotent) ---- */
+  var existingFooter = document.querySelector('footer');
+  if (existingFooter && !existingFooter.classList.contains('premium-footer')) {
+    var footerHTML =
+      '<div class="pf-grid">'
+      + '<div>'
+      + '<div class="pf-brand">LOCAL-AI-MODELS</div>'
+      + '<p class="pf-tagline">Reference for engineers running AI locally — VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>'
+      + '<div class="pf-meta">v2026.09.14 · 132 models · 59 frameworks</div>'
+      + '</div>'
+      + '<div class="pf-col">'
+      + '<div class="pf-col-title">Catalog</div>'
+      + '<ul>'
+      + '<li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>'
+      + '<li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>'
+      + '<li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>'
+      + '<li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>'
+      + '</ul>'
+      + '</div>'
+      + '<div class="pf-col">'
+      + '<div class="pf-col-title">Tools</div>'
+      + '<ul>'
+      + '<li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>'
+      + '<li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>'
+      + '<li><a href="https://local-ai-models.ai/model-builder.html">Workstation Builder</a></li>'
+      + '<li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>'
+      + '</ul>'
+      + '</div>'
+      + '<div class="pf-col">'
+      + '<div class="pf-col-title">About</div>'
+      + '<ul>'
+      + '<li><a href="https://local-ai-models.ai/privacy.html">Privacy</a></li>'
+      + '<li><a href="https://local-ai-models.ai/terms.html">Terms</a></li>'
+      + '<li><a href="https://local-ai-models.ai/cookies.html">Cookies</a></li>'
+      + '<li><a href="https://local-ai-models.ai/accessibility.html">Accessibility</a></li>'
+      + '<li><a href="https://local-ai-models.ai/about.html">About</a></li>'
+      + '<li><a href="https://local-ai-models.ai/contact.html">Contact</a></li>'
+      + '</ul>'
+      + '</div>'
+      + '</div>'
+      + '<div class="pf-bottom">'
+      + '<span><span class="pf-pulse"><span class="pf-dot"></span>SYSTEM ONLINE</span> &nbsp;·&nbsp; Last updated September 14, 2026</span>'
+      + '<span>Single-file architecture · Privacy disclosures available</span>'
+      + '</div>';
+    existingFooter.classList.add('premium-footer');
+    existingFooter.innerHTML = footerHTML;
+  }
+})();
+</script>
+<script>
+/* =====================================================================
+   INTERACTIVE LAYER v2 — dopamine pack v3
+   Self-contained. Idempotent. Adds:
+     - Scroll progress bar (top)
+     - Section rail with numbered always-visible labels + scroll-progress line
+     - Custom cursor + trail + spotlight (ported from landing)
+     - Auto-magnetic on buttons
+     - Edge speed lines (scroll velocity reactive)
+     - Section title clip-path reveal on scroll-in
+     - VRAM Calculator floating widget + modal
+     - Tooltip system (data-tip="...")
+     - Click particle bursts (color cycling)
+     - Page transition flash (on internal nav)
+     - Achievement toasts
+===================================================================== */
+(function(){
+  if (window.__interactiveV2) return;
+  window.__interactiveV2 = true;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+  /* ---------- CSS injection ---------- */
+  var css = ''
+  /* Scroll progress bar */
+  + '.iv-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:9990;pointer-events:none;background:transparent}'
+  + '.iv-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#00d4ff,#818cf8,#a78bfa,#ec4899);box-shadow:0 0 12px rgba(0,212,255,0.6);transition:width 80ms linear;transform-origin:left}'
+  /* SECTION RAIL — bigger, always-visible numbered labels, connected line */
+  + '.iv-rail{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;align-items:flex-end;pointer-events:none}'
+  + '@media (max-width:820px){.iv-rail{display:none}}'
+  + '.iv-rail-track{position:absolute;right:11px;top:14px;bottom:14px;width:1px;background:rgba(255,255,255,0.10)}'
+  + '.iv-rail-track-fill{position:absolute;left:0;top:0;width:1px;background:linear-gradient(180deg,#00d4ff,#818cf8,#a78bfa);height:0;transition:height 350ms cubic-bezier(0.16,1,0.3,1);box-shadow:0 0 8px rgba(0,212,255,0.6)}'
+  + '.iv-rail-item{position:relative;display:flex;align-items:center;gap:14px;height:38px;pointer-events:auto;cursor:pointer;text-decoration:none}'
+  + '.iv-rail-label{font-family:"JetBrains Mono",monospace;font-size:0.66rem;text-transform:uppercase;letter-spacing:1.4px;color:#5b606b;padding:5px 12px;background:rgba(6,7,10,0.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.06);border-radius:100px;white-space:nowrap;max-width:0;overflow:hidden;opacity:0;transform:translateX(8px);transition:all 320ms cubic-bezier(0.16,1,0.3,1);display:flex;align-items:center;gap:8px}'
+  + '.iv-rail-label .iv-rail-num{color:#8a8f99;font-weight:600}'
+  + '.iv-rail:hover .iv-rail-label,.iv-rail-item.active .iv-rail-label{max-width:240px;opacity:1;transform:translateX(0);padding:5px 14px}'
+  + '.iv-rail-item.active .iv-rail-label{color:#00d4ff;border-color:rgba(0,212,255,0.4);background:rgba(0,212,255,0.08);box-shadow:0 0 16px rgba(0,212,255,0.2)}'
+  + '.iv-rail-item.active .iv-rail-label .iv-rail-num{color:#00d4ff}'
+  + '.iv-rail-dot{width:10px;height:10px;border-radius:50%;background:#1c1d20;border:1.5px solid rgba(255,255,255,0.18);position:relative;flex-shrink:0;transition:all 320ms cubic-bezier(0.34,1.56,0.64,1)}'
+  + '.iv-rail-item:hover .iv-rail-dot{background:rgba(0,212,255,0.3);border-color:#00d4ff;transform:scale(1.3)}'
+  + '.iv-rail-item.active .iv-rail-dot{background:#00d4ff;border-color:#00d4ff;transform:scale(1.4);box-shadow:0 0 14px rgba(0,212,255,0.7),0 0 28px rgba(0,212,255,0.35)}'
+  + '.iv-rail-item.active .iv-rail-dot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1.5px solid rgba(0,212,255,0.3);animation:iv-rail-ring 1.8s ease-out infinite}'
+  + '@keyframes iv-rail-ring{0%{transform:scale(1);opacity:1}100%{transform:scale(2);opacity:0}}'
+  + '.iv-rail-item.flash .iv-rail-dot{animation:iv-rail-flash 600ms ease-out}'
+  + '@keyframes iv-rail-flash{0%{box-shadow:0 0 0 0 rgba(0,212,255,1)}100%{box-shadow:0 0 0 30px rgba(0,212,255,0)}}'
+  /* CUSTOM CURSOR (ported from landing) */
+  + '.iv-cursor,.iv-cursor-trail,.iv-cursor-spotlight{pointer-events:none}'
+  + '.iv-cursor{position:fixed;top:0;left:0;width:10px;height:10px;margin:-5px 0 0 -5px;background:#00d4ff;border-radius:50%;mix-blend-mode:difference;box-shadow:0 0 14px rgba(0,212,255,0.65);z-index:9999;transform:translate3d(-100px,-100px,0);will-change:transform;transition:width 350ms cubic-bezier(0.16,1,0.3,1),height 350ms cubic-bezier(0.16,1,0.3,1),margin 350ms cubic-bezier(0.16,1,0.3,1),background 200ms,opacity 180ms}'
+  + '.iv-cursor.hover{width:46px;height:46px;margin:-23px 0 0 -23px;background:rgba(0,212,255,0.10);border:1px solid #00d4ff}'
+  + '.iv-cursor.click{opacity:0.5}'
+  + '.iv-cursor-trail{position:fixed;top:0;left:0;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;border:1px solid rgba(0,212,255,0.32);opacity:0.7;z-index:9998;transform:translate3d(-100px,-100px,0);will-change:transform}'
+  + '.iv-cursor-spotlight{position:fixed;inset:0;z-index:2;background:radial-gradient(420px circle at var(--ivmx,50%) var(--ivmy,50%),rgba(0,212,255,0.07) 0%,rgba(129,140,248,0.04) 35%,transparent 75%);transition:opacity 400ms cubic-bezier(0.16,1,0.3,1)}'
+  + '.iv-touch .iv-cursor,.iv-touch .iv-cursor-trail,.iv-touch .iv-cursor-spotlight{display:none}'
+  /* EDGE SPEED LINES — vertical streaks on edges, scale Y based on scroll velocity */
+  + '.iv-edge{position:fixed;top:0;bottom:0;width:80px;pointer-events:none;z-index:80;opacity:0;transition:opacity 500ms cubic-bezier(0.16,1,0.3,1)}'
+  + '.iv-edge.left{left:0;background:linear-gradient(90deg,rgba(0,212,255,0.08) 0%,transparent 100%)}'
+  + '.iv-edge.right{right:0;background:linear-gradient(-90deg,rgba(0,212,255,0.08) 0%,transparent 100%)}'
+  + '.iv-edge.show{opacity:1}'
+  + '.iv-edge::before{content:"";position:absolute;top:50%;width:1px;height:60%;background:linear-gradient(180deg,transparent,#00d4ff 50%,transparent);transform:translateY(-50%);box-shadow:0 0 8px rgba(0,212,255,0.5)}'
+  + '.iv-edge.left::before{right:30px}'
+  + '.iv-edge.right::before{left:30px}'
+  /* DRAMATIC SECTION TITLE REVEALS */
+  + '.iv-reveal-title{position:relative;display:inline-block;clip-path:inset(0 100% 0 0);transition:clip-path 800ms cubic-bezier(0.7,0,0.2,1)}'
+  + '.iv-reveal-title.in{clip-path:inset(0 0 0 0)}'
+  + '.iv-reveal-title::after{content:"";position:absolute;top:0;right:-2px;bottom:0;width:3px;background:linear-gradient(180deg,#00d4ff,#a78bfa);box-shadow:0 0 16px rgba(0,212,255,0.8);opacity:0;transition:opacity 200ms}'
+  + '.iv-reveal-title.in::after{opacity:1;animation:iv-title-sweep 800ms cubic-bezier(0.7,0,0.2,1) forwards}'
+  + '@keyframes iv-title-sweep{0%{opacity:1;right:100%}80%{opacity:1;right:-2px}100%{opacity:0;right:-2px}}'
+  /* Floating Action Button — VRAM calc */
+  + '.iv-fab{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#818cf8);border:none;cursor:pointer;z-index:200;box-shadow:0 10px 30px rgba(0,212,255,0.45),inset 0 1px 0 rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;transition:transform 250ms cubic-bezier(0.34,1.56,0.64,1),box-shadow 250ms}'
+  + '.iv-fab:hover{transform:scale(1.1) rotate(8deg);box-shadow:0 16px 40px rgba(0,212,255,0.6)}'
+  + '.iv-fab:active{transform:scale(0.95)}'
+  + '.iv-fab svg{width:26px;height:26px;color:#06070a}'
+  + '.iv-fab::before{content:"";position:absolute;inset:-4px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#a78bfa,#ec4899);z-index:-1;opacity:0;transition:opacity 300ms;animation:iv-fab-rotate 4s linear infinite}'
+  + '.iv-fab:hover::before{opacity:0.8}'
+  + '@keyframes iv-fab-rotate{to{transform:rotate(360deg)}}'
+  + '.iv-fab-pulse{position:absolute;inset:0;border-radius:50%;background:rgba(0,212,255,0.5);animation:iv-fab-pulse 2.4s ease-in-out infinite;pointer-events:none}'
+  + '@keyframes iv-fab-pulse{0%{transform:scale(1);opacity:0.6}100%{transform:scale(1.6);opacity:0}}'
+  + '.iv-fab-tip{position:absolute;right:72px;top:50%;transform:translateY(-50%) translateX(8px);background:rgba(6,7,10,0.95);border:1px solid rgba(0,212,255,0.3);border-radius:8px;padding:8px 14px;font-family:"JetBrains Mono",monospace;font-size:0.72rem;color:#cbd5e1;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 220ms,transform 220ms}'
+  + '.iv-fab:hover .iv-fab-tip{opacity:1;transform:translateY(-50%) translateX(0)}'
+  /* VRAM Calculator modal */
+  + '.iv-modal-bg{position:fixed;inset:0;background:rgba(6,7,10,0.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:300;opacity:0;pointer-events:none;transition:opacity 300ms cubic-bezier(0.16,1,0.3,1)}'
+  + '.iv-modal-bg.show{opacity:1;pointer-events:auto}'
+  + '.iv-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-44%) scale(0.96);width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 64px);overflow-y:auto;background:linear-gradient(180deg,#131416 0%,#0a0b10 100%);border:1px solid rgba(255,255,255,0.10);border-radius:20px;z-index:301;opacity:0;pointer-events:none;transition:opacity 350ms cubic-bezier(0.16,1,0.3,1),transform 400ms cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 30px 80px rgba(0,0,0,0.55)}'
+  + '.iv-modal::before{content:"";position:absolute;inset:0;border-radius:20px;padding:1px;background:conic-gradient(from var(--iv-angle,0deg),#00d4ff,#818cf8,#a78bfa,#ec4899,#00d4ff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:iv-modal-rotate 10s linear infinite;opacity:0.55}'
+  + '.iv-modal-bg.show ~ .iv-modal{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}'
+  + '@property --iv-angle{syntax:"<angle>";initial-value:0deg;inherits:false}'
+  + '@keyframes iv-modal-rotate{to{--iv-angle:360deg}}'
+  + '.iv-modal-inner{padding:32px}'
+  + '.iv-modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:16px}'
+  + '.iv-modal-eyebrow{font-family:"JetBrains Mono",monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:2px;color:#00d4ff;margin-bottom:6px}'
+  + '.iv-modal-title{font-family:"Inter",sans-serif;font-weight:600;font-size:1.6rem;letter-spacing:-0.025em;color:#f6f7f9}'
+  + '.iv-modal-sub{font-size:0.85rem;color:#8a8f99;margin-top:6px;line-height:1.5}'
+  + '.iv-modal-close{background:transparent;border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 200ms cubic-bezier(0.16,1,0.3,1);flex-shrink:0;font-size:1.1rem}'
+  + '.iv-modal-close:hover{background:rgba(255,255,255,0.06);border-color:#00d4ff;color:#00d4ff;transform:rotate(90deg)}'
+  /* VRAM bar */
+  + '.iv-vram-display{margin:8px 0 24px}'
+  + '.iv-vram-num{font-family:"Inter",sans-serif;font-weight:700;font-size:3.6rem;letter-spacing:-0.04em;line-height:1;background:linear-gradient(135deg,#00d4ff,#818cf8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;transition:transform 250ms cubic-bezier(0.34,1.56,0.64,1)}'
+  + '.iv-vram-unit{font-family:"JetBrains Mono",monospace;font-size:0.78rem;text-transform:uppercase;letter-spacing:2px;color:#5b606b;margin-left:10px}'
+  + '.iv-vram-bar{position:relative;height:14px;background:rgba(255,255,255,0.05);border-radius:7px;overflow:hidden;margin:18px 0 14px}'
+  + '.iv-vram-fill{position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,#22c55e 0%,#fbbf24 60%,#ef4444 100%);border-radius:7px;width:0;transition:width 350ms cubic-bezier(0.16,1,0.3,1);box-shadow:0 0 18px rgba(0,212,255,0.4)}'
+  + '.iv-vram-ticks{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:0.62rem;color:#5b606b;text-transform:uppercase;letter-spacing:1px}'
+  + '.iv-fit-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0 24px}'
+  + '.iv-fit{padding:12px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;text-align:center;transition:all 250ms cubic-bezier(0.16,1,0.3,1);position:relative;overflow:hidden}'
+  + '.iv-fit-name{font-family:"JetBrains Mono",monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:#8a8f99;margin-bottom:4px}'
+  + '.iv-fit-vram{font-family:"JetBrains Mono",monospace;font-size:0.72rem;color:#5b606b}'
+  + '.iv-fit-icon{font-size:1.1rem;margin-bottom:4px;line-height:1;display:block}'
+  + '.iv-fit.fits{background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.35)}'
+  + '.iv-fit.fits .iv-fit-name,.iv-fit.fits .iv-fit-vram{color:#22c55e}'
+  + '.iv-fit.tight{background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.35)}'
+  + '.iv-fit.tight .iv-fit-name,.iv-fit.tight .iv-fit-vram{color:#fbbf24}'
+  + '.iv-fit.no{opacity:0.5}'
+  + '.iv-control{margin-bottom:18px}'
+  + '.iv-control label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-family:"JetBrains Mono",monospace;font-size:0.7rem;text-transform:uppercase;letter-spacing:1.4px;color:#8a8f99}'
+  + '.iv-control label b{color:#00d4ff;font-weight:600;font-size:0.78rem}'
+  + '.iv-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;outline:none;cursor:pointer}'
+  + '.iv-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:#00d4ff;border-radius:50%;cursor:pointer;box-shadow:0 0 12px rgba(0,212,255,0.6);transition:transform 200ms cubic-bezier(0.34,1.56,0.64,1)}'
+  + '.iv-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}'
+  + '.iv-slider::-moz-range-thumb{width:18px;height:18px;background:#00d4ff;border-radius:50%;cursor:pointer;border:none;box-shadow:0 0 12px rgba(0,212,255,0.6)}'
+  + '.iv-pills{display:flex;gap:6px;flex-wrap:wrap}'
+  + '.iv-pill{font-family:"JetBrains Mono",monospace;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;padding:8px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:100px;color:#cbd5e1;cursor:pointer;transition:all 220ms cubic-bezier(0.16,1,0.3,1)}'
+  + '.iv-pill:hover{border-color:rgba(0,212,255,0.5);color:#00d4ff}'
+  + '.iv-pill.active{background:rgba(0,212,255,0.12);border-color:#00d4ff;color:#00d4ff;box-shadow:0 0 12px rgba(0,212,255,0.25)}'
+  /* Tooltip */
+  + '.iv-tip{position:absolute;background:rgba(6,7,10,0.96);backdrop-filter:blur(12px);border:1px solid rgba(0,212,255,0.3);border-radius:8px;padding:10px 14px;font-family:"Inter",sans-serif;font-size:0.82rem;color:#cbd5e1;line-height:1.45;max-width:280px;z-index:9995;pointer-events:none;opacity:0;transform:translateY(6px) scale(0.96);transition:opacity 200ms,transform 250ms cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 24px rgba(0,0,0,0.45)}'
+  + '.iv-tip.show{opacity:1;transform:translateY(0) scale(1)}'
+  /* Click particles */
+  + '.iv-burst{position:fixed;width:5px;height:5px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-burst-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}'
+  + '@keyframes iv-burst-out{to{transform:translate3d(var(--ivdx,0),var(--ivdy,0),0) scale(0);opacity:0}}'
+  /* Page transition flash */
+  + '.iv-flash{position:fixed;inset:0;background:linear-gradient(135deg,#00d4ff 0%,#818cf8 50%,#a78bfa 100%);z-index:9999;pointer-events:none;opacity:0;transform:scaleX(0);transform-origin:left center;transition:transform 500ms cubic-bezier(0.7,0,0.2,1),opacity 250ms 350ms ease-out}'
+  + '.iv-flash.go{opacity:0.9;transform:scaleX(1)}'
+  /* Achievement toast */
+  + '.iv-toast{position:fixed;bottom:100px;right:24px;background:rgba(6,7,10,0.96);backdrop-filter:blur(16px);border:1px solid rgba(0,212,255,0.35);border-radius:14px;padding:14px 18px;color:#cbd5e1;font-family:"Inter",sans-serif;font-size:0.9rem;display:flex;align-items:center;gap:12px;z-index:400;transform:translateX(120%);transition:transform 500ms cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 12px 40px rgba(0,0,0,0.6),0 0 30px rgba(0,212,255,0.15);max-width:340px}'
+  + '.iv-toast.show{transform:translateX(0)}'
+  + '.iv-toast-icon{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#818cf8);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}'
+  + '.iv-toast-title{font-family:"JetBrains Mono",monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#00d4ff;margin-bottom:2px}'
+  /* Reduced-motion */
+  + '@media (prefers-reduced-motion:reduce){.iv-fab-pulse,.iv-fab::before,.iv-modal::before{animation:none}.iv-burst,.iv-flash,.iv-cursor,.iv-cursor-trail,.iv-cursor-spotlight,.iv-edge{display:none}}'
+  ;
+  var styleEl = document.createElement('style');
+  styleEl.id = 'iv2-style';
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  if (isTouch) document.documentElement.classList.add('iv-touch');
+
+  /* ---------- 1. Scroll progress bar ---------- */
+  var progressEl = document.createElement('div');
+  progressEl.className = 'iv-progress';
+  progressEl.innerHTML = '<div class="iv-progress-bar" id="iv-pbar"></div>';
+  document.body.appendChild(progressEl);
+  var pbar = document.getElementById('iv-pbar');
+
+  /* ---------- 2. Section rail (numbered, always-visible labels) ---------- */
+  // Priority 1: explicitly-marked anchors via [data-iv-section]
+  var headings = Array.from(document.querySelectorAll('[data-iv-section]'));
+  // Priority 2: h2 with explicit section class
+  if (headings.length === 0) headings = Array.from(document.querySelectorAll('h2.section-heading, h2.section-title, .section-heading h2, .section-title h2, .section-heading'));
+  // Priority 3: all h2s that are NOT inside any kind of card wrapper
+  if (headings.length === 0) {
+    var cardSel = '.model-card, .tool-card, .catalog-card, .matrix-card, .primer-card, .stack-card, .pane, .fit-card, .edu-card, .dest-card, .source-card, .hw-card, .feature-card, .usecase-card';
+    headings = Array.from(document.querySelectorAll('h2')).filter(function(h){
+      if (h.offsetParent === null) return false;
+      var t = h.textContent.trim();
+      if (t.length === 0 || t.length > 80) return false;
+      if (h.closest(cardSel)) return false;
+      if (h.dataset.ivSkip != null) return false;
+      return true;
+    });
+  }
+  // Cap at 10 (was 12) — fewer = less crowded
+  if (headings.length > 10) headings = headings.slice(0, 10);
+  var railFill;
+  if (headings.length >= 3) {
+    var rail = document.createElement('div');
+    rail.className = 'iv-rail';
+    var track = document.createElement('div');
+    track.className = 'iv-rail-track';
+    railFill = document.createElement('div');
+    railFill.className = 'iv-rail-track-fill';
+    track.appendChild(railFill);
+    rail.appendChild(track);
+    headings.forEach(function(h, i){
+      if (!h.id) h.id = 'iv-sec-' + i;
+      var label = h.textContent.trim().replace(/[^\w\s—·-]/g,'').replace(/^\s*\d+\s+/, '').slice(0, 32);
+      var num = String(i + 1).padStart(2, '0');
+      var item = document.createElement('a');
+      item.href = '#' + h.id;
+      item.className = 'iv-rail-item';
+      item.dataset.idx = i;
+      item.innerHTML =
+        '<span class="iv-rail-label"><span class="iv-rail-num">' + num + '</span><span>' + label + '</span></span>' +
+        '<span class="iv-rail-dot"></span>';
+      item.addEventListener('click', function(e){
+        e.preventDefault();
+        item.classList.add('flash');
+        setTimeout(function(){ item.classList.remove('flash'); }, 700);
+        window.scrollTo({ top: h.offsetTop - 80, behavior: 'smooth' });
+      });
+      rail.appendChild(item);
+    });
+    document.body.appendChild(rail);
+  }
+
+  function updateScrollUI(){
+    var sh = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = sh > 0 ? (window.scrollY / sh) * 100 : 0;
+    pbar.style.width = pct + '%';
+    if (railFill) railFill.style.height = pct + '%';
+    if (headings.length) {
+      var sy = window.scrollY + 200;
+      var activeIdx = 0;
+      headings.forEach(function(h, i){ if (h.offsetTop < sy) activeIdx = i; });
+      document.querySelectorAll('.iv-rail-item').forEach(function(item, i){
+        item.classList.toggle('active', i === activeIdx);
+      });
+    }
+  }
+  window.addEventListener('scroll', updateScrollUI, { passive: true });
+  updateScrollUI();
+
+  /* ---------- 3. Custom cursor + spotlight (ported from landing) ---------- */
+  if (!isTouch && !reduced) {
+    var cursorEl = document.createElement('div');
+    cursorEl.className = 'iv-cursor';
+    var trailEl = document.createElement('div');
+    trailEl.className = 'iv-cursor-trail';
+    var spotEl = document.createElement('div');
+    spotEl.className = 'iv-cursor-spotlight';
+    document.body.appendChild(spotEl);
+    document.body.appendChild(cursorEl);
+    document.body.appendChild(trailEl);
+    var cmx = -100, cmy = -100, ccx = cmx, ccy = cmy, ctx2 = cmx, cty = cmy;
+    document.addEventListener('mousemove', function(e){
+      cmx = e.clientX; cmy = e.clientY;
+      spotEl.style.setProperty('--ivmx', cmx + 'px');
+      spotEl.style.setProperty('--ivmy', cmy + 'px');
+    }, { passive: true });
+    function cursorTick(){
+      ccx += (cmx - ccx) * 0.32;
+      ccy += (cmy - ccy) * 0.32;
+      cursorEl.style.transform = 'translate3d(' + ccx + 'px,' + ccy + 'px,0)';
+      ctx2 += (cmx - ctx2) * 0.14;
+      cty += (cmy - cty) * 0.14;
+      trailEl.style.transform = 'translate3d(' + ctx2 + 'px,' + cty + 'px,0)';
+      requestAnimationFrame(cursorTick);
+    }
+    requestAnimationFrame(cursorTick);
+    document.addEventListener('mousedown', function(){ cursorEl.classList.add('click'); });
+    document.addEventListener('mouseup', function(){ cursorEl.classList.remove('click'); });
+    // Hover state on interactive elements (covers existing pages)
+    var hoverSel = 'a, button, [role="button"], [data-magnetic], .model-card, .catalog-card, .primer-card, .matrix-card, .edu-card, .pane, .fit-card, .stack-card, .iv-rail-item, .cd-pin, .iv-fab, .iv-pill, .preset-btn, .filter-pill';
+    document.querySelectorAll(hoverSel).forEach(function(el){
+      el.addEventListener('mouseenter', function(){ cursorEl.classList.add('hover'); });
+      el.addEventListener('mouseleave', function(){ cursorEl.classList.remove('hover'); });
+    });
+    // Hide native cursor on body & all scrollable elements
+    document.body.style.cursor = 'none';
+    /* cursor:none + .iv-cursor restyle + #bg-nodes attracting field now come from the shared /bg-nodes.js (homepage parity) */
+  }
+
+  /* ---------- 4. Auto-magnetic on buttons ---------- */
+  if (!isTouch && !reduced) {
+    var magSel = 'button:not(.cd-pin):not(.iv-modal-close):not(.cd-close):not(.iv-fab), .btn, .hero-btn, .btn-primary, [data-magnetic]';
+    document.querySelectorAll(magSel).forEach(function(el){
+      // Skip elements inside modal (could feel odd) and very small ones
+      if (el.offsetWidth < 60) return;
+      var raf = false;
+      el.addEventListener('mousemove', function(e){
+        if (raf) return; raf = true;
+        var r = el.getBoundingClientRect();
+        var dx = (e.clientX - r.left - r.width/2) * 0.18;
+        var dy = (e.clientY - r.top - r.height/2) * 0.18;
+        requestAnimationFrame(function(){
+          el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+          raf = false;
+        });
+      });
+      el.addEventListener('mouseleave', function(){ el.style.transform = ''; });
+    });
+  }
+
+  /* ---------- 5. Edge speed lines (scroll velocity reactive) ---------- */
+  if (!reduced) {
+    var edgeL = document.createElement('div'); edgeL.className = 'iv-edge left';
+    var edgeR = document.createElement('div'); edgeR.className = 'iv-edge right';
+    document.body.appendChild(edgeL);
+    document.body.appendChild(edgeR);
+    var lastScrollY = window.scrollY, lastScrollT = performance.now();
+    var edgeTimeout;
+    window.addEventListener('scroll', function(){
+      var now = performance.now();
+      var dy = window.scrollY - lastScrollY;
+      var dt = now - lastScrollT;
+      var v = Math.abs(dy / Math.max(dt, 1));
+      if (v > 1.5) {
+        edgeL.classList.add('show');
+        edgeR.classList.add('show');
+        clearTimeout(edgeTimeout);
+        edgeTimeout = setTimeout(function(){
+          edgeL.classList.remove('show'); edgeR.classList.remove('show');
+        }, 240);
+      }
+      lastScrollY = window.scrollY; lastScrollT = now;
+    }, { passive: true });
+  }
+
+  /* ---------- 6. Dramatic section title reveals ---------- */
+  if (!reduced) {
+    var titleSel = 'h1, h2.section-heading, h2.section-title, .section-heading, .section-title';
+    var titles = document.querySelectorAll(titleSel);
+    titles.forEach(function(t){
+      // Skip if no text or already revealed
+      if (!t.textContent.trim() || t.classList.contains('iv-reveal-title')) return;
+      t.classList.add('iv-reveal-title');
+    });
+    var titleIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          titleIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2, rootMargin: '0px 0px -40px 0px' });
+    titles.forEach(function(t){ titleIO.observe(t); });
+  }
+
+  /* ---------- 7. Floating VRAM Calculator ---------- */
+  var fab = document.createElement('button');
+  fab.className = 'iv-fab';
+  fab.setAttribute('aria-label', 'Open VRAM Calculator');
+  fab.innerHTML =
+    '<span class="iv-fab-pulse"></span>' +
+    '<span class="iv-fab-tip">VRAM Calculator</span>' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="4" y1="14" x2="20" y2="14"/><line x1="4" y1="18" x2="20" y2="18"/></svg>';
+  document.body.appendChild(fab);
+
+  var modalBg = document.createElement('div');
+  modalBg.className = 'iv-modal-bg';
+  document.body.appendChild(modalBg);
+
+  var modal = document.createElement('div');
+  modal.className = 'iv-modal';
+  modal.innerHTML =
+    '<div class="iv-modal-inner">' +
+      '<div class="iv-modal-head">' +
+        '<div>' +
+          '<div class="iv-modal-eyebrow">Calculator</div>' +
+          '<div class="iv-modal-title">VRAM Estimator</div>' +
+          '<div class="iv-modal-sub">Pick model size, quantization, context. Real-time estimate of VRAM you need + which hardware can run it.</div>' +
+        '</div>' +
+        '<button class="iv-modal-close" id="iv-close" aria-label="Close">×</button>' +
+      '</div>' +
+      '<div class="iv-vram-display">' +
+        '<span class="iv-vram-num" id="iv-vram-num">7</span><span class="iv-vram-unit">GB VRAM (Q4_K_M, 8K ctx)</span>' +
+      '</div>' +
+      '<div class="iv-vram-bar"><div class="iv-vram-fill" id="iv-vram-fill"></div></div>' +
+      '<div class="iv-vram-ticks"><span>0</span><span>24 GB</span><span>48 GB</span><span>80 GB</span><span>192 GB</span></div>' +
+      '<div class="iv-fit-row" id="iv-fit-row"></div>' +
+      '<div class="iv-control">' +
+        '<label>Model size <b id="iv-params-lbl">7B</b></label>' +
+        '<input type="range" min="0" max="9" value="3" class="iv-slider" id="iv-params" aria-label="Model parameter size"/>' +
+      '</div>' +
+      '<div class="iv-control">' +
+        '<label>Quantization <b id="iv-quant-lbl">Q4_K_M</b></label>' +
+        '<div class="iv-pills" id="iv-quant">' +
+          '<button class="iv-pill" data-q="0.30">FP16</button>' +
+          '<button class="iv-pill" data-q="0.55">Q8_0</button>' +
+          '<button class="iv-pill" data-q="0.40">Q5_K_M</button>' +
+          '<button class="iv-pill active" data-q="0.30">Q4_K_M</button>' +
+          '<button class="iv-pill" data-q="0.22">Q3_K_M</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="iv-control">' +
+        '<label>Context length <b id="iv-ctx-lbl">8K</b></label>' +
+        '<div class="iv-pills" id="iv-ctx">' +
+          '<button class="iv-pill" data-c="2048">2K</button>' +
+          '<button class="iv-pill" data-c="4096">4K</button>' +
+          '<button class="iv-pill active" data-c="8192">8K</button>' +
+          '<button class="iv-pill" data-c="32768">32K</button>' +
+          '<button class="iv-pill" data-c="131072">128K</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+
+  var paramSizes = [1, 3, 7, 8, 14, 22, 32, 70, 120, 671];
+  var paramLabels = ['1B','3B','7B','8B','14B','22B','32B','70B','120B','671B'];
+  var hardware = [
+    { name: 'RTX 3060', vram: 12, icon: '🎮' },
+    { name: 'RTX 4090', vram: 24, icon: '⚡' },
+    { name: 'RTX 6000 Ada', vram: 48, icon: '🚀' },
+    { name: 'H100 80GB', vram: 80, icon: '🛰️' }
+  ];
+  function calcVram() {
+    var idx = parseInt(document.getElementById('iv-params').value, 10);
+    var params = paramSizes[idx];
+    var quant = parseFloat(document.querySelector('#iv-quant .iv-pill.active').dataset.q);
+    var ctx = parseInt(document.querySelector('#iv-ctx .iv-pill.active').dataset.c, 10);
+    var base = params * quant * 1.0;
+    var kv = (ctx / 8192) * (params / 7) * 0.6;
+    var total = base + kv;
+    document.getElementById('iv-vram-num').textContent = total < 10 ? total.toFixed(1) : Math.round(total);
+    document.getElementById('iv-params-lbl').textContent = paramLabels[idx];
+    document.getElementById('iv-quant-lbl').textContent = document.querySelector('#iv-quant .iv-pill.active').textContent;
+    document.getElementById('iv-ctx-lbl').textContent = document.querySelector('#iv-ctx .iv-pill.active').textContent;
+    var pct = Math.min(100, (Math.log(total + 1) / Math.log(200)) * 100);
+    document.getElementById('iv-vram-fill').style.width = pct + '%';
+    var fitHTML = '';
+    hardware.forEach(function(hw){
+      var fits = total <= hw.vram;
+      var tight = total <= hw.vram * 1.05 && !fits;
+      var cls = fits ? 'fits' : (tight ? 'tight' : 'no');
+      var icon = fits ? '✓' : (tight ? '~' : '✗');
+      fitHTML += '<div class="iv-fit ' + cls + '"><span class="iv-fit-icon">' + icon + '</span><div class="iv-fit-name">' + hw.name + '</div><div class="iv-fit-vram">' + hw.vram + ' GB</div></div>';
+    });
+    document.getElementById('iv-fit-row').innerHTML = fitHTML;
+    var num = document.getElementById('iv-vram-num');
+    num.style.transform = 'scale(1.08)';
+    setTimeout(function(){ num.style.transform = 'scale(1)'; }, 180);
+  }
+  function openModal(){
+    modalBg.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    calcVram();
+  }
+  function closeModal(){
+    modalBg.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  fab.addEventListener('click', openModal);
+  modalBg.addEventListener('click', closeModal);
+  document.addEventListener('click', function(e){ if (e.target.id === 'iv-close') closeModal(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+  document.getElementById('iv-params').addEventListener('input', calcVram);
+  document.querySelectorAll('#iv-quant .iv-pill').forEach(function(p){
+    p.addEventListener('click', function(){
+      document.querySelectorAll('#iv-quant .iv-pill').forEach(function(x){ x.classList.remove('active'); });
+      p.classList.add('active'); calcVram();
+    });
+  });
+  document.querySelectorAll('#iv-ctx .iv-pill').forEach(function(p){
+    p.addEventListener('click', function(){
+      document.querySelectorAll('#iv-ctx .iv-pill').forEach(function(x){ x.classList.remove('active'); });
+      p.classList.add('active'); calcVram();
+    });
+  });
+
+  /* ---------- 8. Tooltip system ---------- */
+  var tipEl = document.createElement('div');
+  tipEl.className = 'iv-tip';
+  document.body.appendChild(tipEl);
+  function showTip(target, text){
+    tipEl.textContent = text;
+    tipEl.classList.add('show');
+    var r = target.getBoundingClientRect();
+    var tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+    var top = r.top - th - 10 + window.scrollY;
+    var left = r.left + r.width/2 - tw/2;
+    if (top < window.scrollY + 10) top = r.bottom + 10 + window.scrollY;
+    left = Math.max(8, Math.min(window.innerWidth - tw - 8, left));
+    tipEl.style.top = top + 'px';
+    tipEl.style.left = left + 'px';
+  }
+  function hideTip(){ tipEl.classList.remove('show'); }
+  document.addEventListener('mouseover', function(e){
+    var t = e.target.closest('[data-tip]');
+    if (t) showTip(t, t.dataset.tip);
+  });
+  document.addEventListener('mouseout', function(e){
+    var t = e.target.closest('[data-tip]');
+    if (t) hideTip();
+  });
+
+  /* ---------- 9. Click particle bursts ---------- */
+  if (!reduced) {
+    var burstColors = ['#00d4ff', '#818cf8', '#a78bfa', '#ec4899', '#22c55e'];
+    document.addEventListener('click', function(e){
+      if (e.target.closest('input, select, .iv-modal, .iv-fab, .iv-pill, .iv-modal-close')) return;
+      var n = 7;
+      for (var i = 0; i < n; i++) {
+        var b = document.createElement('div');
+        b.className = 'iv-burst';
+        var angle = (Math.PI * 2 * i) / n + Math.random() * 0.4;
+        var dist = 36 + Math.random() * 28;
+        b.style.setProperty('--ivdx', (Math.cos(angle) * dist) + 'px');
+        b.style.setProperty('--ivdy', (Math.sin(angle) * dist) + 'px');
+        b.style.left = (e.clientX - 2.5) + 'px';
+        b.style.top = (e.clientY - 2.5) + 'px';
+        b.style.background = burstColors[(i + Math.floor(Math.random() * burstColors.length)) % burstColors.length];
+        b.style.boxShadow = '0 0 8px ' + b.style.background;
+        document.body.appendChild(b);
+        setTimeout(function(el){ return function(){ el.remove(); }; }(b), 720);
+      }
+    });
+  }
+
+  /* ---------- 10. Page transition flash ---------- */
+  if (!reduced) {
+    var flash = document.createElement('div');
+    flash.className = 'iv-flash';
+    document.body.appendChild(flash);
+    document.addEventListener('click', function(e){
+      var a = e.target.closest('a');
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      if (e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return;
+      if (!/\.html(\?|#|$)/.test(href) && href !== '/') return;
+      if (/^https?:/.test(href)) return;
+      e.preventDefault();
+      flash.classList.add('go');
+      setTimeout(function(){ window.location.href = href; }, 380);
+    });
+  }
+
+  /* ---------- 11. Achievement toasts ---------- */
+  function toast(title, msg, icon){
+    var t = document.createElement('div');
+    t.className = 'iv-toast';
+    t.innerHTML = '<div class="iv-toast-icon">' + (icon || '✦') + '</div><div><div class="iv-toast-title">' + title + '</div>' + msg + '</div>';
+    document.body.appendChild(t);
+    setTimeout(function(){ t.classList.add('show'); }, 50);
+    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 600); }, 4400);
+  }
+  var bottomFired = false;
+  window.addEventListener('scroll', function(){
+    if (bottomFired) return;
+    if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 40) {
+      bottomFired = true;
+      var stored = localStorage.getItem('iv-bottom');
+      if (!stored) {
+        localStorage.setItem('iv-bottom', '1');
+        toast('Completionist', 'You read all the way down. Respect.', '🏁');
+      }
+    }
+  }, { passive: true });
+  var calcOpenedKey = 'iv-calc-opened';
+  fab.addEventListener('click', function(){
+    if (!localStorage.getItem(calcOpenedKey)) {
+      localStorage.setItem(calcOpenedKey, '1');
+      setTimeout(function(){ toast('Tool unlocked', 'VRAM calculator at your service. Drag the slider.', '🧮'); }, 600);
+    }
+  });
+
+  if (window.console) console.log('%c✦ Interactive Layer v2 (v3) loaded', 'color:#00d4ff;font-family:monospace;font-size:11px');
+})();
+</script>
+</body>
+</html>

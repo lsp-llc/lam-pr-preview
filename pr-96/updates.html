@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PR #96 preview — updates related 132 + historical Aug 26 125 (not production)</title>
+<meta name="description" content="Weekly changelog for the Local AI Models reference. New model additions, feature launches, ecosystem milestones. Updated September 14, 2026.">
+<meta name="keywords" content="local AI updates, new open source models 2026, AI changelog, ollama new models, llama 4, GLM-5, DeepSeek V3.2, Qwen3 updates">
+<link rel="canonical" href="https://lsp-llc.github.io/lam-pr-preview/pr-96/updates.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="What's New — Local AI Models">
+<meta property="og:description" content="Weekly changelog of model additions and feature updates for the local AI ecosystem.">
+<meta property="og:url" content="https://local-ai-models.ai/updates.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta property="og:image" content="https://local-ai-models.ai/hero-updates.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What's New — Local AI Models">
+<meta name="robots" content="noindex,nofollow,noarchive">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "Local AI Models — Updates",
+  "url": "https://local-ai-models.ai/updates.html",
+  "description": "Weekly changelog for the Local AI Models reference",
+  "blogPost": [
+    {"@type":"BlogPosting","headline":"Homepage catalog count matches the index","datePublished":"2026-08-26"},
+    {"@type":"BlogPosting","headline":"Community Analytics snapshot refreshed","datePublished":"2026-08-24"},
+    {"@type":"BlogPosting","headline":"Catalog: Ornith-1.5 9B / 35B-A3B / 397B","datePublished":"2026-08-21"},
+    {"@type":"BlogPosting","headline":"How to Read a Coding-Model Leaderboard","datePublished":"2026-08-20"},
+    {"@type":"BlogPosting","headline":"Sitemap dates refreshed; review templates stay unpublished","datePublished":"2026-08-20"},
+    {"@type":"BlogPosting","headline":"Nemotron 3.5 Lightning","datePublished":"2026-08-20"},
+    {"@type":"BlogPosting","headline":"Weekday scan: Qwen3.8 and Kimi K3","datePublished":"2026-08-20"},
+    {"@type":"BlogPosting","headline":"Catalog: DeepSeek V4, Qwen3-Coder-Next, Kimi K2.6/2.7, Ministral 3","datePublished":"2026-08-20"},
+    {"@type":"BlogPosting","headline":"NVIDIA GTC 2026 — Nemotron 3 Super & Omni Added","datePublished":"2026-03-26"},
+    {"@type":"BlogPosting","headline":"24 New Models Added — Music Gen & 3D Gen Sections Launched","datePublished":"2026-03-18"},
+    {"@type":"BlogPosting","headline":"Missing Models Research — 50+ Models Identified for Addition","datePublished":"2026-03-17"},
+    {"@type":"BlogPosting","headline":"GLM-5 744B, Kimi K2.5, GPT-OSS 120B Added","datePublished":"2026-03-09"},
+    {"@type":"BlogPosting","headline":"Community Analytics Integration","datePublished":"2026-03-02"},
+    {"@type":"BlogPosting","headline":"FLUX.2, Z-Image-Turbo, Wan 2.2 MoE, OLMo 3.1 Added","datePublished":"2026-03-01"},
+    {"@type":"BlogPosting","headline":"Quantization Guide Expanded + Recommended Stacks","datePublished":"2026-02-28"},
+    {"@type":"BlogPosting","headline":"Initial Launch — 107 Models Cataloged","datePublished":"2026-02-22"}
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+/* SITE NAV */
+.site-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(6,7,10,0.78);
+  backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+/* HERO */
+.hero { position: relative; min-height: 56vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-updates.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; transition: color 200ms var(--ease); }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 600px; margin: 0 auto; line-height: 1.55; }
+
+/* CONTAINER */
+.container { max-width: 980px; margin: 0 auto; padding: 104px 28px; }
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 36px; }
+.timeline::before { content: ''; position: absolute; left: 11px; top: 12px; bottom: 12px; width: 2px; background: linear-gradient(180deg, var(--accent), var(--purple), transparent); }
+.update { position: relative; padding-bottom: 48px; }
+.update::before { content: ''; position: absolute; left: -36px; top: 4px; width: 24px; height: 24px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); box-shadow: 0 0 14px rgba(0,212,255,0.5); }
+.update::after { content: ''; position: absolute; left: -28px; top: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.update-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.update-date { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); font-weight: 600; letter-spacing: 0.5px; }
+.update-tag { font-family: var(--font-mono); font-size: 0.66rem; padding: 4px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.tag-new-model { background: rgba(34,197,94,0.10); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.tag-feature { background: rgba(167,139,250,0.10); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+.tag-update { background: rgba(255,159,28,0.10); color: #ff9f1c; border: 1px solid rgba(255,159,28,0.3); }
+.update-title { font-family: var(--font); font-size: 1.5rem; font-weight: 600; letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 12px; color: var(--text); }
+.update-desc { color: var(--text-2); line-height: 1.65; font-size: 1.0rem; }
+.update-desc strong { color: var(--text); font-weight: 600; }
+.update-desc code { font-family: var(--font-mono); font-size: 0.85rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; color: var(--accent); }
+
+/* RELATED */
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+/* FOOTER */
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+/* SCROLL REVEAL */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-stagger > * { opacity: 0; transform: translateX(-20px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+.reveal-stagger.visible > * { opacity: 1; transform: translateX(0); }
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 60ms; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 130ms; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 200ms; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 270ms; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 340ms; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 410ms; }
+.reveal-stagger.visible > *:nth-child(7) { transition-delay: 480ms; }
+.reveal-stagger.visible > *:nth-child(8) { transition-delay: 550ms; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal, .reveal-stagger > * { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+/* Universal premium fixes (applied via premium-patch.js) */
+/* 1. Display weight refinements — 700 was too heavy */
+h1, h2, .section-heading, .section-title, .hero-title, .stack-title, .scenario-title, .chart-title, .update-title, .step-title, .tool-name, .tool-card-name, .stack-card .stack-title { font-weight: 600 !important; letter-spacing: -0.025em; }
+/* 2. Contrast bumps for muted text — was failing WCAG AA */
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, .stack-note, .verdict, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+/* 3. Touch targets ≥44px on nav links and buttons */
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .topnav-links a, .btn, .hero-btn, .preset-btn, .filter-btn, .filter-pill, .iv-pill, .tier-pill, .step-dot, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+/* 4. Accessible focus rings — never remove default outline without a custom one */
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+/* 5. Animation grammar — width/height/top/left transitions get cheaper alternatives */
+.scanline, .gauge-fill, .stacked-bar-fill, .bar-fill, [class*="-fill"]:not(.iv-vram-fill):not(.cn-modal) { will-change: transform; }
+/* 6. Body text minimum 16px on key surfaces (was 0.85rem in some cards) */
+.card-desc, .stack-note, .scenario p, .scenario li, .breaks-note { font-size: 0.95rem; line-height: 1.55; }
+/* 7. prefers-reduced-motion safety */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+
+/* PREMIUM-PATCH-V2 */
+/* Patch v2 — targets remaining critique gaps */
+
+/* 1. Broader body text floor — 0.95rem minimum on text-bearing card content */
+.catalog-desc, .hub-desc, .dest-desc, .primer-desc, .matrix-why, .edu-text,
+.fit-card-meta, .stack-desc, .scenario-text, .tool-desc, .tool-use,
+.update-desc, .breaks-note, .step-desc, .step-note, .quant-prose,
+.card-desc-inner, .card-grid li, .card-grid p, .related-desc,
+.foot-tagline, .pf-tagline, .hero-sub, .lede {
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.6;
+}
+
+/* 2. Vertical breathing room — bump common section selectors */
+.section, section.section, .quant-guide, .stacks-guide, .hub,
+.philosophy, .final-cta, .related, .container > section,
+.tools-grid + *, .stacks-grid + *,
+section[class*='-section'] {
+  padding-top: 96px !important;
+  padding-bottom: 96px !important;
+}
+@media (max-width: 700px) {
+  .section, section.section, .quant-guide, .stacks-guide, .hub,
+  .philosophy, .final-cta, .related, .container > section,
+  section[class*='-section'] {
+    padding-top: 56px !important;
+    padding-bottom: 56px !important;
+  }
+}
+
+/* 3. Width-animation kill — anything with -fill class becomes transform-only */
+.bench-bar-fill, .gauge-fill, .stacked-bar-fill, .bar-fill, .progress-bar,
+.iv-vram-fill, .threshold-fill {
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* 4. Tighter letter-spacing on small uppercase UI */
+.section-eyebrow, .hub-section-eyebrow, .breadcrumb,
+.foot-col-title, .pf-col-title, .hero-eyebrow,
+.dest-icon, .hub-icon, .iv-fab-tip, .step-dot .step-label,
+.usecase-card .step-label, .filter-pill, .filter-btn,
+.iv-pill, .pillish, .scenario-hw, .stack-hw,
+[class*='-eyebrow'], [class*='-tag'][class*='tool'] {
+  letter-spacing: 1px !important;
+}
+.section-heading, .section-title, h2.section-heading {
+  letter-spacing: -0.02em !important;
+}
+
+/* 5. Surface luminance ordering — force ramp on common var conflicts */
+:root {
+  --surface-fixed-1: #131416;
+  --surface-fixed-2: #1c1d20;
+  --surface-fixed-3: #25272a;
+}
+
+/* 6. Hide unused fonts (Instrument Serif when not used by .italic / .accent / serif content) */
+/* — leaving as-is; removal would change layout subtly. Browsers can lazy-load. */
+
+/* end PREMIUM-PATCH-V2 */
+
+</style>
+<!-- Schema: Organization (publisher trust signal for AEO) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="https://local-ai-models.ai/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+
+<style>
+.preview-mark {
+  background: rgba(245,197,24,0.28);
+  color: inherit;
+  outline: 2px solid #f5c518;
+  outline-offset: 2px;
+  padding: 0 0.12em;
+}
+</style>
+
+</head>
+<body>
+<p class="preview-banner" style="margin:0;padding:10px 16px;background:#1a1a1a;color:#f5c518;font:14px/1.45 Inter,system-ui,sans-serif;text-align:center;position:relative;z-index:200;">Preview of <a href="https://github.com/lsp-llc/local-ai-models/pull/96" style="color:#f5c518;">lsp-llc/local-ai-models#96</a> — leftover 125→132 chrome restamp, head <code>16ff7eb</code>. Draft. Do not merge. Not Firebase. ads.txt not touched. <a href="./" style="color:#f5c518;">#96 pages</a> · <a href="../index.html" style="color:#f5c518;">all previews</a> · <a href="#browse-132" style="color:#f5c518;">related 132</a> · <a href="#historical-125" style="color:#f5c518;">Aug 26 125 leftover</a></p>
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="https://local-ai-models.ai/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+      <a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+      <a href="https://local-ai-models.ai/model-builder.html">PC Builder</a>
+      <a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+      <a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+      <a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+      <a href="https://local-ai-models.ai/sentiment.html">Community</a>
+      <a href="https://local-ai-models.ai/guidance.html">Guidance</a>
+      <a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
+      <a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+      <a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+      <a href="https://local-ai-models.ai/updates.html" class="active" aria-current="page">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="https://local-ai-models.ai/local-ai-models.html">Home</a><span class="sep">/</span><span>Updates</span></div>
+    <div class="hero-eyebrow">Live · Updated September 14, 2026</div>
+    <h1 class="hero-title">What's <span class="accent">new</span></h1>
+    <p class="hero-sub">The local AI ecosystem moves fast. Six months of model releases, feature launches, and frontier shifts — all in one timeline.</p>
+  </div>
+</section>
+
+<div class="upd-primer">
+  <div class="upd-primer-inner">
+    <div class="upd-primer-eyebrow">About this changelog</div>
+    <p class="upd-primer-text">This timeline records what changed on the site and in the fast-moving ecosystem it tracks. The model data behind the catalog (downloads, likes, community discussion, and research activity) is refreshed on an automated weekly cadence from public sources, so what you read reflects a living field rather than a one-time snapshot.</p>
+  </div>
+</div>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+  <div class="timeline reveal-stagger">
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">September 1, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">Catalog: Qwen3-ASR (1.7B / 0.6B)</h2>
+      <p class="update-desc">One official ungated Qwen3 ASR family card on <a href="https://local-ai-models.ai/local-ai-models.html#qwen3-asr-1-7b-0-6b">the catalog</a>. Hub ids <code>Qwen/Qwen3-ASR-1.7B</code> and <code>Qwen/Qwen3-ASR-0.6B</code> (HTTP 200, gated=false, last verified 2026-09-01). Apache 2.0 from Hub YAML; LICENSE file is HTTP 404 (curator note, not a site 404). Pipeline automatic-speech-recognition. Params from the card names (1.7B / 0.6B). Context 64K from <code>thinker_config.text_config.max_position_embeddings</code> = 65536. No Vision or Tool Use chips — ASR, not an LLM. VRAM chip is a catalog Q4 estimate (params_B × 0.5), labeled not a Hub measurement. Catalog count is now <strong>132</strong>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 30, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">Catalog: Command A+ (218B MoE / 25B active)</h2>
+      <p class="update-desc">One official ungated Command A+ card on <a href="https://local-ai-models.ai/local-ai-models.html#command-a-plus-218b-moe-25b-active">the catalog</a>, immediately after Command A (kept). Hub id <code>CohereLabs/command-a-plus-05-2026</code> (API 307 → <code>-bf16</code>; HTTP 200, gated=false, last verified 2026-08-30). Apache 2.0. README: 25B active / 218B total, 128K input, text + image. VRAM chip is a catalog Q4 estimate (218B × 0.5 = ~109 GB), not printed on the Hub card. Hardware table quoted as GPU count, not occupancy. Catalog count is now <strong>131</strong>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 30, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">Catalog: official Gemma 4 instruct (E2B / E4B / 12B / 26B-A4B / 31B)</h2>
+      <p class="update-desc">Five official ungated Gemma 4 instruct cards on <a href="https://local-ai-models.ai/local-ai-models.html">the catalog</a> (HF API HTTP 200, last verified 2026-08-30): <code>google/gemma-4-E2B-it</code>, <code>E4B-it</code>, <code>12B-it</code>, <code>26B-A4B-it</code>, <code>31B-it</code>. Apache 2.0 from YAML + <a href="https://ai.google.dev/gemma/docs/gemma_4_license" target="_blank" rel="noopener">gemma_4_license</a>; LICENSE file still 404. VRAM chips are catalog Q4 estimates (<code>params_B × 0.5</code> on the loadable class) — not printed on the Hub cards, no official GGUF. Catalog count is now <strong>130</strong>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta" id="historical-125"><div class="update-date">August 26, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Homepage catalog count matches the index</h2>
+      <p class="update-desc">Homepage inventory copy now matches the catalog card count: <mark class="preview-mark"><strong>125</strong> open-weight models</mark>. Counted from the <code>model-card</code> rows on <a href="https://local-ai-models.ai/local-ai-models.html">local-ai-models.html</a> after #44–#48 landed on <code>main</code>. The catalog already had those cards; the homepage hero, destination cards, stack-builder fit line, and footer / mission-control stamps still said 100 (stamp scripts were reading the 100-row signals registry). Footer regen now also matches the <code>dataset … &middot; N models</code> entity form. CLAWS stays at 59 frameworks.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 24, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Community Analytics snapshot refreshed</h2>
+      <p class="update-desc">The weekly Hugging Face Hub downloads and likes snapshot used by <a href="https://local-ai-models.ai/sentiment.html">Community Analytics</a> was rebuilt from the current catalog. The snapshot now covers <strong>114</strong> models.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 23, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">Muse Glimmer 30B</h2>
+      <p class="update-desc">Added a catalog card for Meta <strong>Muse Glimmer 30B</strong> from the official Hugging Face card <a href="https://huggingface.co/meta-models/Muse-Glimmer-30B" target="_blank" rel="noopener"><code>meta-models/Muse-Glimmer-30B</code></a> (not <code>meta-llama</code>). Apache 2.0 from the Hub card. GQA 32/2. VRAM chip is card-stated <strong>K-Quant-17GB</strong>; official GGUF text file is 16.8 GB for the 24 GB envelope — no catalog ×0.5 estimate. llama.cpp floor is <code>b10353</code> / <a href="https://github.com/ggml-org/llama.cpp/pull/26841" target="_blank" rel="noopener">#26841</a>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 21, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">Catalog: Ornith-1.5 9B / 35B-A3B / 397B</h2>
+      <p class="update-desc">Three official Hub cards added to the live catalog (HF API HTTP 200, last verified 2026-08-21). Licenses from the cards: all <code>mit</code>. VRAM chips: 9B ~5.6 GB official Q4_K_M; 35B-A3B ~22 GB official Q4_K_M (24GB-class for weights only — MoE pays total weights); 397B ~241 GB official Q4_K_M. Catalog-only — no lecture-guide, no <code>/reviews/</code> pages. Homepage marketed count left unchanged: stamp scripts count <code>_registry.json</code>, not model-card rows.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 20, 2026</div><span class="update-tag tag-feature">Guide</span></div>
+      <h2 class="update-title">How to Read a Coding-Model Leaderboard</h2>
+      <p class="update-desc">Published a dated practitioner guide at <a href="https://local-ai-models.ai/benchmark-goodhart-law.html">benchmark-goodhart-law.html</a> (20 August 2026). A two-point gap can be an artifact of the test setup. The page uses SWE-bench as the worked example and five fields (named harness, training cutoff versus bench age, contamination note, vendor versus third-party, and this site's evidence labels). Sources: Goodhart's 1975 paper via the 1984 collected-essays reprint, Jimenez et al. arXiv:2310.06770, Xia et al. Agentless (2024), and Zhang et al. on harness disclosure (2026). The 68.0 and 70.6 SWE-bench Verified figures sit on the <a href="https://local-ai-models.ai/best-local-coding-llm.html">coding guide</a>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 20, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Sitemap dates refreshed; review templates stay unpublished</h2>
+      <p class="update-desc">Per-model review templates remain unpublished (<code>noindex</code>) and off the sitemap. Sitemap <code>lastmod</code> dates on the indexed core pages were refreshed to <strong>2026-08-20</strong> so crawlers see current inventory rather than the previous 2026-08-11 dates.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 20, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Catalog cards verified against Hugging Face</h2>
+      <p class="update-desc">Every catalog card was checked against the Hugging Face model API on <strong>2026-08-20</strong>. Licenses, parameter counts, context windows, and last-verified dates were refreshed from official cards. VRAM chips use the catalog Q4 estimate (<code>Params_B × 0.5</code> at Q4_K_M, 8K) when the Hub card does not print a GB figure — the same style as the rest of the live catalog. Hub-stated figures are kept (for example Ministral 3 24 GB FP8, Mistral Small 3.2 ~55 GB bf16/fp16). Qwen3.8-27B and Nemotron 3.5 Lightning also cite practitioner-reported 4090/5090/Spark occupancy in VRAM Breakdown (not on the chip). Official successor rows added where the live card was a previous generation and the new id returned HTTP 200: Qwen3.6-27B, Qwen3.6-35B-A3B, and GLM-5.2. A second pass the same day attached official ids for Command A and Nemotron 3 Nano Omni, and corrected Hub-printed licenses on Gemma 3n, Whisper V3, Fish Speech, MaskGCT, Jina Embeddings v3, MusicGen, PixArt-Σ, and GLM-4.7-Flash. Catalog count is now <strong>121</strong>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 20, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">Nemotron 3.5 Lightning</h2>
+      <p class="update-desc">Added the official Hugging Face card for <strong>NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</strong> (HF 200, last verified 2026-08-20). Facts from that card only: 30B / 3B active, Mamba-2 + MoE + Attention hybrid, up to 1M context, OpenMDW 1.1. Single-GPU deployment quoted as 1× DGX Spark (GB10) or 1× H100. VRAM GB is Unknown. Catalog count is now <strong>118</strong>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 20, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">Weekday scan: Qwen3.8 and Kimi K3</h2>
+      <p class="update-desc">Added official Hugging Face cards for <strong>Qwen3.8-27B</strong>, <strong>Qwen3.8-2.4T-A95B</strong>, and <strong>Kimi K3</strong> (all HF 200, last verified 2026-08-20). Facts are taken from those cards only; VRAM is Unknown where the card does not state it. Catalog count is now <strong>117</strong>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 20, 2026</div><span class="update-tag tag-new-model">New Models</span><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Catalog: DeepSeek V4, Qwen3-Coder-Next, Kimi K2.6/2.7, Ministral 3</h2>
+      <p class="update-desc">Added 10 Hugging Face cards last verified 2026-08-20 (all HF HTTP 200). Copy is limited to facts on those cards: parameters, license, architecture, published date, and any GGUF/quant or VRAM the card itself states. Where VRAM is not on the card it is marked <strong>Unknown</strong> — no catalog estimates. New ids: DeepSeek V4 Flash (0731) and V4 Pro, Qwen3-Coder-Next, Qwen3-Coder 30B-A3B, Kimi K2.6 and K2.7-Code (K2.5 kept), Mistral Small 3.2, Ministral 3 14B, GLM-4.5-Air, ERNIE 4.5 21B-A3B. Also corrected five stale <code>data-hf-id</code> values. Codestral 25.01 and 25.05 both returned HF 401 (gated); the existing 25.01 id was left in place. Marketed catalog count is now <strong>114</strong>.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">August 10, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Site Coherence Pass: One Nav, One Name</h2>
+      <p class="update-desc">Every page now carries the same navigation in the same order, and the catalog goes by one name: <strong>Models</strong> (the page itself is the Model Catalog). Footers were unified sitewide and the long-form <a href="https://local-ai-models.ai/local-ai-server-guide.html">Local AI Server Guide</a> is now linked from every page, the homepage, and Getting Started. Also fixed: the custom cursor disappearing over the privacy banner and the search palette, and the privacy controls covering footer content. Speed figures in the Stack Builder are now labeled for what they are: theoretical upper bounds from memory bandwidth, not measured throughput.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">July 27, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Summer Data Cadence</h2>
+      <p class="update-desc">The weekly signal refresh has run on schedule through the summer (community downloads, likes, and discussion signals for all 100 cataloged models, most recently August 3). No editorial changes this window; the data underneath the catalog kept moving.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">July 21, 2026</div><span class="update-tag tag-feature">Feature</span><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Content Depth Wave, About Page, and a Live Dashboard Fix</h2>
+      <p class="update-desc">The homepage, PC Builder, Updates, and Recommended Stacks pages gained substantial evergreen reference sections and FAQs. A proper <a href="https://local-ai-models.ai/about.html">About page</a> now explains who runs the site and how the data pipeline works. The <a href="https://local-ai-models.ai/sentiment.html">Community Analytics</a> dashboard was rebuilt to render from the weekly data snapshot instead of a live API call that could fail in the browser. Accuracy correction: the M3 Max estimate for 70B models on <a href="https://local-ai-models.ai/stacks.html">Stacks</a> was revised from roughly 15 to 25 tok/s down to roughly 6 to 10 tok/s, reflecting memory-bandwidth reality.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">June 26, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Faster Homepage</h2>
+      <p class="update-desc">Dropped the WebGL background shader and moved the particle layer to a small shared script, cutting homepage weight and bringing the tool pages to visual parity with less code.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">June 18, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Trust and Crawl Hygiene</h2>
+      <p class="update-desc">The 100 per-model reference cards were removed from search indexing until each one carries enough unique data to stand on its own; the sitemap now lists only the curated core pages. Broken navigation anchors and dead external links were repaired sitewide, EEA consent handling was hardened, and the weekly site-health check now files its findings automatically so drift gets caught within days instead of months.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">May 25, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">NVIDIA GTC 2026 — Nemotron 3 Super &amp; Omni Added</h2>
+      <p class="update-desc">Added NVIDIA's latest open models from GTC 2026: <strong>Nemotron 3 Super</strong> (120B MoE, 12B active, 1M context, 7× throughput) and <strong>Nemotron 3 Omni</strong> (multimodal video/document understanding). Model count now 109. Enhanced community sentiment with badges, stacked sentiment bars, trending indicators, and community stats mined from reviews.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">March 18, 2026</div><span class="update-tag tag-new-model">New Models</span><span class="update-tag tag-feature">Feature</span></div>
+      <h2 class="update-title">24 New Models Added — Music Gen &amp; 3D Gen Sections Launched</h2>
+      <p class="update-desc">Major expansion: added 24 new model cards across all categories. Model count now 107. New models include Gemma 3n, StarCoder2, MiniMax M2.5, Qwen3.5 32B, Falcon 3, Codestral 25.05, SmolVLM, Molmo, Chatterbox TTS, Dia TTS, MaskGCT, Jina Embeddings v3, Hunyuan Image, Sana, and more. Launched two brand-new sections: <strong>Music Generation</strong> (ACE-Step, Stable Audio Open, MusicGen) and <strong>3D Generation</strong> (TRELLIS 2, Hunyuan3D 2.0, TripoSR). Site now updates continuously.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">May 25, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">Missing Models Research — 50+ Models Identified for Addition</h2>
+      <p class="update-desc">Deep research completed across all categories. Key findings: Chinese labs now dominate frontier open-weight models (GLM-5, Kimi K2.5, Qwen 3.5, DeepSeek V3.2). Missing models to add include: <code>Chatterbox TTS</code> (Resemble AI), <code>ACE-Step</code> (music gen), <code>TRELLIS/Hunyuan3D</code> (3D gen), <code>Phi-4-reasoning</code>, <code>SmolVLM</code>, <code>Moonshine Gen 2</code>, <code>Ministral 3</code>, and many more. MoE architecture now dominates frontier models.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">March 9, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">GLM-5 744B, Kimi K2.5, GPT-OSS 120B Added</h2>
+      <p class="update-desc">Added latest frontier models: GLM-5 (744B MoE, #1 open-source Quality Index), Kimi K2.5 (Moonshot AI reasoning), GPT-OSS (OpenAI's first open-weight models at 20B and 120B MoE). Updated model count to 107.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">March 2, 2026</div><span class="update-tag tag-feature">Feature</span></div>
+      <h2 class="update-title">Community Analytics Integration</h2>
+      <p class="update-desc">Added real-time model popularity data from HuggingFace — every model card now shows real download counts and community likes.</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">March 1, 2026</div><span class="update-tag tag-new-model">New Models</span></div>
+      <h2 class="update-title">FLUX.2, Z-Image-Turbo, Wan 2.2 MoE, OLMo 3.1 Added</h2>
+      <p class="update-desc">Added FLUX.2 image generation suite (Klein 4B to Pro 32B), Z-Image-Turbo (sub-second generation), Wan 2.2 with MoE architecture, and OLMo 3.1 (the only fully open-source model family with training data, code, and checkpoints).</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">February 28, 2026</div><span class="update-tag tag-update">Update</span></div>
+      <h2 class="update-title">Quantization Guide Expanded + Recommended Stacks</h2>
+      <p class="update-desc">Major expansion of the quantization guide with JPEG analogy, real-world scenarios, and "What Breaks First" degradation table. Added 6 complete recommended stacks by hardware tier (RTX 4090, 4070 Ti, 3060, Mac M-series, Air-Gapped, Creative).</p>
+    </div>
+
+    <div class="update">
+      <div class="update-meta"><div class="update-date">February 22, 2026</div><span class="update-tag tag-feature">Feature</span></div>
+      <h2 class="update-title">Initial Launch — 107 Models Cataloged</h2>
+      <p class="update-desc">First release of the Local AI Model Index. 107 models across 10 categories: LLMs, coding, vision, embeddings, STT, TTS, image generation, and video generation. Search, filter, hardware tiers, and VRAM calculator included.</p>
+    </div>
+
+  </div>
+</div>
+
+<section class="related">
+  <div class="related-title reveal">— Related</div>
+  <div class="related-grid reveal">
+    <a href="https://local-ai-models.ai/local-ai-models.html" class="related-card">
+      <div class="related-eyebrow">Catalog</div>
+      <div class="related-name">Models</div>
+      <div class="related-desc"><mark class="preview-mark" id="browse-132">Browse all 132 open-weight models</mark> with VRAM, license, and benchmarks.</div>
+    </a>
+    <a href="https://local-ai-models.ai/quantization.html" class="related-card">
+      <div class="related-eyebrow">Learn</div>
+      <div class="related-name">Quantization Explained</div>
+      <div class="related-desc">Why Q4_K_M is the community default and what changes when you compress further.</div>
+    </a>
+    <a href="https://local-ai-models.ai/stacks.html" class="related-card">
+      <div class="related-eyebrow">Hardware</div>
+      <div class="related-name">Recommended Stacks</div>
+      <div class="related-desc">Complete pre-vetted setups by hardware tier — from RTX 3060 to multi-H100 racks.</div>
+    </a>
+  </div>
+</section>
+
+<section class="upd-ref" id="methodology">
+  <div class="upd-ref-eyebrow">Methodology · How the data is kept fresh</div>
+  <h2 class="upd-ref-title">How this site stays <span class="upd-ref-accent">current</span></h2>
+  <p class="upd-ref-lede">Open models ship, get superseded, and fall out of favor on a timescale measured in weeks. A reference that never changed would be wrong within a month. To keep pace without hand-editing every figure, the site pulls a small set of public, freely available signals on a regular schedule and folds the results back into the <a href="https://local-ai-models.ai/local-ai-models.html">model catalog</a> and the <a href="https://local-ai-models.ai/sentiment.html">community data page</a>. This section explains where those numbers come from, what each one actually measures, and where each one can mislead you.</p>
+
+  <div class="upd-points">
+    <div class="upd-point">
+      <div class="upd-point-tag">Cadence</div>
+      <h3 class="upd-point-title">Refreshed on a weekly rhythm</h3>
+      <p class="upd-point-desc">An automated job runs on a weekly schedule, re-reads the public sources below, and updates the popularity figures shown on each model card and on the community page. Between runs the numbers hold steady, so a figure you note on Monday still matches what the page showed that week. Last signal refresh: August 24, 2026.</p>
+    </div>
+    <div class="upd-point">
+      <div class="upd-point-tag">Source</div>
+      <h3 class="upd-point-title">HuggingFace Hub</h3>
+      <p class="upd-point-desc">The Hub is where most open-weight models are published, versioned, and downloaded. It exposes two public counters per repository: a rolling 30-day download count and community likes. These anchor the site's usage picture because they cover nearly every model in the catalog under one consistent scheme.</p>
+    </div>
+    <div class="upd-point">
+      <div class="upd-point-tag">Source</div>
+      <h3 class="upd-point-title">Hacker News</h3>
+      <p class="upd-point-desc">Hacker News surfaces what practitioners are actively arguing about. When a model launches or a technique catches on, the discussion volume and comment threads there are a fast, public read on developer attention, often days ahead of any download surge.</p>
+    </div>
+    <div class="upd-point">
+      <div class="upd-point-tag">Source</div>
+      <h3 class="upd-point-title">arXiv</h3>
+      <p class="upd-point-desc">arXiv is where the underlying research is posted. Tracking related papers and their uptake gives a sense of whether a model or method has genuine research momentum behind it, rather than a one-week publicity spike that fades.</p>
+    </div>
+    <div class="upd-point">
+      <div class="upd-point-tag">Signal · limits</div>
+      <h3 class="upd-point-title">Downloads measure reach, but inflate easily</h3>
+      <p class="upd-point-desc">A download count is the broadest usage proxy available, yet it counts machines, not people. Continuous-integration pipelines, mirrors, re-pulls after a cache clear, and automated evaluation runs all register as downloads. Read it as an order-of-magnitude signal of reach, not a precise headcount of users.</p>
+    </div>
+    <div class="upd-point">
+      <div class="upd-point-tag">Signal · limits</div>
+      <h3 class="upd-point-title">Likes move slower and endorse</h3>
+      <p class="upd-point-desc">A like is a deliberate act by a logged-in account, so it is harder to inflate and closer to a genuine endorsement. The tradeoff is lag: likes accumulate slowly and undercount models that are heavily used in production but rarely bookmarked. A high like-to-download ratio hints at affection; a low one hints at utility without loyalty.</p>
+    </div>
+    <div class="upd-point">
+      <div class="upd-point-tag">Signal · limits</div>
+      <h3 class="upd-point-title">Discussion and papers show attention, not quality</h3>
+      <p class="upd-point-desc">Hacker News threads and arXiv activity capture interest and research energy, which often lead the usage curve. But attention is not the same as fitness for your task. A model can dominate discussion for a week and still be the wrong pick for your VRAM budget or license constraints.</p>
+    </div>
+    <div class="upd-point">
+      <div class="upd-point-tag">Why it matters</div>
+      <h3 class="upd-point-title">A changelog is the honest record</h3>
+      <p class="upd-point-desc">In a field where the leaderboard can turn over in a month, a dated changelog is what separates a current recommendation from a stale one. Every entry above is timestamped so you can see how fresh the underlying view is and weigh it accordingly.</p>
+    </div>
+  </div>
+
+  <p class="upd-ref-close">None of these signals is a verdict on its own; the site's job is to place them side by side so you can triangulate. To see the live figures and a fuller how-to-read guide, visit the <a href="https://local-ai-models.ai/sentiment.html">community data page</a>. To act on them, the <a href="https://local-ai-models.ai/local-ai-models.html">model catalog</a> lets you filter by the constraints that actually decide a local deployment (VRAM, license, and modality), and the <a href="https://local-ai-models.ai/recommend.html">recommender</a> turns your hardware into a shortlist.</p>
+
+  <div class="upd-faq">
+    <h3 class="upd-faq-heading">Frequently asked</h3>
+    <details class="upd-faq-item">
+      <summary>How often is the data updated?</summary>
+      <p>On a weekly cadence. An automated job re-reads the public sources once a week and refreshes the popularity figures across the catalog and the community page. Last signal refresh: August 24, 2026. Separately, new model additions and site features land as they are ready and are logged in the timeline above, each with its own date and tag.</p>
+    </details>
+    <details class="upd-faq-item">
+      <summary>Where does the data come from?</summary>
+      <p>Three public, freely accessible sources: the HuggingFace Hub for per-model download and like counts, Hacker News for developer discussion, and arXiv for related research activity. Nothing here is pulled from private dashboards or paywalled reports; every figure traces back to a source you can open yourself. The live values and a longer explanation live on the <a href="https://local-ai-models.ai/sentiment.html">community data page</a>.</p>
+    </details>
+    <details class="upd-faq-item">
+      <summary>Why do the numbers change?</summary>
+      <p>Because the underlying signals are living. The download counter reflects a rolling 30-day window of machine pulls; likes tick up as more accounts endorse it; discussion and paper activity rise and fall with attention. Each weekly refresh captures a new reading, so week-to-week movement is expected. Watching that movement over time is the entire point of tracking it rather than freezing a single snapshot.</p>
+    </details>
+    <details class="upd-faq-item">
+      <summary>How do I read popularity signals?</summary>
+      <p>Treat them as complementary, not interchangeable. Downloads show reach but include automated pulls; likes show slower, more deliberate endorsement; discussion and papers show attention and research momentum that often leads the usage curve. No single number decides whether a model fits your hardware or license needs, so cross-check against the <a href="https://local-ai-models.ai/local-ai-models.html">catalog</a> and read the full how-to-read guide on the <a href="https://local-ai-models.ai/sentiment.html">community data page</a>.</p>
+    </details>
+  </div>
+</section>
+
+<style>
+/* ── UPDATES METHODOLOGY REFERENCE (upd-* scoped) ─────────────────────────── */
+.upd-primer { max-width: 980px; margin: 0 auto; padding: 40px 28px 0; }
+.upd-primer-inner { border-left: 2px solid var(--accent); padding: 4px 0 4px 20px; }
+.upd-primer-eyebrow { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 10px; }
+.upd-primer-text { color: var(--text-2); font-size: 1.02rem; line-height: 1.65; max-width: 760px; }
+
+.upd-ref { max-width: 980px; margin: 0 auto; padding: 24px 28px 80px; }
+.upd-ref-eyebrow { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 18px; padding-top: 40px; border-top: 1px solid var(--border); }
+.upd-ref-title { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.08; margin-bottom: 20px; color: var(--text); }
+.upd-ref-accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: inline-block; padding: 0 0.08em 0.05em 0; }
+.upd-ref-lede { color: var(--text-2); font-size: 1.05rem; line-height: 1.7; max-width: 800px; margin-bottom: 40px; }
+.upd-ref-lede a, .upd-ref-close a, .upd-faq-item a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.3); transition: border-color 200ms var(--ease); }
+.upd-ref-lede a:hover, .upd-ref-close a:hover, .upd-faq-item a:hover { border-bottom-color: var(--accent); }
+
+.upd-points { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 40px; }
+.upd-point { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: border-color 300ms var(--ease), transform 300ms var(--ease); }
+.upd-point:hover { border-color: rgba(0,212,255,0.28); transform: translateY(-2px); }
+.upd-point-tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--accent); background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.22); padding: 4px 10px; border-radius: 100px; margin-bottom: 14px; }
+.upd-point-title { font-family: var(--font); font-size: 1.12rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 10px; color: var(--text); }
+.upd-point-desc { color: var(--text-2); font-size: 0.95rem; line-height: 1.6; }
+
+.upd-ref-close { color: var(--text-2); font-size: 1.02rem; line-height: 1.7; max-width: 800px; }
+
+.upd-faq { margin-top: 52px; }
+.upd-faq-heading { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 20px; padding-top: 40px; border-top: 1px solid var(--border); }
+.upd-faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0 20px; margin-bottom: 12px; transition: border-color 200ms var(--ease); }
+.upd-faq-item[open] { border-color: rgba(0,212,255,0.28); }
+.upd-faq-item summary { cursor: pointer; list-style: none; font-family: var(--font); font-size: 1.05rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text); padding: 18px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; }
+.upd-faq-item summary::-webkit-details-marker { display: none; }
+.upd-faq-item summary::after { content: '+'; font-family: var(--font-mono); font-size: 1.35rem; font-weight: 400; line-height: 1; color: var(--accent); transition: transform 250ms var(--ease); flex-shrink: 0; }
+.upd-faq-item[open] summary::after { transform: rotate(45deg); }
+.upd-faq-item p { color: var(--text-2); font-size: 0.98rem; line-height: 1.7; padding: 0 0 20px; max-width: 820px; }
+
+@media (max-width: 700px) {
+  .upd-primer { padding-top: 28px; }
+  .upd-ref { padding-bottom: 56px; }
+  .upd-points { grid-template-columns: 1fr; }
+}
+/* end UPDATES METHODOLOGY REFERENCE */
+</style>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.09.14 &middot; 132 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+      <li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+      <li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+      <li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+      <li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+      <li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+      <li><a href="https://local-ai-models.ai/guidance.html">Guidance</a></li>
+      <li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="https://local-ai-models.ai/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+      <li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+      <li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed September 14, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> &middot; <a href="https://local-ai-models.ai/terms.html">Terms</a> &middot; <a href="https://local-ai-models.ai/cookies.html">Cookies</a> &middot; <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> &middot; <a href="https://local-ai-models.ai/about.html">About</a> &middot; <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+// Hero parallax (subtle, GPU-accelerated)
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){
+      var y = window.scrollY;
+      bg.style.transform = 'translate3d(0,' + (y * 0.20) + 'px,0) scale(1.06)';
+      ticking = false;
+    });
+  }, { passive: true });
+})();
+
+// Scroll reveal
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+/* TITLE-CLIP-FIX — italic descenders + gradient-clipped text need padding & overflow:visible */
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2, .final-cta-title, .philosophy-quote { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+.section-h2 .accent, .final-cta-title .italic, .philosophy-quote .gt, .philosophy-quote .gradient-text { display: inline-block; padding: 0 0.12em 0.06em 0; margin-right: -0.06em; overflow: visible; }
+/* end TITLE-CLIP-FIX */
+
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+</body>
+</html>
