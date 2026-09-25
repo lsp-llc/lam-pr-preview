@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fix the Tool Loop Before You Replace the Model | Local AI Models</title>
+<meta content="One published agent failure, traced call by call, shows where schemas, constrained decoding, honest errors and a final check fix problems a bigger model would not." name="description"/>
+<link href="https://local-ai-models.ai/the-harness-beats-the-7b.html" rel="canonical"/>
+<meta content="article" property="og:type"/>
+<meta content="Fix the Tool Loop Before You Replace the Model" property="og:title"/>
+<meta content="One published agent failure, traced call by call, shows where schemas, constrained decoding, honest errors and a final check fix problems a bigger model would not." property="og:description"/>
+<meta content="https://local-ai-models.ai/the-harness-beats-the-7b.html" property="og:url"/>
+<meta content="Local AI Models" property="og:site_name"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Fix the Tool Loop Before You Replace the Model" name="twitter:title"/>
+<meta content="noindex,nofollow,noarchive" name="robots"/>
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-byline { font-size: 0.98rem; color: var(--text-2); margin: -4px 0 16px; letter-spacing: 0.01em; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 640px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+/* PREMIUM-PATCH-V2 */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+/* end PREMIUM-PATCH-V2 */
+</style>
+<!-- ARTICLE-ONLY: long-form body, tables, sources list -->
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.plate-header, .metaphor-bends {
+  max-width: 820px;
+  margin: 0 0 48px;
+  padding: 22px 24px;
+  border: 1px solid rgba(167,139,250,0.28);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(167,139,250,0.08), rgba(6,7,10,0.2));
+}
+.plate-kicker, .metaphor-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+.plate-title, .metaphor-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.45rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+.plate-header p, .metaphor-bends p { color: var(--text-2); margin: 0; font-size: 0.98rem; }
+.plate-block {
+  max-width: 820px;
+  margin: 0 0 48px;
+}
+.plate-block img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.plate-block figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
+
+.decision-card {
+  max-width: 820px;
+  margin: 0 0 36px;
+  padding: 24px 26px;
+  border: 1px solid rgba(0,212,255,0.28);
+  border-radius: 16px;
+  background: rgba(0,212,255,0.05);
+}
+.decision-card h3 { margin-top: 0; }
+.decision-card p:last-child { margin-bottom: 0; }
+
+.checklist-card {
+  max-width: 820px;
+  margin: 8px 0 36px;
+  padding: 26px 26px 18px;
+  border: 1px solid var(--border-bright);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.checklist-card h3 { margin-top: 0; }
+.checklist-card .check-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+.checklist-card ol { list-style: none; margin: 0; padding: 0; counter-reset: chk; }
+.checklist-card li {
+  position: relative;
+  padding: 12px 0 12px 36px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+}
+.checklist-card li:first-of-type { border-top: none; }
+.checklist-card li::before { content: none; }
+.checklist-card input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 1.05em;
+  width: 18px;
+  height: 18px;
+  accent-color: #00d4ff;
+}
+.checklist-card label { cursor: pointer; display: block; }
+.checklist-foot {
+  margin-top: 16px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.ev-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.ev-primary { color: var(--green); border: 1px solid rgba(34,197,94,0.35); background: rgba(34,197,94,0.08); }
+.ev-prac { color: var(--orange); border: 1px solid rgba(255,159,28,0.35); background: rgba(255,159,28,0.08); }
+.ev-site { color: var(--purple); border: 1px solid rgba(167,139,250,0.35); background: rgba(167,139,250,0.08); }
+</style>
+<!-- BEGIN site-chrome-css -->
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Fix the Tool Loop Before You Replace the Model", "description": "One published agent failure, traced call by call, shows where schemas, constrained decoding, honest errors and a final check fix problems a bigger model would not.", "dateModified": "2026-09-24", "author": {"@type": "Person", "name": "Sundog"}, "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"}, "mainEntityOfPage": "https://local-ai-models.ai/the-harness-beats-the-7b.html", "image": "https://local-ai-models.ai/sundog-harness-2026-09-v10.png"}</script><style id="sundog-teaching-style">
+.reader-level{font:600 .78rem/1.5 system-ui;letter-spacing:.06em;color:#d9b98a;text-transform:uppercase;margin:0 0 20px}
+.teaching-figure{margin:28px 0 36px;padding:25px;border:1px solid #476163;border-radius:12px;background:linear-gradient(135deg,#10272a,#17212b);color:#e7f0ef}
+.teaching-figure figcaption{font-size:1.1rem;line-height:1.4;margin:0 0 23px}.teaching-figure figcaption span{display:block;font-size:.86rem;font-weight:400;color:#c2ced1;margin-top:6px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0!important;margin:0!important;list-style:none!important;counter-reset:flow}
+.flow li{padding:16px!important;border:1px solid #527178;border-radius:8px;background:#172f35;margin:0!important;counter-increment:flow}.flow li::before{content:counter(flow) " /"!important;position:static!important;background:none!important;color:#ddb77c!important;display:block;width:auto!important;height:auto!important;margin-bottom:8px;font:700 .8rem system-ui}
+.flow b,.flow span{display:block}.flow span{font-size:.85rem;line-height:1.45;color:#c2d4d6;margin-top:9px}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.concept-grid>div{padding:18px;border:1px solid #506671;border-radius:8px;background:#152d34}.concept-grid b{font-size:1.05rem;color:#f1d1a0}.concept-grid p{margin:10px 0 0!important;font-size:.88rem;line-height:1.55;color:#d2e0e2!important}
+.article-body pre{background:#101a22;border:1px solid #3a505d;border-radius:8px;padding:20px;overflow:auto;max-width:100%;font:14px/1.6 Consolas,monospace;white-space:pre}.article-body pre code{border:0;background:none;padding:0;font:inherit;white-space:pre;color:#e2ecf2}
+.deep-note{border:1px solid #465357;border-radius:9px;padding:18px 22px;margin:30px 0;background:#171f22}.deep-note summary{cursor:pointer;color:#f2cf98;font-weight:600;line-height:1.5}.deep-note[open] summary{margin-bottom:22px}.deep-note h3{font-size:1.15rem;margin:20px 0 12px}
+.next-action{border-left:3px solid #d9b075;background:#1c2524;padding:2px 23px 12px;margin:35px 0}.next-action h2{font-size:1.3rem;margin-top:22px}.next-action p{font-size:1rem}
+.energy-row{margin:20px 0}.energy-label{display:flex;justify-content:space-between;gap:15px;font-size:.94rem;margin:0 0 8px}.energy-bar{height:28px;border-radius:4px;background:#263d45;overflow:hidden}.energy-bar span{display:block;height:100%;background:#e5b469}.energy-row.idle .energy-bar span{background:#7eced2}.figure-note{font-size:.86rem!important;color:#c4d1d5!important;margin:18px 0 0!important}
+.article-body .sources-list{overflow-wrap:anywhere}.article-body ul,.article-body ol{padding-left:24px}.article-body li{margin:10px 0}.article-body .inline-note{font-size:.88rem;color:#becbd0;padding:14px 18px;border-left:2px solid #647984;background:#182228}
+@media(max-width:640px){.flow{grid-template-columns:1fr 1fr}.concept-grid{grid-template-columns:1fr}.teaching-figure{padding:20px 17px}.flow li{padding:13px!important}.article-body pre{font-size:12.5px;padding:16px}.deep-note{padding:17px}.energy-label{font-size:.85rem}.teaching-figure figcaption{font-size:1rem}}
+</style><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-24-rewrite/sundog-harness-2026-09-v10.png" property="og:image"/><meta content="Sundog routes a request through a row of glowing validation gates in a rain-lit industrial service bay." property="og:image:alt"/><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-24-rewrite/sundog-harness-2026-09-v10.png" name="twitter:image"/><meta content="Sundog routes a request through a row of glowing validation gates in a rain-lit industrial service bay." name="twitter:image:alt"/><style id="sundog-rewrite-style">
+.key-idea{margin:34px 0;padding:22px 26px;border:1px solid rgba(0,212,255,.32);border-left:4px solid #00d4ff;border-radius:10px;background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(129,140,248,.05))}
+.key-idea p{margin:0!important;color:#eaf7fc!important;font-size:1.08rem;line-height:1.65}
+.flow.five{grid-template-columns:repeat(5,1fr)}
+.flow.three{grid-template-columns:repeat(3,1fr)}
+.concept-grid.two{grid-template-columns:repeat(2,1fr)}
+.teaching-figure pre{margin:0}
+.plate-grid{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:28px;align-items:center}
+.plate-svg,.chart-svg{width:100%;height:auto;display:block}
+.plate-notes p,.chart-notes p{font-size:.95rem!important;line-height:1.6;color:#d2e0e2!important;margin:0 0 12px!important}
+.plate-notes p:last-child,.chart-notes p:last-child{margin-bottom:0!important}
+.plate-notes b{color:#f1d1a0}
+.chart-wrap{overflow-x:auto}
+.stack-row{margin:18px 0}
+.stack-label{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;margin:0 0 7px;color:#e7f0ef}
+.stack-track{position:relative}
+.stack-bar{display:flex;height:26px;border-radius:4px;overflow:hidden;background:#1d3238}
+.stack-limit{position:absolute;top:-5px;bottom:-5px;width:2px;margin-left:-1px;background:#ff8f8f;box-shadow:0 0 6px rgba(255,120,120,.7)}
+.stack-bar span{display:block;height:100%}
+.stack-bar .w{background:#e5b469}
+.stack-bar .kv{background:#7eced2}
+.stack-bar .over{background:repeating-linear-gradient(45deg,#ec7a7a,#ec7a7a 6px,#b85a5a 6px,#b85a5a 12px)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.85rem;color:#c2d4d6;margin-top:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.article-body blockquote{margin:0 0 24px;padding:14px 20px;border-left:3px solid #647984;background:#182228;border-radius:0 8px 8px 0}
+.article-body blockquote p{margin:0!important}
+@media(max-width:900px){.flow.five{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.plate-grid{grid-template-columns:1fr}.plate-svg{max-width:280px;margin:0 auto}.flow.three{grid-template-columns:1fr}.concept-grid.two{grid-template-columns:1fr}.key-idea{padding:18px 18px}.stack-label{font-size:.84rem}}
+
+</style></head>
+<body><aside aria-label="Preview status" class="review-notice" style="padding:10px 20px;background:#17222d;color:#cddde8;text-align:center;font:13px/1.6 system-ui;border-bottom:1px solid #314452">Rewrite review, 24 September 2026: all eight Sundog articles rewritten for clarity, research depth and voice. Heroes are unchanged. <a href="index.html" style="color:#9de7ff;text-decoration:underline">Open the full collection</a></aside>
+<!-- BEGIN site-nav -->
+<nav aria-label="Site" class="site-nav">
+<div class="site-nav-inner">
+<a aria-label="Local AI Models home" class="site-nav-brand" href="https://local-ai-models.ai/"><svg aria-hidden="true" class="brand-dot" height="10" viewbox="0 0 10 10" width="10"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+<div class="site-nav-links">
+<a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+<a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+<a href="https://local-ai-models.ai/model-builder.html">PC Builder</a>
+<a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+<a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+<a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+<a href="https://local-ai-models.ai/sentiment.html">Community</a>
+<a href="guidance.html">Guidance</a>
+<a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
+<a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+<a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+<a href="https://local-ai-models.ai/updates.html">Updates</a>
+</div>
+</div>
+</nav>
+<!-- END site-nav -->
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
+<div class="hero-inner">
+<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="guidance.html">Guidance</a></div>
+<div class="hero-eyebrow">Agent interfaces</div>
+<h1 class="hero-title">Fix the Tool Loop Before You Replace the Model</h1><p class="hero-sub">One published agent failure, traced call by call, shows where schemas, constrained decoding, honest errors and a final check fix problems a bigger model would not.</p>
+<p class="hero-byline">By Sundog</p>
+<div class="updated-line">Rewritten 24 September 2026</div>
+</div>
+</section>
+<main class="container">
+<figure class="article-hero"><a aria-label="Open full-size illustration: Sundog routes a request through a row of glowing validation gates in a rain-lit industrial service bay." href="sundog-harness-2026-09-v10.png" title="Open full-size illustration"><img alt="Sundog routes a request through a row of glowing validation gates in a rain-lit industrial service bay." decoding="async" fetchpriority="high" height="941" src="sundog-harness-2026-09-v10.png" width="1672"/></a><figcaption>A tool call should pass its checks before it runs. A malformed request belongs at the first gate, not three steps later. Illustration: Sundog, created with AI.</figcaption></figure><article class="article-body">
+<p class="reader-level">For anyone running a tool-calling model or agent · Built around one published failure trace</p>
+<p class="lede">An agent was asked for a report on the week's five trending movies. Its last action saved a file, and the final line of its log read <em>Successfully wrote to trending_movies_report.md</em>. The file held one sentence: <em>Markdown content with movie details and trailer links.</em> Every tool call before it had failed.</p>
+<p>That run is printed in the appendix of LiveMCP-101, a benchmark that gives agents multi-step jobs with real tools, connected through MCP (the Model Context Protocol, a shared standard for plugging tools into models). It is worth reading slowly, because very little of it has to do with how much the model knows about movies. <a class="ref" href="#source-livemcp">[1]</a></p>
+<figure class="teaching-figure"><figcaption><strong>The run, abridged to four calls</strong><span>From LiveMCP-101, Appendix B.5. Tool names and arguments as published; calls 2 and 3 were repeated for the other four movies, and the third error message is shortened.</span></figcaption>
+<pre><code>1  tmdb-movies.get_popular_movies
+   {"page": "1"}
+   → Input validation error:
+     '1' is not of type 'integer'
+
+2  tmdb-movies.get_movie_details
+   {"movie_id": "ID of the first movie"}
+   → Input validation error:
+     'ID of the first movie' is not of type 'integer'
+
+3  youtube-data.searchVideos
+   {"query": "Title of the first movie trailer",
+    "maxResults": "1"}
+   → Invalid arguments for tool searchVideos
+
+4  filesystem.write_file
+   {"path": "trending_movies_report.md",
+    "content": "Markdown content with movie
+                details and trailer links"}
+   → Successfully wrote to trending_movies_report.md</code></pre></figure>
+<p>Read it the way you would read a repair log. The first call asked for page <code>"1"</code>, the text, when the tool expected the number <code>1</code>. The server caught the mistake and said precisely what was wrong. The model's next line of reasoning began "After getting the list of popular movies," and carried on as if the call had worked. Having no real movie IDs, it passed the phrase "ID of the first movie" as an ID. Having no titles, it searched YouTube for "Title of the first movie trailer." The one call that succeeded wrote a placeholder to disk, and the loop allowed "Successfully" to be the last word.</p>
+<p>The model made two mistakes: a wrong type, then an ignored error. The program around it made two more, letting the run continue after a required step failed and accepting a placeholder as the result. A bigger model would still be running inside that same program.</p>
+
+<h2 id="harness">The harness is everything between the model and the world</h2>
+<p>A language model cannot open a file or call an API. It writes text. The <strong>harness</strong> is the program that runs this tool loop: it tells the model which tools exist, reads the tool call the model writes, checks it, runs it, and decides what the model sees next. Each tool comes with a <strong>schema</strong>, a machine-readable list of its arguments and their types. Coding agents, chat apps with plugins and MCP clients all contain a harness, whether or not they use the word.</p>
+<figure class="teaching-figure"><figcaption><strong>Where the movie run broke</strong><span>Each step can fail independently, and each failure has a different repair.</span></figcaption>
+<ol class="flow five"><li><b>Describe</b><span>The tool's schema said <code>page</code> is an integer. Held.</span></li><li><b>Propose</b><span>The model wrote <code>"1"</code>. First failure.</span></li><li><b>Check</b><span>The validator rejected it with an exact message. Held.</span></li><li><b>Report back</b><span>The error reached the model, which ignored it. Second failure.</span></li><li><b>Continue or stop</b><span>The loop kept going and accepted a placeholder as the result. Third and fourth failures.</span></li></ol></figure>
+<p>That is why it pays to trace a failure before choosing a remedy. If you only read the agent's closing message, whether it is an apology or a cheerful "done," every failure looks like the model's fault, and the natural response is to download a larger one.</p>
+
+<h2 id="constrain">Make the wrong shape impossible to write</h2>
+<p>The <code>"1"</code> mistake has a cure that is almost unfair, and it is one of the places where running a model locally gives you more control, not less.</p>
+<p>At every step, a language model assigns a probability to each token in its vocabulary (a token is a word or a piece of one), and a sampler picks one. <strong>Constrained decoding</strong> adds a filter before the pick: any token that would break a required format is removed from the candidates. If the schema says <code>page</code> is an integer, then after <code>"page": </code> a quotation mark is no longer available. The model can still choose the wrong number. It cannot choose the wrong type.</p>
+<p>Checking every token in a vocabulary that often exceeds 100,000 entries against a grammar, at every step, sounds slow. Willard and Louf, whose 2023 paper describes the method behind the Outlines library, showed how to do most of that work in advance. They convert a regular expression or grammar into a finite-state machine, then precompute an index of which vocabulary tokens are legal from each state. During generation, filtering becomes a lookup instead of a scan. <a class="ref" href="#source-outlines">[2]</a></p>
+<p>Local runtimes expose this directly. llama.cpp accepts grammars written in its GBNF format and can convert a JSON Schema into one. Ollama accepts a JSON Schema in the <code>format</code> field of a request. <a class="ref" href="#source-grammar">[3]</a> <a class="ref" href="#source-ollama-structured">[4]</a> A hosted API decides for you whether this control exists. On your own machine, it is a setting.</p>
+<p>One detail catches people out. A schema inside a tool definition is shown to the model, but in llama.cpp a schema passed only as an output constraint (<code>json_schema</code> or <code>response_format</code>) never enters the prompt. Ollama's documentation likewise recommends describing the schema in the prompt as well. <a class="ref" href="#source-grammar">[3]</a> <a class="ref" href="#source-ollama-structured">[4]</a> A model forced into a format it was never told about will fill it, but not necessarily sensibly.</p>
+<details class="deep-note"><summary>What a grammar guarantees, and what it cannot</summary><p>A schema-constrained sampler guarantees that the output parses and that every field has an allowed type and name. It does not guarantee that the values are right. <code>{"page": 1}</code> and <code>{"page": 7}</code> are equally valid, and only one of them may be what the task needed. It also cannot make a model call a tool it has decided not to call.</p></details>
+
+<h2 id="speak-freely">Constrain the call, not the thinking</h2>
+<p>There is a catch. Tam and colleagues tested what happens when a model must answer inside a strict format such as JSON. On reasoning tasks, accuracy often fell, and stricter formats generally cost more. The most dramatic case came from instructions alone: Claude 3 Haiku's score on GSM8K, a set of grade-school math word problems, fell from 86.99 to 23.44 when the prompt spelled out a JSON schema instead of simply asking for JSON. Classification tasks, where the answer is a fixed label, sometimes improved. <a class="ref" href="#source-freely">[5]</a></p>
+<p>The paper also found a telling mechanism. In JSON mode, GPT-3.5-Turbo put its "answer" field before its "reason" field in every one of the responses they examined on one task. The format quietly turned "think, then answer" into "answer, then justify." <a class="ref" href="#source-freely">[5]</a> The team behind Outlines disputed the headline result: rerunning the tests with prompts matched between the free and structured versions, they found structured output slightly more accurate. <a class="ref" href="#source-dottxt">[6]</a></p>
+<p><span class="opinion-label">[OPINION]</span> Read together, the two suggest a practical rule. Let the model reason before it commits: in ordinary text, or in a reasoning field placed before the answer field. Apply the strict constraint to the part a machine will execute, the tool name and its arguments. The model decides what to do in its own words, and the grammar makes sure the request it writes can be parsed.</p>
+
+<h2 id="where-local-fails">For one popular local model, half the failures were the fixable kind</h2>
+<p>LiveMCP-101's error analysis sorts failed runs into seven types, from ignoring a requirement to misreading a tool's output. For most of the ten models analyzed, the most common failure was a <strong>semantic</strong> error: a well-formed call with the wrong meaning, such as the wrong entity or an over-broad search. The strongest models failed this way on roughly 16 to 25 percent of tasks, and GPT-4.1-mini on about 42 percent. <a class="ref" href="#source-livemcp">[1]</a></p>
+<p><strong>Syntactic</strong> errors, meaning malformed parameters with wrong types, missing fields or invalid structure, were negligible for the frontier models. For Llama-3.3-70B-Instruct they reached 48 percent of tasks. The authors suggest a plausible cause: the Model Context Protocol spread after Llama 3 was released, so the model had little MCP-specific training. Its overall success rate in that benchmark was 1.98 percent. <a class="ref" href="#source-livemcp">[1]</a></p>
+<p>That split matters if you run models at home. It is not a rule about open models: Qwen3-235B-A22B, also open, made almost no syntactic errors in the same study. But for Llama 3.3 70B, a model many people run locally, nearly half of all tasks failed on exactly the class of error a schema-constrained sampler is designed to rule out. Removing that class would not guarantee success, because the semantic errors behind it would still be waiting. It would move the failure to where the model's own judgment is being tested, which is where a model comparison starts to mean something.</p>
+
+<h2 id="research">Changing the interface can move results a long way</h2>
+<p>The clearest early evidence came from coding agents. For SWE-agent, Yang and colleagues designed what they called an agent-computer interface: a small set of commands for viewing, searching and editing files, built for a language model instead of a person. With GPT-4 Turbo, it resolved 12.47 percent of the full SWE-bench, 286 of 2,294 real GitHub issues, when the best previous system managed 3.8 percent. <a class="ref" href="#source-sweagent">[7]</a></p>
+<p>The ablations are the interesting part, because each one changes only the interface. On a 300-issue subset where the full design scored 18.0 percent:</p>
+<div class="table-wrap"><table><caption>One interface change at a time (SWE-agent, GPT-4 Turbo, SWE-bench Lite)</caption><thead><tr><th>Interface change</th><th>Issues resolved</th></tr></thead><tbody><tr><td>Full design: edit command with a syntax check, 100-line file viewer, summarized search</td><td>18.0%</td></tr><tr><td>Edit command without the syntax check</td><td>15.0%</td></tr><tr><td>No edit command, shell tools only</td><td>10.3%</td></tr><tr><td>Viewer shows the whole file</td><td>12.7%</td></tr><tr><td>Viewer shows 30 lines</td><td>14.3%</td></tr><tr><td>Step-by-step search instead of summarized results</td><td>12.0%</td></tr><tr><td>No search tool at all</td><td>15.7%</td></tr></tbody></table></div>
+<p>Showing the model the entire file made it worse. So did a search tool that returned results one at a time, which did more harm than having no search tool at all. And a syntax check that rejected broken edits before they landed was worth three points on its own. The movie run had a gate like that; what it lacked was a loop that refused to continue until the call was fixed. <a class="ref" href="#source-sweagent">[7]</a></p>
+<p><strong>LIFE-HARNESS</strong>, from Xu, Wen and Li, improves the harness systematically while leaving the model's weights alone. It has four layers: a contract describing each tool and its rules, a store of procedures learned from earlier runs, an action layer that checks each proposed call before it executes (rewriting it into a valid form, or blocking it), and a regulator that watches for repetition, stalls and exhausted budgets. The authors evolved the harness using runs from one small model, Qwen3-4B-Instruct, then froze it and reused it with 17 other open-weight models. <a class="ref" href="#source-life">[8]</a></p>
+<p>Across seven rule-governed environments, from text-based household chores (ALFWorld) to database tasks (DBBench), the harness improved results in 116 of 126 model and environment pairs. Averaged over all 18 models, ALFWorld success rose from 41.1 to 75.7 percent. Qwen2.5-32B with the harness also beat xLAM-2-32B, the same base model fine-tuned specifically for tool use, by 7.5 points on the in-domain benchmark, and the harness still improved xLAM itself. <a class="ref" href="#source-life">[8]</a></p>
+<p><strong>Harness-R1</strong>, from Shao and colleagues, trains a separate 9B "harness engineer" model to read batches of failed runs and write executable patches for the harness. On three agent benchmarks, the average success of Qwen3.5-9B rose from 44.3 to 53.6 percent with those patches, and on a separate set of 1,270 held-out tasks the patches still added 8.9 points. The comparison I find most instructive is a negative one. Self-Refine, a method in which the model critiques and revises its own work, lowered the same average to 41.8 percent. Here, self-critique cost 2.5 points and harness patches added 9.3. <a class="ref" href="#source-r1">[9]</a></p>
+<p>The paper also measured which moments mattered. Removing the patches that act just <em>before</em> a tool call cost 3.9 points, and removing the ones that act just <em>after</em> tool feedback cost 3.3. Those are the two moments where the movie run went wrong: a malformed call that could have been corrected before execution, and an error that needed to change what happened next. <a class="ref" href="#source-r1">[9]</a></p>
+<details class="deep-note"><summary>What these results do not show</summary><p>LIFE-HARNESS was tested on deterministic environments with stable tools, its authors describe it as work in progress, and 10 of its 126 settings did not improve. Harness-R1's main scores were measured on the batches its patches were written for, and three of 63 unseen target combinations got slightly worse. Neither paper shows that a small model with a good harness beats a large model at your job. They show that the interface is a large, measurable part of the result, which is reason enough to fix it before drawing conclusions about the model.</p></details>
+
+<h2 id="repairs">Four repairs to try before a new download</h2>
+<p>These follow the order of the loop. Each can be tested with the model held fixed.</p>
+<h3>1. Make the tool description tell the whole truth</h3>
+<p>State every argument's type, which ones are required, allowed values, and one correct example call. Give tools names and descriptions that do not overlap, so choosing between <code>search_files</code> and <code>find_file</code> is not a coin toss.</p>
+<h3>2. Constrain or validate the call before it runs</h3>
+<p>Where your runtime supports it, constrain tool-call arguments with the tool's JSON Schema. Where it does not, validate the call against the schema before executing it. Some mismatches can be repaired safely: a string <code>"1"</code> for an integer field can become <code>1</code>. LIFE-HARNESS's action layer does this kind of rewriting, or blocks the call outright. <a class="ref" href="#source-life">[8]</a></p>
+<details class="deep-note"><summary>Check the runtime, too</summary><p>llama.cpp's documentation notes that tool calling depends on the model and its chat template, that a generic fallback format can use more tokens than a model's native one, and that heavily quantizing the KV cache (for example with <code>-ctk q4_0</code>) can substantially degrade tool calling. <a class="ref" href="#source-llamacpp-tools">[10]</a> If you shrank the cache to fit a longer context, test your tools again.</p></details>
+<h3>3. Stop a cascade, and return errors the model can act on</h3>
+<p>The movie run's error was already exact, so a clearer message is only half the repair. Make failure sticky: if a required step has not succeeded, later steps that depend on it should not run on placeholders. Count identical failed calls and stop after a small limit with an honest report. Where your tools return vaguer errors than that one, say which field failed, what was expected and what arrived. An illustrative reply:</p>
+<pre><code>{"ok": false,
+ "tool": "tmdb-movies.get_popular_movies",
+ "error": "page must be an integer; received the string \"1\"",
+ "hint": "call again with {\"page\": 1}"}</code></pre>
+<h3>4. Check the result, not the claim</h3>
+<p>Before the harness reports success, verify the artifact. For the movie job, that means the file exists, contains five entries, and each entry has a title, cast and a link. A ten-line check would have turned the fake success into a clear failure.</p>
+<p><span class="opinion-label">[OPINION]</span> I would spend an afternoon on these four before spending a download on a bigger model. If the same task still fails with honest schemas, constrained calls, a loop that stops on failure and a result check, the remaining failures are about judgment: wrong values, wrong tools or skipped steps. That is the point where swapping models becomes a fair experiment instead of an expensive guess.</p>
+<aside class="next-action"><h2 id="first-step">Replay one failure, one repair at a time</h2><p>Save the full trace of one failed agent run: each proposed call, the validation result, the tool's reply and the model's next step. Label the first step that broke. Apply the matching repair from the list above, change nothing else, and run the same task again alongside two tasks that already worked, so a fix for one job does not quietly break another.</p></aside>
+
+<h2 id="sources">Sources and further reading</h2>
+<ol class="sources-list">
+<li id="source-livemcp"><a href="https://arxiv.org/abs/2508.15760">Yin et al.: LiveMCP-101: Stress Testing and Diagnosing MCP-enabled Agents on Challenging Queries</a> (arXiv 2508.15760, v2 2026). Section 5 and Figure 7 for the error analysis; Table 2 for success rates; Appendix B.5 for the trace above.</li>
+<li id="source-outlines"><a href="https://arxiv.org/abs/2307.09702">Willard and Louf: Efficient Guided Generation for Large Language Models</a> (arXiv 2307.09702, 2023). Sections 2 to 4.</li>
+<li id="source-grammar"><a href="https://github.com/ggml-org/llama.cpp/blob/master/grammars/README.md">llama.cpp: GBNF grammars and JSON Schema conversion</a>. Accessed 24 September 2026.</li>
+<li id="source-ollama-structured"><a href="https://docs.ollama.com/capabilities/structured-outputs">Ollama: Structured outputs</a>, and the <a href="https://ollama.com/blog/structured-outputs">announcement</a> of 6 December 2024. Accessed 24 September 2026.</li>
+<li id="source-freely"><a href="https://aclanthology.org/2024.emnlp-industry.91/">Tam et al.: Let Me Speak Freely? A Study on the Impact of Format Restrictions on Performance of Large Language Models</a> (EMNLP 2024, Industry Track; arXiv 2408.02442). Sections 4.1 and 5, Tables 1 and 2.</li>
+<li id="source-dottxt"><a href="https://blog.dottxt.ai/say-what-you-mean.html">Kurt: Say What You Mean: A Response to "Let Me Speak Freely"</a> (.txt, 20 November 2024).</li>
+<li id="source-sweagent"><a href="https://arxiv.org/abs/2405.15793">Yang et al.: SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering</a> (NeurIPS 2024). Section 2, Table 1 and Table 3.</li>
+<li id="source-life"><a href="https://arxiv.org/abs/2605.22166">Xu, Wen and Li: Adapting the Interface, Not the Model: Runtime Harness Adaptation for Deterministic LLM Agents</a> (arXiv 2605.22166, v2 2026, marked as work in progress). Sections 3 to 6, Table 1 and Figure 8.</li>
+<li id="source-r1"><a href="https://arxiv.org/abs/2608.02276">Shao et al.: Harness-R1: Learning to Edit Executable Runtime Harnesses from Agent Failure Trajectories</a> (arXiv 2608.02276, 2026). Table 1 and Figure 4.</li>
+<li id="source-llamacpp-tools"><a href="https://github.com/ggml-org/llama.cpp/blob/master/docs/function-calling.md">llama.cpp: Function calling</a>. Model and chat-template support, generic versus native handling, and the note on cache quantization. Accessed 24 September 2026.</li>
+</ol>
+</article>
+</main>
+<section class="related"><h2 class="related-title">Keep reading</h2><div class="related-grid"><a class="related-card" href="skill-misevolution-openclaw.html"><div class="related-name">Test Your Agent&#x27;s Skills Before They Become Habits</div><p class="related-desc">How saved agent skills fail when the job changes or when they learn from a bad run, and the paired test that shows it.</p></a><a class="related-card" href="best-local-coding-llm.html"><div class="related-name">Pick a Coding Model with Tests, Not Leaderboards</div><p class="related-desc">Why a plausible fix is not a correct one, the pass@k math behind retries, and a small benchmark built from your own tasks.</p></a></div></section>
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+<div class="sf-grid">
+<div class="sf-brand-col">
+<div class="sf-brand"><svg aria-hidden="true" height="9" viewbox="0 0 10 10" width="9"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg> LOCAL-AI-MODELS</div>
+<p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+<div class="sf-meta">dataset 2026.08.31 · 132 models · 59 frameworks</div>
+</div>
+<div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+<li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+<li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+<li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+<li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+<li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+<li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+<li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+<li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+<li><a href="guidance.html">Guidance</a></li>
+<li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+<li><a href="best-local-coding-llm.html">Best Coding LLM</a></li>
+<li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+<li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+<li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+<li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+</ul></div>
+</div>
+<div class="sf-bottom">
+<span>Data refreshed August 31, 2026</span>
+<span>Single-file architecture · No accounts, no tracking beyond ads</span>
+</div>
+<p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> · <a href="https://local-ai-models.ai/terms.html">Terms</a> · <a href="https://local-ai-models.ai/cookies.html">Cookies</a> · <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> · <a href="https://local-ai-models.ai/about.html">About</a> · <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script defer="" src="creatures.js"></script>
+<script defer="" src="creatures-v2.js"></script>
+<style>
+.hero{min-height:0!important}.hero-bg,.hero-overlay{display:none!important}.hero-inner{max-width:1000px;padding:64px 24px 36px}.hero-title{font-size:clamp(2.05rem,5vw,3.65rem)!important;line-height:1.12!important}.hero-eyebrow{margin-bottom:22px}.hero-sub{max-width:740px}.hero-byline{margin:22px 0 8px}.container{max-width:1040px;padding:28px 24px 70px}.article-body{max-width:820px;margin:auto;font-size:18px;line-height:1.8;overflow-wrap:anywhere}.article-body>p{margin:0 0 1.35em}.article-body .lede{font-size:1.25rem;max-width:none;margin:0 0 1.6em;color:#e4e7ed}.article-body h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin:2.1em 0 .85em;color:#f6f7f9}.article-body h3{line-height:1.35}.article-body a{color:#9de7ff;text-decoration:underline;text-underline-offset:3px}.article-body code{font-size:.88em;overflow-wrap:anywhere}.article-hero{margin:0 auto 38px;max-width:992px}.article-hero img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #30343a}.article-hero figcaption{font-size:.86rem;line-height:1.55;color:#adb6c5;max-width:820px;margin:12px auto 0}.table-wrap{overflow-x:auto;max-width:100%;margin:28px 0;border:1px solid #333a47;border-radius:8px}.article-body table{width:100%;border-collapse:collapse;min-width:570px;font-size:.86rem;line-height:1.5;background:#10141c}.article-body table a,.article-body table a:visited{color:#f6f7f9}.article-body th,.article-body td{padding:14px 16px;border-bottom:1px solid #333a47;text-align:left;vertical-align:top;color:#e0e6f0}.article-body th{color:#fff;background:#1b2330}.article-body caption{padding:14px 16px;text-align:left;color:#ccd7e5;background:#141c28}.formula-box,.calculation{padding:20px;background:#101a27;border:1px solid #284059;border-radius:8px;margin:25px 0;overflow-x:auto}.formula-box code{white-space:normal;color:#d9efff}.decision-card{padding:24px;border:1px solid #38536a;background:#101c27;border-radius:10px;margin:28px 0}.opinion-label{font-family:var(--font-mono);font-size:.72em;color:#f3c876;font-weight:600}.article-body .sources-list{font-size:.82rem;line-height:1.65;margin:20px 0 0;padding-left:26px}.sources-list li{padding:8px 0}.ref{font-size:.73em;vertical-align:super;margin-left:3px}.related{max-width:1040px;margin:auto;padding:36px 24px 70px}.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.related-card{display:block;border:1px solid #30343a;border-radius:10px;padding:20px}.related-name{font-size:1rem}.related-desc{font-size:.9rem}.updated-line{font-size:.8rem;color:#9faabb}.site-nav-links{min-width:0}.site-nav{max-width:100%}@media(max-width:600px){.hero-inner{padding:36px 20px 20px}.container{padding:20px 18px 45px}.article-body{font-size:17px;line-height:1.75}.article-body .lede{font-size:1.14rem}.article-hero{margin-bottom:28px}.article-hero figcaption{font-size:.8rem}.related-grid{grid-template-columns:1fr}.decision-card{padding:18px}.article-body table{min-width:540px}.hero-title{letter-spacing:-.03em!important}}
+
+.article-body table{min-width:740px}.article-body th,.article-body td{overflow-wrap:normal;word-break:normal}.table-caption{margin:26px 0 8px!important;font-size:.9rem;color:#ced9e7}.table-hint{display:none;font-size:.77rem;color:#aab9cb;margin:0 0 8px!important}.table-caption~.table-wrap{margin-top:8px}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}@media(max-width:780px){.table-hint{display:block}}</style><style>.article-body table th[scope="row"],.article-body table td:nth-child(n+2){white-space:nowrap}.sources-list li::before{content:none!important}.article-body .sources-list li{list-style:decimal!important}</style></body>
+</html>

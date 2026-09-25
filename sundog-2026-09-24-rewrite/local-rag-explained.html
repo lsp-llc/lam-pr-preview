@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Nearest Passage Is Not Always the Right One | Local AI Models</title>
+<meta content="Embeddings cannot tell whether a passage is current, and a single vector cannot always return every right answer. Here is the math behind the second problem and a retrieval stack that handles both." name="description"/>
+<link href="https://local-ai-models.ai/local-rag-explained.html" rel="canonical"/>
+<meta content="article" property="og:type"/>
+<meta content="The Nearest Passage Is Not Always the Right One" property="og:title"/>
+<meta content="Embeddings cannot tell whether a passage is current, and a single vector cannot always return every right answer. Here is the math behind the second problem and a retrieval stack that handles both." property="og:description"/>
+<meta content="https://local-ai-models.ai/local-rag-explained.html" property="og:url"/>
+<meta content="Local AI Models" property="og:site_name"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="The Nearest Passage Is Not Always the Right One" name="twitter:title"/>
+<meta content="noindex,nofollow,noarchive" name="robots"/>
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-byline { font-size: 0.98rem; color: var(--text-2); margin: -4px 0 16px; letter-spacing: 0.01em; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 640px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+/* PREMIUM-PATCH-V2 */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+/* end PREMIUM-PATCH-V2 */
+</style>
+<!-- ARTICLE-ONLY: long-form body, tables, sources list -->
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.plate-header, .metaphor-bends {
+  max-width: 820px;
+  margin: 0 0 48px;
+  padding: 22px 24px;
+  border: 1px solid rgba(167,139,250,0.28);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(167,139,250,0.08), rgba(6,7,10,0.2));
+}
+.plate-kicker, .metaphor-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+.plate-title, .metaphor-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.45rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+.plate-header p, .metaphor-bends p { color: var(--text-2); margin: 0; font-size: 0.98rem; }
+.plate-block {
+  max-width: 820px;
+  margin: 0 0 48px;
+}
+.plate-block img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.plate-block figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
+
+.decision-card {
+  max-width: 820px;
+  margin: 0 0 36px;
+  padding: 24px 26px;
+  border: 1px solid rgba(0,212,255,0.28);
+  border-radius: 16px;
+  background: rgba(0,212,255,0.05);
+}
+.decision-card h3 { margin-top: 0; }
+.decision-card p:last-child { margin-bottom: 0; }
+
+.checklist-card {
+  max-width: 820px;
+  margin: 8px 0 36px;
+  padding: 26px 26px 18px;
+  border: 1px solid var(--border-bright);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.checklist-card h3 { margin-top: 0; }
+.checklist-card .check-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+.checklist-card ol { list-style: none; margin: 0; padding: 0; counter-reset: chk; }
+.checklist-card li {
+  position: relative;
+  padding: 12px 0 12px 36px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+}
+.checklist-card li:first-of-type { border-top: none; }
+.checklist-card li::before { content: none; }
+.checklist-card input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 1.05em;
+  width: 18px;
+  height: 18px;
+  accent-color: #00d4ff;
+}
+.checklist-card label { cursor: pointer; display: block; }
+.checklist-foot {
+  margin-top: 16px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.ev-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.ev-primary { color: var(--green); border: 1px solid rgba(34,197,94,0.35); background: rgba(34,197,94,0.08); }
+.ev-prac { color: var(--orange); border: 1px solid rgba(255,159,28,0.35); background: rgba(255,159,28,0.08); }
+.ev-site { color: var(--purple); border: 1px solid rgba(167,139,250,0.35); background: rgba(167,139,250,0.08); }
+</style>
+<!-- BEGIN site-chrome-css -->
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Nearest Passage Is Not Always the Right One", "description": "Embeddings cannot tell whether a passage is current, and a single vector cannot always return every right answer. Here is the math behind the second problem and a retrieval stack that handles both.", "dateModified": "2026-09-24", "author": {"@type": "Person", "name": "Sundog"}, "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"}, "mainEntityOfPage": "https://local-ai-models.ai/local-rag-explained.html", "image": "https://local-ai-models.ai/sundog-rag-2026-09-v10.png"}</script><style id="sundog-teaching-style">
+.reader-level{font:600 .78rem/1.5 system-ui;letter-spacing:.06em;color:#d9b98a;text-transform:uppercase;margin:0 0 20px}
+.teaching-figure{margin:28px 0 36px;padding:25px;border:1px solid #476163;border-radius:12px;background:linear-gradient(135deg,#10272a,#17212b);color:#e7f0ef}
+.teaching-figure figcaption{font-size:1.1rem;line-height:1.4;margin:0 0 23px}.teaching-figure figcaption span{display:block;font-size:.86rem;font-weight:400;color:#c2ced1;margin-top:6px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0!important;margin:0!important;list-style:none!important;counter-reset:flow}
+.flow li{padding:16px!important;border:1px solid #527178;border-radius:8px;background:#172f35;margin:0!important;counter-increment:flow}.flow li::before{content:counter(flow) " /"!important;position:static!important;background:none!important;color:#ddb77c!important;display:block;width:auto!important;height:auto!important;margin-bottom:8px;font:700 .8rem system-ui}
+.flow b,.flow span{display:block}.flow span{font-size:.85rem;line-height:1.45;color:#c2d4d6;margin-top:9px}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.concept-grid>div{padding:18px;border:1px solid #506671;border-radius:8px;background:#152d34}.concept-grid b{font-size:1.05rem;color:#f1d1a0}.concept-grid p{margin:10px 0 0!important;font-size:.88rem;line-height:1.55;color:#d2e0e2!important}
+.article-body pre{background:#101a22;border:1px solid #3a505d;border-radius:8px;padding:20px;overflow:auto;max-width:100%;font:14px/1.6 Consolas,monospace;white-space:pre}.article-body pre code{border:0;background:none;padding:0;font:inherit;white-space:pre;color:#e2ecf2}
+.deep-note{border:1px solid #465357;border-radius:9px;padding:18px 22px;margin:30px 0;background:#171f22}.deep-note summary{cursor:pointer;color:#f2cf98;font-weight:600;line-height:1.5}.deep-note[open] summary{margin-bottom:22px}.deep-note h3{font-size:1.15rem;margin:20px 0 12px}
+.next-action{border-left:3px solid #d9b075;background:#1c2524;padding:2px 23px 12px;margin:35px 0}.next-action h2{font-size:1.3rem;margin-top:22px}.next-action p{font-size:1rem}
+.energy-row{margin:20px 0}.energy-label{display:flex;justify-content:space-between;gap:15px;font-size:.94rem;margin:0 0 8px}.energy-bar{height:28px;border-radius:4px;background:#263d45;overflow:hidden}.energy-bar span{display:block;height:100%;background:#e5b469}.energy-row.idle .energy-bar span{background:#7eced2}.figure-note{font-size:.86rem!important;color:#c4d1d5!important;margin:18px 0 0!important}
+.article-body .sources-list{overflow-wrap:anywhere}.article-body ul,.article-body ol{padding-left:24px}.article-body li{margin:10px 0}.article-body .inline-note{font-size:.88rem;color:#becbd0;padding:14px 18px;border-left:2px solid #647984;background:#182228}
+@media(max-width:640px){.flow{grid-template-columns:1fr 1fr}.concept-grid{grid-template-columns:1fr}.teaching-figure{padding:20px 17px}.flow li{padding:13px!important}.article-body pre{font-size:12.5px;padding:16px}.deep-note{padding:17px}.energy-label{font-size:.85rem}.teaching-figure figcaption{font-size:1rem}}
+</style><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-24-rewrite/sundog-rag-2026-09-v10.png" property="og:image"/><meta content="Sundog pulls a glowing record from an archive wall beside a holographic map of linked documents." property="og:image:alt"/><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-24-rewrite/sundog-rag-2026-09-v10.png" name="twitter:image"/><meta content="Sundog pulls a glowing record from an archive wall beside a holographic map of linked documents." name="twitter:image:alt"/><style id="sundog-rewrite-style">
+.key-idea{margin:34px 0;padding:22px 26px;border:1px solid rgba(0,212,255,.32);border-left:4px solid #00d4ff;border-radius:10px;background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(129,140,248,.05))}
+.key-idea p{margin:0!important;color:#eaf7fc!important;font-size:1.08rem;line-height:1.65}
+.flow.five{grid-template-columns:repeat(5,1fr)}
+.flow.three{grid-template-columns:repeat(3,1fr)}
+.concept-grid.two{grid-template-columns:repeat(2,1fr)}
+.teaching-figure pre{margin:0}
+.plate-grid{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:28px;align-items:center}
+.plate-svg,.chart-svg{width:100%;height:auto;display:block}
+.plate-notes p,.chart-notes p{font-size:.95rem!important;line-height:1.6;color:#d2e0e2!important;margin:0 0 12px!important}
+.plate-notes p:last-child,.chart-notes p:last-child{margin-bottom:0!important}
+.plate-notes b{color:#f1d1a0}
+.chart-wrap{overflow-x:auto}
+.stack-row{margin:18px 0}
+.stack-label{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;margin:0 0 7px;color:#e7f0ef}
+.stack-track{position:relative}
+.stack-bar{display:flex;height:26px;border-radius:4px;overflow:hidden;background:#1d3238}
+.stack-limit{position:absolute;top:-5px;bottom:-5px;width:2px;margin-left:-1px;background:#ff8f8f;box-shadow:0 0 6px rgba(255,120,120,.7)}
+.stack-bar span{display:block;height:100%}
+.stack-bar .w{background:#e5b469}
+.stack-bar .kv{background:#7eced2}
+.stack-bar .over{background:repeating-linear-gradient(45deg,#ec7a7a,#ec7a7a 6px,#b85a5a 6px,#b85a5a 12px)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.85rem;color:#c2d4d6;margin-top:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.article-body blockquote{margin:0 0 24px;padding:14px 20px;border-left:3px solid #647984;background:#182228;border-radius:0 8px 8px 0}
+.article-body blockquote p{margin:0!important}
+@media(max-width:900px){.flow.five{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.plate-grid{grid-template-columns:1fr}.plate-svg{max-width:280px;margin:0 auto}.flow.three{grid-template-columns:1fr}.concept-grid.two{grid-template-columns:1fr}.key-idea{padding:18px 18px}.stack-label{font-size:.84rem}}
+
+</style></head>
+<body><aside aria-label="Preview status" class="review-notice" style="padding:10px 20px;background:#17222d;color:#cddde8;text-align:center;font:13px/1.6 system-ui;border-bottom:1px solid #314452">Rewrite review, 24 September 2026: all eight Sundog articles rewritten for clarity, research depth and voice. Heroes are unchanged. <a href="index.html" style="color:#9de7ff;text-decoration:underline">Open the full collection</a></aside>
+<!-- BEGIN site-nav -->
+<nav aria-label="Site" class="site-nav">
+<div class="site-nav-inner">
+<a aria-label="Local AI Models home" class="site-nav-brand" href="https://local-ai-models.ai/"><svg aria-hidden="true" class="brand-dot" height="10" viewbox="0 0 10 10" width="10"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+<div class="site-nav-links">
+<a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+<a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+<a href="https://local-ai-models.ai/model-builder.html">PC Builder</a>
+<a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+<a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+<a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+<a href="https://local-ai-models.ai/sentiment.html">Community</a>
+<a href="guidance.html">Guidance</a>
+<a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
+<a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+<a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+<a href="https://local-ai-models.ai/updates.html">Updates</a>
+</div>
+</div>
+</nav>
+<!-- END site-nav -->
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
+<div class="hero-inner">
+<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="guidance.html">Guidance</a></div>
+<div class="hero-eyebrow">Local retrieval</div>
+<h1 class="hero-title">The Nearest Passage Is Not Always the Right One</h1><p class="hero-sub">Embeddings cannot tell whether a passage is current, and a single vector cannot always return every right answer. Here is the math behind the second problem and a retrieval stack that handles both.</p>
+<p class="hero-byline">By Sundog</p>
+<div class="updated-line">Rewritten 24 September 2026</div>
+</div>
+</section>
+<main class="container">
+<figure class="article-hero"><a aria-label="Open full-size illustration: Sundog pulls a glowing record from an archive wall beside a holographic map of linked documents." href="sundog-rag-2026-09-v10.png" title="Open full-size illustration"><img alt="Sundog pulls a glowing record from an archive wall beside a holographic map of linked documents." decoding="async" fetchpriority="high" height="941" src="sundog-rag-2026-09-v10.png" width="1671"/></a><figcaption>Two notices, one digit apart: similarity finds both, and only a rule can say which one is current. Illustration: Sundog, created with AI.</figcaption></figure><article class="article-body">
+<p class="reader-level">For people building or using retrieval over their own documents · Includes the math, explained step by step</p>
+<p class="lede">Your local assistant says the maintenance window starts Friday at 6 p.m. It quotes the notice word for word. The notice is real, relevant and clearly written. It was also replaced last week by a notice that says 8 p.m.</p>
+<p>Nothing in that answer is a hallucination. The model used exactly the evidence it was given. The failure happened one step earlier. <strong>Retrieval-augmented generation</strong> (RAG) means searching your documents for passages related to a question and pasting the best matches into the model's prompt, and this search handed over the wrong passage. When a RAG answer is wrong, check what the search returned before you change anything else.</p>
+
+<h2 id="what-near-means">What "similar" means to an embedding model</h2>
+<p>Documents are first split into passages, usually called <strong>chunks</strong>. An embedding model turns each chunk into a list of numbers, a vector, arranged so that texts about similar things land near each other. At question time, the question gets a vector too, and retrieval keeps the chunks whose vectors are closest. The usual measure of closeness is cosine similarity:</p>
+<pre><code>cos(q, p) = (q · p) / (|q| × |p|)</code></pre>
+<p>Here q is the question's vector and p a passage's. The dot product q · p multiplies the two vectors entry by entry and adds up the results, and |q| is a vector's length. The score depends only on the angle between the vectors, not on their lengths; a value near 1 means they point the same way. <a class="ref" href="#source-sbert">[1]</a></p>
+<p>Now look at the two notices. <em>Maintenance begins Friday at 6 p.m.</em> and <em>Maintenance begins Friday at 8 p.m.</em> are about the same subject, share almost every word and differ by one digit. Any reasonable embedding model will place them almost on top of each other. That is the model doing its job. Its job is to measure what a text is about. Whether the text is current, authoritative, complete or allowed is not part of that measurement.</p>
+<div class="key-idea"><p>An embedding score answers "how much does this passage resemble the question?" It cannot answer "is this passage true today?" Every reliable retrieval system adds something that can.</p></div>
+
+<h2 id="two-kinds">Fast comparison, careful comparison</h2>
+<p>There are two basic ways a model can judge whether a passage answers a question. A <strong>bi-encoder</strong> reads the question and the passage separately, turns each into a vector, and compares the vectors. A <strong>cross-encoder</strong> reads the question and passage together, so every word of one can be weighed against every word of the other, and outputs a relevance score.</p>
+<p>The cross-encoder is usually more accurate, and the Sentence-BERT paper shows why it is too slow to use on a whole collection. To find the most similar pair among 10,000 sentences, a cross-encoder has to read every pair: 10,000 × 9,999 ÷ 2, about 50 million passes, which the authors estimated at roughly 65 hours on a V100 GPU. Sentence-BERT embeds all 10,000 sentences in about five seconds in total, and the 50 million comparisons become cheap vector arithmetic taking about 0.01 seconds. <a class="ref" href="#source-sbert">[1]</a></p>
+<p>That arithmetic explains the shape of almost every serious retrieval system. A fast method pulls a few dozen candidates from the whole collection. A careful <strong>reranker</strong>, typically a cross-encoder, reorders just those few dozen. In Nogueira and Cho's early experiment on the MS MARCO passage benchmark, a BERT reranker applied to keyword-search candidates raised MRR@10, a score that rewards putting the first correct passage near the top, from 16.7 to 36.5 on the development set. <a class="ref" href="#source-rerank">[2]</a> Because a reranker reads the question and passage together, it can connect a question that asks for the latest version with a passage that states its date. A bi-encoder has already compressed both away.</p>
+
+<h2 id="geometry">Some answers cannot be reached with one vector</h2>
+<p>A paper from Weller and colleagues at Google DeepMind and Johns Hopkins, published at ICLR 2026, found a deeper limit. It is my favorite result in this area because you can draw it.</p>
+<figure class="teaching-figure plate"><figcaption><strong>Four documents, six pairs, four reachable</strong><span>A two-dimensional toy example that illustrates the paper's idea; it is not a figure from the paper. Each document is a point on the circle, and a query returns the two documents whose directions are closest to its own.</span></figcaption>
+<div class="plate-grid"><svg viewBox="0 0 320 320" role="img" aria-labelledby="circle-title circle-desc" class="plate-svg"><title id="circle-title">Four documents on a circle</title><desc id="circle-desc">Ana at the top, Ben at the right, Cy at the bottom and Dee at the left. A query arrow points between Ana and Ben, so they are its top two. Ana and Cy are opposite each other.</desc><circle cx="160" cy="160" r="104" fill="none" stroke="#527178" stroke-width="2"/><line x1="160" y1="160" x2="238" y2="82" stroke="#00d4ff" stroke-width="3"/><polygon points="238,82 222,86 234,98" fill="#00d4ff"/><text x="244" y="72" fill="#9de7ff" font-size="17" font-family="Inter, sans-serif">query</text><line x1="160" y1="56" x2="160" y2="264" stroke="#ec7a7a" stroke-width="1.5" stroke-dasharray="5 5"/><circle cx="160" cy="56" r="11" fill="#e5b469"/><circle cx="264" cy="160" r="11" fill="#e5b469"/><circle cx="160" cy="264" r="11" fill="#7eced2"/><circle cx="56" cy="160" r="11" fill="#7eced2"/><text x="160" y="32" text-anchor="middle" fill="#f6f7f9" font-size="19" font-family="Inter, sans-serif">Ana</text><text x="282" y="166" fill="#f6f7f9" font-size="19" font-family="Inter, sans-serif">Ben</text><text x="160" y="298" text-anchor="middle" fill="#f6f7f9" font-size="19" font-family="Inter, sans-serif">Cy</text><text x="38" y="166" text-anchor="end" fill="#f6f7f9" font-size="19" font-family="Inter, sans-serif">Dee</text></svg>
+<div class="plate-notes"><p><b>Reachable as a top two:</b> Ana and Ben, Ben and Cy, Cy and Dee, Dee and Ana.</p><p><b>Unreachable:</b> Ana and Cy, Ben and Dee. Whichever way a query points, its two nearest documents sit side by side on the circle. Two opposite documents are never both in the top two.</p><p>If Ana and Cy are the only two people who like chess, no query in this space can return exactly them for "Who likes chess?"</p></div></div></figure>
+<p>Real embeddings have hundreds or thousands of dimensions, which allows vastly more combinations, but the paper proves the ceiling never disappears as long as right answers must outscore wrong ones by some margin. With n documents there are C(n, k) = n! ÷ (k! (n − k)!) possible sets of k results: 6 pairs among the 4 documents in the drawing, and about 1.25 billion pairs among 50,000 documents. The number of sets that queries can single out has a ceiling set by the embedding's dimension, and adding documents never raises it. Once a collection is big enough, some top-k sets cannot be returned by any query at all. <a class="ref" href="#source-limit">[3]</a></p>
+<p>To see how soon the ceiling arrives, the authors ran a best case. They skipped language entirely and optimized the vectors directly against the answers, then found the largest collection for which every pair of documents could still be retrieved as a top two. They measured dimensions 4 through 45 and fitted a cubic curve. Extrapolated, the ceiling is about 500,000 documents at 512 dimensions, 4 million at 1,024 and 250 million at 4,096. A real embedding model, which has to learn from text, cannot beat this best case, and the next experiment shows how far short it falls. <a class="ref" href="#source-limit">[3]</a></p>
+<p>They built LIMIT, a deliberately simple dataset: 50,000 documents describing what people like, and 1,000 questions of the form "Who likes X?", each with exactly two correct answers. Every answer pair comes from the same 46 people, so the questions demand 1,000 of the 1,035 possible pairs among them. The best single-vector embedding model they tested found only 18.9 percent of the right people within its top 100 results. A multi-vector model, which keeps one vector per token instead of one per document, reached 54.8 percent. BM25, a keyword-scoring method from the 1990s, reached 93.6 percent, because matching exact words behaves like a space with one dimension per word. It is not a cure-all: on a version of the test rephrased with synonyms, BM25 lost more than 89 percent of its score. And a large language model that read the documents and questions directly solved the 46-person version completely. <a class="ref" href="#source-limit">[3]</a></p>
+<details class="deep-note"><summary>The counting argument, for readers who want it</summary><p>Suppose every document and query is a unit vector in d dimensions, and say a query realizes a set S of k documents if every document in S outscores every document outside it by at least 2γ. Each realizable set needs its own query, and those queries must sit a minimum distance apart. Only about (1 + 1/γ)<sup>d</sup> points fit on a d-dimensional sphere at that spacing. The paper's bound is C(n, k) ≤ (1 + 1/γ)<sup>d</sup>, which rearranges to d ≥ log C(n, k) ÷ log(1 + 1/γ). C(n, k) keeps rising as the collection grows, while (1 + 1/γ)<sup>d</sup> stays fixed. With γ = 0.1 and a million documents, the bound calls for at least 12 dimensions to make every top-2 set reachable, 52 for every top-10 set and 425 for every top-100 set. These are minimums, and loose ones: in the authors' experiments, even language-free vectors needed about 18 dimensions to handle every pair among 100 documents, where the bound asks for 4. <a class="ref" href="#source-limit">[3]</a></p></details>
+<p>The practical lesson: when a question asks for a combination, such as "both of these," "all of these except that," "how many," or "which ones like X," do not assume the nearest few chunks form the complete answer. Pull more candidates and let something that can reason about the combination decide: a reranker, a metadata filter, a keyword match or a structured query.</p>
+
+<h2 id="hybrid">Keyword search is not obsolete; it covers a different blind spot</h2>
+<p>BM25 scores a passage by how often it contains the question's words, weighted so rare words count more and long passages do not win just by being long. <a class="ref" href="#source-bm25">[4]</a> It knows nothing about meaning. It is excellent at exactly the things embeddings smear: error codes, part numbers, names, version strings, and exact numbers that appear in the question.</p>
+<p>Running both searches raises the question of how to merge two rankings whose scores are on different scales. The standard answer is <strong>reciprocal rank fusion</strong> (RRF), from Cormack, Clarke and Büttcher. It ignores the scores and uses only each passage's rank in each list:</p>
+<pre><code>RRF(p) = Σ over rankers of 1 / (k + rank(p)),   with k = 60</code></pre>
+<p>This k is a smoothing constant, unrelated to the k in "top k." The authors fixed it at 60 during a pilot study and found the exact value was not critical. In their TREC experiments, the fused ranking beat both older fusion methods and the best single system by 4 to 5 percent on average. <a class="ref" href="#source-rrf">[5]</a></p>
+<p>A worked example, with made-up ranks. Passage A is first in the keyword list and tenth in the embedding list. Passage B is third and second.</p>
+<pre><code>A: 1/(60 + 1) + 1/(60 + 10) = 0.01639 + 0.01429 = 0.03068
+B: 1/(60 + 3) + 1/(60 + 2)  = 0.01587 + 0.01613 = 0.03200</code></pre>
+<p>B wins. Without the 60, A would score 1/1 + 1/10 = 1.10 and B only 1/3 + 1/2 ≈ 0.83, and A would win on the strength of a single first place. With it, first and third place count almost the same (0.0164 against 0.0159), so a passage that both methods like beats one that only one method loves. That is the behavior you want when each method has blind spots.</p>
+<p>Anthropic's 2024 write-up on what it calls contextual retrieval puts numbers on stacking these stages. Their measure was the share of needed chunks missing from the top 20 results. With ordinary embeddings, 5.7 percent were missing. Prepending a short, model-written note about each chunk's place in its document before embedding it cut that to 3.7 percent. Adding BM25 over the same annotated chunks cut it to 2.9 percent, and adding a reranker to 1.9 percent, a two-thirds reduction overall. <a class="ref" href="#source-contextual">[6]</a> Those figures come from their collections and models, but the ordering matches the reasoning above: each stage covers a different blind spot.</p>
+
+<h2 id="structure">The 6 p.m. problem needs a rule, not a better score</h2>
+<p>None of this fixes the notices. Both contain the right words, both mean nearly the same thing, and even a reranker only helps if the question and the passages make the date visible. The dependable fix is to store what the system needs to know as data: a <code>status</code> field of <code>current</code> or <code>superseded</code>, an effective date, a <code>supersedes</code> link. Filter out superseded documents before ranking. Similarity finds the topic. The rule decides which version applies.</p>
+<p>Relationships work the same way. A <strong>knowledge graph</strong> stores facts extracted from documents as connected entries, such as (Company A, supplies, Company B). HybridRAG, from researchers at BlackRock and NVIDIA, combined vector search with a graph built from 50 company earnings-call transcripts and tested 400 analyst questions. The graph did better on questions about named entities and specific extracted facts; vector search did better on open-ended questions and on questions naming no entity at all. The hybrid tied the graph on faithfulness and led on answer relevance, but its context precision, roughly the share of retrieved text that was relevant, fell to 0.79, below vector search alone at 0.84 and the graph alone at 0.96. Combining sources also combined their noise. All three scores came from a language model acting as judge. <a class="ref" href="#source-hybridrag">[7]</a></p>
+
+<h2 id="less-context">Then hand the model less, and put the best first</h2>
+<p>It is tempting to send twenty passages so the right one is surely in there. Research on how models read long inputs argues against it. In "Lost in the Middle," Liu and colleagues moved the one relevant document around within a set of distractors and found a U-shaped curve: models used information best at the beginning or end of their input and worst in the middle. With 20 documents, GPT-3.5-Turbo answered 75.8 percent of questions correctly when the relevant document came first and 63.2 percent when it came last, but only 53.8 percent when it sat in the middle. Asked the same questions with no documents at all, it scored 56.1 percent. Buried in the middle of 19 distractors, the right document left this 2023 model worse off than having no documents at all. <a class="ref" href="#source-lost">[8]</a></p>
+<p>There is a local cost too. Every passage you pass along takes room in the chat model's context and in its KV cache, the memory it keeps for the conversation, which <a href="kv-cache-geometry.html">Why a Longer Chat Needs More Memory</a> shows how to price. On your own machine, the embedding model and any reranker also share memory and processor time with the chat model. So finish by cutting the list down: rerank, keep the few passages that matter, put the strongest one first, and remove superseded versions entirely rather than trusting the model to notice the date.</p>
+
+<h2 id="measure">Test retrieval on its own, before you blame the model</h2>
+<p>Write ten questions you know the answers to. For each one, list the exact passages a correct answer needs. Include some questions with a tempting outdated passage, some that need two passages, and at least one the documents cannot answer; for that one, check that the final answer admits the documents do not cover it. Then run only the retrieval step and record what comes back.</p>
+<p>The simplest score is recall at k: of the passages a question needs, what fraction appear in the top k results?</p>
+<pre><code>Recall@k = required passages found in the top k ÷ required passages</code></pre>
+<p>A question that needs two passages, with only one in the top five, scores 1 ÷ 2 = 50 percent at k = 5. The pattern of misses tells you what to change:</p>
+<div class="table-wrap"><table><caption>Reading a retrieval failure</caption><thead><tr><th>What you see</th><th>What to change first</th></tr></thead><tbody><tr><td>The right passage never appears.</td><td>How documents are split into chunks, the embedding model, adding keyword search, or the number of candidates.</td></tr><tr><td>Both notices appear; the old one ranks first.</td><td>A status or date filter. A better similarity score will not fix this.</td></tr><tr><td>Each needed fact is in a different passage and only one comes back.</td><td>More candidates plus a reranker, or a structured query for combinations.</td></tr><tr><td>The right passages arrive at the top and the answer is still wrong.</td><td>Now look at the prompt and the model.</td></tr></tbody></table></div>
+<p><span class="opinion-label">[OPINION]</span> For a personal or small-team archive, I would start with keyword search and a good embedding model fused with RRF, a status and date filter, and a small reranker over the top few dozen results. That stack is boring, inspectable and covers the blind spots each part has alone. I would add a knowledge graph only after the test above shows failures on relationship questions, because a graph is one more thing that can go stale.</p>
+<aside class="next-action"><h2 id="first-step">Give every document a status</h2><p>Before tuning anything else, add a status and an effective date to each document and filter out superseded ones at query time. It is the cheapest change on this page, and the only one that fixes the 6 p.m. answer.</p></aside>
+
+<h2 id="sources">Sources and further reading</h2>
+<ol class="sources-list">
+<li id="source-sbert"><a href="https://arxiv.org/abs/1908.10084">Reimers and Gurevych: Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks</a> (EMNLP 2019). Sections 1 to 4.</li>
+<li id="source-rerank"><a href="https://arxiv.org/abs/1901.04085v5">Nogueira and Cho: Passage Re-ranking with BERT</a> (arXiv 1901.04085, v5, 2020). Table 1.</li>
+<li id="source-limit"><a href="https://arxiv.org/abs/2508.21038">Weller, Boratko, Naim and Lee: On the Theoretical Limitations of Embedding-Based Retrieval</a> (ICLR 2026). Theorem 1 and Table 1; Section 4 and Figure 2 for the free-embedding experiment; Section 5 and Appendix G for LIMIT results.</li>
+<li id="source-bm25">Robertson and Zaragoza: The Probabilistic Relevance Framework: BM25 and Beyond. <em>Foundations and Trends in Information Retrieval</em> 3(4), 333 to 389, 2009.</li>
+<li id="source-rrf"><a href="https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf">Cormack, Clarke and Büttcher: Reciprocal Rank Fusion outperforms Condorcet and Individual Rank Learning Methods</a> (SIGIR 2009). Section 1 and Tables 1 to 3.</li>
+<li id="source-contextual"><a href="https://www.anthropic.com/engineering/contextual-retrieval">Anthropic: Introducing Contextual Retrieval</a> (September 2024).</li>
+<li id="source-hybridrag"><a href="https://arxiv.org/abs/2408.04948">Sarmah et al.: HybridRAG: Integrating Knowledge Graphs and Vector Retrieval Augmented Generation for Efficient Information Extraction</a> (arXiv 2408.04948, 2024). Sections 3 to 5 and Table 5.</li>
+<li id="source-lost"><a href="https://arxiv.org/abs/2307.03172">Liu et al.: Lost in the Middle: How Language Models Use Long Contexts</a> (TACL 2024). Per-position results in arXiv v3, Appendix G, Table 6.</li>
+</ol>
+</article>
+</main>
+<section class="related"><h2 class="related-title">Keep reading</h2><div class="related-grid"><a class="related-card" href="kv-cache-geometry.html"><div class="related-name">Why a Longer Chat Needs More Memory</div><p class="related-desc">Price the KV cache per token from a model&#x27;s configuration, and see which design choices and settings shrink it.</p></a><a class="related-card" href="skill-misevolution-openclaw.html"><div class="related-name">Test Your Agent&#x27;s Skills Before They Become Habits</div><p class="related-desc">How saved agent skills fail when the job changes or when they learn from a bad run, and the paired test that shows it.</p></a></div></section>
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+<div class="sf-grid">
+<div class="sf-brand-col">
+<div class="sf-brand"><svg aria-hidden="true" height="9" viewbox="0 0 10 10" width="9"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg> LOCAL-AI-MODELS</div>
+<p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+<div class="sf-meta">dataset 2026.08.31 · 132 models · 59 frameworks</div>
+</div>
+<div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+<li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+<li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+<li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+<li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+<li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+<li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+<li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+<li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+<li><a href="guidance.html">Guidance</a></li>
+<li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+<li><a href="best-local-coding-llm.html">Best Coding LLM</a></li>
+<li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+<li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+<li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+<li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+</ul></div>
+</div>
+<div class="sf-bottom">
+<span>Data refreshed August 31, 2026</span>
+<span>Single-file architecture · No accounts, no tracking beyond ads</span>
+</div>
+<p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> · <a href="https://local-ai-models.ai/terms.html">Terms</a> · <a href="https://local-ai-models.ai/cookies.html">Cookies</a> · <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> · <a href="https://local-ai-models.ai/about.html">About</a> · <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script defer="" src="creatures.js"></script>
+<script defer="" src="creatures-v2.js"></script>
+<style>
+.hero{min-height:0!important}.hero-bg,.hero-overlay{display:none!important}.hero-inner{max-width:1000px;padding:64px 24px 36px}.hero-title{font-size:clamp(2.05rem,5vw,3.65rem)!important;line-height:1.12!important}.hero-eyebrow{margin-bottom:22px}.hero-sub{max-width:740px}.hero-byline{margin:22px 0 8px}.container{max-width:1040px;padding:28px 24px 70px}.article-body{max-width:820px;margin:auto;font-size:18px;line-height:1.8;overflow-wrap:anywhere}.article-body>p{margin:0 0 1.35em}.article-body .lede{font-size:1.25rem;max-width:none;margin:0 0 1.6em;color:#e4e7ed}.article-body h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin:2.1em 0 .85em;color:#f6f7f9}.article-body h3{line-height:1.35}.article-body a{color:#9de7ff;text-decoration:underline;text-underline-offset:3px}.article-body code{font-size:.88em;overflow-wrap:anywhere}.article-hero{margin:0 auto 38px;max-width:992px}.article-hero img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #30343a}.article-hero figcaption{font-size:.86rem;line-height:1.55;color:#adb6c5;max-width:820px;margin:12px auto 0}.table-wrap{overflow-x:auto;max-width:100%;margin:28px 0;border:1px solid #333a47;border-radius:8px}.article-body table{width:100%;border-collapse:collapse;min-width:570px;font-size:.86rem;line-height:1.5;background:#10141c}.article-body table a,.article-body table a:visited{color:#f6f7f9}.article-body th,.article-body td{padding:14px 16px;border-bottom:1px solid #333a47;text-align:left;vertical-align:top;color:#e0e6f0}.article-body th{color:#fff;background:#1b2330}.article-body caption{padding:14px 16px;text-align:left;color:#ccd7e5;background:#141c28}.formula-box,.calculation{padding:20px;background:#101a27;border:1px solid #284059;border-radius:8px;margin:25px 0;overflow-x:auto}.formula-box code{white-space:normal;color:#d9efff}.decision-card{padding:24px;border:1px solid #38536a;background:#101c27;border-radius:10px;margin:28px 0}.opinion-label{font-family:var(--font-mono);font-size:.72em;color:#f3c876;font-weight:600}.article-body .sources-list{font-size:.82rem;line-height:1.65;margin:20px 0 0;padding-left:26px}.sources-list li{padding:8px 0}.ref{font-size:.73em;vertical-align:super;margin-left:3px}.related{max-width:1040px;margin:auto;padding:36px 24px 70px}.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.related-card{display:block;border:1px solid #30343a;border-radius:10px;padding:20px}.related-name{font-size:1rem}.related-desc{font-size:.9rem}.updated-line{font-size:.8rem;color:#9faabb}.site-nav-links{min-width:0}.site-nav{max-width:100%}@media(max-width:600px){.hero-inner{padding:36px 20px 20px}.container{padding:20px 18px 45px}.article-body{font-size:17px;line-height:1.75}.article-body .lede{font-size:1.14rem}.article-hero{margin-bottom:28px}.article-hero figcaption{font-size:.8rem}.related-grid{grid-template-columns:1fr}.decision-card{padding:18px}.article-body table{min-width:540px}.hero-title{letter-spacing:-.03em!important}}
+
+.article-body table{min-width:740px}.article-body th,.article-body td{overflow-wrap:normal;word-break:normal}.table-caption{margin:26px 0 8px!important;font-size:.9rem;color:#ced9e7}.table-hint{display:none;font-size:.77rem;color:#aab9cb;margin:0 0 8px!important}.table-caption~.table-wrap{margin-top:8px}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}@media(max-width:780px){.table-hint{display:block}}</style><style>.article-body table th[scope="row"],.article-body table td:nth-child(n+2){white-space:nowrap}.sources-list li::before{content:none!important}.article-body .sources-list li{list-style:decimal!important}</style></body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Why a Model Can Fit and Still Feel Slow | Local AI Models</title>
+<meta content="To write each new word, your hardware reads the model&#x27;s weights from memory again. Once you see that, token speed becomes arithmetic you can check." name="description"/>
+<link href="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html" rel="canonical"/>
+<meta content="article" property="og:type"/>
+<meta content="Why a Model Can Fit and Still Feel Slow" property="og:title"/>
+<meta content="To write each new word, your hardware reads the model&#x27;s weights from memory again. Once you see that, token speed becomes arithmetic you can check." property="og:description"/>
+<meta content="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html" property="og:url"/>
+<meta content="Local AI Models" property="og:site_name"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Why a Model Can Fit and Still Feel Slow" name="twitter:title"/>
+<meta content="noindex,nofollow,noarchive" name="robots"/>
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: url('hero-quantization.png') center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-byline { font-size: 0.98rem; color: var(--text-2); margin: -4px 0 16px; letter-spacing: 0.01em; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 640px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+/* PREMIUM-PATCH-V2 */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+/* end PREMIUM-PATCH-V2 */
+</style>
+<!-- ARTICLE-ONLY: long-form body, tables, sources list -->
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.plate-header, .metaphor-bends {
+  max-width: 820px;
+  margin: 0 0 48px;
+  padding: 22px 24px;
+  border: 1px solid rgba(167,139,250,0.28);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(167,139,250,0.08), rgba(6,7,10,0.2));
+}
+.plate-kicker, .metaphor-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+.plate-title, .metaphor-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.45rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+.plate-header p, .metaphor-bends p { color: var(--text-2); margin: 0; font-size: 0.98rem; }
+.plate-block {
+  max-width: 820px;
+  margin: 0 0 48px;
+}
+.plate-block img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.plate-block figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
+
+.decision-card {
+  max-width: 820px;
+  margin: 0 0 36px;
+  padding: 24px 26px;
+  border: 1px solid rgba(0,212,255,0.28);
+  border-radius: 16px;
+  background: rgba(0,212,255,0.05);
+}
+.decision-card h3 { margin-top: 0; }
+.decision-card p:last-child { margin-bottom: 0; }
+
+.checklist-card {
+  max-width: 820px;
+  margin: 8px 0 36px;
+  padding: 26px 26px 18px;
+  border: 1px solid var(--border-bright);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.checklist-card h3 { margin-top: 0; }
+.checklist-card .check-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+.checklist-card ol { list-style: none; margin: 0; padding: 0; counter-reset: chk; }
+.checklist-card li {
+  position: relative;
+  padding: 12px 0 12px 36px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+}
+.checklist-card li:first-of-type { border-top: none; }
+.checklist-card li::before { content: none; }
+.checklist-card input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 1.05em;
+  width: 18px;
+  height: 18px;
+  accent-color: #00d4ff;
+}
+.checklist-card label { cursor: pointer; display: block; }
+.checklist-foot {
+  margin-top: 16px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.ev-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.ev-primary { color: var(--green); border: 1px solid rgba(34,197,94,0.35); background: rgba(34,197,94,0.08); }
+.ev-prac { color: var(--orange); border: 1px solid rgba(255,159,28,0.35); background: rgba(255,159,28,0.08); }
+.ev-site { color: var(--purple); border: 1px solid rgba(167,139,250,0.35); background: rgba(167,139,250,0.08); }
+</style>
+<!-- BEGIN site-chrome-css -->
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Why a Model Can Fit and Still Feel Slow", "description": "To write each new word, your hardware reads the model's weights from memory again. Once you see that, token speed becomes arithmetic you can check.", "dateModified": "2026-09-24", "author": {"@type": "Person", "name": "Sundog"}, "publisher": {"@type": "Organization", "name": "Local AI Models", "url": "https://local-ai-models.ai"}, "mainEntityOfPage": "https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html", "image": "https://local-ai-models.ai/sundog-bandwidth-2026-09-v10.png"}</script><style id="sundog-teaching-style">
+.reader-level{font:600 .78rem/1.5 system-ui;letter-spacing:.06em;color:#d9b98a;text-transform:uppercase;margin:0 0 20px}
+.teaching-figure{margin:28px 0 36px;padding:25px;border:1px solid #476163;border-radius:12px;background:linear-gradient(135deg,#10272a,#17212b);color:#e7f0ef}
+.teaching-figure figcaption{font-size:1.1rem;line-height:1.4;margin:0 0 23px}.teaching-figure figcaption span{display:block;font-size:.86rem;font-weight:400;color:#c2ced1;margin-top:6px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0!important;margin:0!important;list-style:none!important;counter-reset:flow}
+.flow li{padding:16px!important;border:1px solid #527178;border-radius:8px;background:#172f35;margin:0!important;counter-increment:flow}.flow li::before{content:counter(flow) " /"!important;position:static!important;background:none!important;color:#ddb77c!important;display:block;width:auto!important;height:auto!important;margin-bottom:8px;font:700 .8rem system-ui}
+.flow b,.flow span{display:block}.flow span{font-size:.85rem;line-height:1.45;color:#c2d4d6;margin-top:9px}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.concept-grid>div{padding:18px;border:1px solid #506671;border-radius:8px;background:#152d34}.concept-grid b{font-size:1.05rem;color:#f1d1a0}.concept-grid p{margin:10px 0 0!important;font-size:.88rem;line-height:1.55;color:#d2e0e2!important}
+.article-body pre{background:#101a22;border:1px solid #3a505d;border-radius:8px;padding:20px;overflow:auto;max-width:100%;font:14px/1.6 Consolas,monospace;white-space:pre}.article-body pre code{border:0;background:none;padding:0;font:inherit;white-space:pre;color:#e2ecf2}
+.deep-note{border:1px solid #465357;border-radius:9px;padding:18px 22px;margin:30px 0;background:#171f22}.deep-note summary{cursor:pointer;color:#f2cf98;font-weight:600;line-height:1.5}.deep-note[open] summary{margin-bottom:22px}.deep-note h3{font-size:1.15rem;margin:20px 0 12px}
+.next-action{border-left:3px solid #d9b075;background:#1c2524;padding:2px 23px 12px;margin:35px 0}.next-action h2{font-size:1.3rem;margin-top:22px}.next-action p{font-size:1rem}
+.energy-row{margin:20px 0}.energy-label{display:flex;justify-content:space-between;gap:15px;font-size:.94rem;margin:0 0 8px}.energy-bar{height:28px;border-radius:4px;background:#263d45;overflow:hidden}.energy-bar span{display:block;height:100%;background:#e5b469}.energy-row.idle .energy-bar span{background:#7eced2}.figure-note{font-size:.86rem!important;color:#c4d1d5!important;margin:18px 0 0!important}
+.article-body .sources-list{overflow-wrap:anywhere}.article-body ul,.article-body ol{padding-left:24px}.article-body li{margin:10px 0}.article-body .inline-note{font-size:.88rem;color:#becbd0;padding:14px 18px;border-left:2px solid #647984;background:#182228}
+@media(max-width:640px){.flow{grid-template-columns:1fr 1fr}.concept-grid{grid-template-columns:1fr}.teaching-figure{padding:20px 17px}.flow li{padding:13px!important}.article-body pre{font-size:12.5px;padding:16px}.deep-note{padding:17px}.energy-label{font-size:.85rem}.teaching-figure figcaption{font-size:1rem}}
+</style><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-24-rewrite/sundog-bandwidth-2026-09-v10.png" property="og:image"/><meta content="Sundog compares a stack of storage with a glowing transfer pipe at a rain-lit street hardware stall." property="og:image:alt"/><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-24-rewrite/sundog-bandwidth-2026-09-v10.png" name="twitter:image"/><meta content="Sundog compares a stack of storage with a glowing transfer pipe at a rain-lit street hardware stall." name="twitter:image:alt"/><style id="sundog-rewrite-style">
+.key-idea{margin:34px 0;padding:22px 26px;border:1px solid rgba(0,212,255,.32);border-left:4px solid #00d4ff;border-radius:10px;background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(129,140,248,.05))}
+.key-idea p{margin:0!important;color:#eaf7fc!important;font-size:1.08rem;line-height:1.65}
+.flow.five{grid-template-columns:repeat(5,1fr)}
+.flow.three{grid-template-columns:repeat(3,1fr)}
+.concept-grid.two{grid-template-columns:repeat(2,1fr)}
+.teaching-figure pre{margin:0}
+.plate-grid{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:28px;align-items:center}
+.plate-svg,.chart-svg{width:100%;height:auto;display:block}
+.plate-notes p,.chart-notes p{font-size:.95rem!important;line-height:1.6;color:#d2e0e2!important;margin:0 0 12px!important}
+.plate-notes p:last-child,.chart-notes p:last-child{margin-bottom:0!important}
+.plate-notes b{color:#f1d1a0}
+.chart-wrap{overflow-x:auto}
+.stack-row{margin:18px 0}
+.stack-label{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;margin:0 0 7px;color:#e7f0ef}
+.stack-track{position:relative}
+.stack-bar{display:flex;height:26px;border-radius:4px;overflow:hidden;background:#1d3238}
+.stack-limit{position:absolute;top:-5px;bottom:-5px;width:2px;margin-left:-1px;background:#ff8f8f;box-shadow:0 0 6px rgba(255,120,120,.7)}
+.stack-bar span{display:block;height:100%}
+.stack-bar .w{background:#e5b469}
+.stack-bar .kv{background:#7eced2}
+.stack-bar .over{background:repeating-linear-gradient(45deg,#ec7a7a,#ec7a7a 6px,#b85a5a 6px,#b85a5a 12px)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.85rem;color:#c2d4d6;margin-top:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.article-body blockquote{margin:0 0 24px;padding:14px 20px;border-left:3px solid #647984;background:#182228;border-radius:0 8px 8px 0}
+.article-body blockquote p{margin:0!important}
+@media(max-width:900px){.flow.five{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.plate-grid{grid-template-columns:1fr}.plate-svg{max-width:280px;margin:0 auto}.flow.three{grid-template-columns:1fr}.concept-grid.two{grid-template-columns:1fr}.key-idea{padding:18px 18px}.stack-label{font-size:.84rem}}
+
+</style></head>
+<body><aside aria-label="Preview status" class="review-notice" style="padding:10px 20px;background:#17222d;color:#cddde8;text-align:center;font:13px/1.6 system-ui;border-bottom:1px solid #314452">Rewrite review, 24 September 2026: all eight Sundog articles rewritten for clarity, research depth and voice. Heroes are unchanged. <a href="index.html" style="color:#9de7ff;text-decoration:underline">Open the full collection</a></aside>
+<!-- BEGIN site-nav -->
+<nav aria-label="Site" class="site-nav">
+<div class="site-nav-inner">
+<a aria-label="Local AI Models home" class="site-nav-brand" href="https://local-ai-models.ai/"><svg aria-hidden="true" class="brand-dot" height="10" viewbox="0 0 10 10" width="10"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+<div class="site-nav-links">
+<a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+<a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+<a href="https://local-ai-models.ai/model-builder.html">PC Builder</a>
+<a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+<a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+<a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+<a href="https://local-ai-models.ai/sentiment.html">Community</a>
+<a href="guidance.html">Guidance</a>
+<a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
+<a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+<a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+<a href="https://local-ai-models.ai/updates.html">Updates</a>
+</div>
+</div>
+</nav>
+<!-- END site-nav -->
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-overlay"></div>
+<div class="hero-inner">
+<div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="guidance.html">Guidance</a></div>
+<div class="hero-eyebrow">Hardware tradeoffs</div>
+<h1 class="hero-title">Why a Model Can Fit and Still Feel Slow</h1><p class="hero-sub">To write each new word, your hardware reads the model&#x27;s weights from memory again. Once you see that, token speed becomes arithmetic you can check.</p>
+<p class="hero-byline">By Sundog</p>
+<div class="updated-line">Rewritten 24 September 2026</div>
+</div>
+</section>
+<main class="container">
+<figure class="article-hero"><a aria-label="Open full-size illustration: Sundog compares a stack of storage with a glowing transfer pipe at a rain-lit street hardware stall." href="sundog-bandwidth-2026-09-v10.png" title="Open full-size illustration"><img alt="Sundog compares a stack of storage with a glowing transfer pipe at a rain-lit street hardware stall." decoding="async" fetchpriority="high" height="941" src="sundog-bandwidth-2026-09-v10.png" width="1672"/></a><figcaption>Capacity decides what fits. Bandwidth decides how fast it answers. Illustration: Sundog, created with AI.</figcaption></figure><article class="article-body">
+<p class="reader-level">For anyone choosing hardware or a model size · One formula, checked against 32 published benchmark results</p>
+<p class="lede">Load a model that fits comfortably in memory, ask it a question, and watch it type. How fast it types was mostly decided before you pressed Enter, by one number on your hardware's spec sheet and one on the model file.</p>
+<p>The two numbers are <strong>memory bandwidth</strong>, how many gigabytes per second the processor can read from memory, and the <strong>size of the weights</strong> the model must read to produce each word. Once you see why those two dominate, you can avoid an expensive mistake: buying memory capacity when you needed memory speed, or the reverse.</p>
+
+<h2 id="reread">To write each word, the model rereads itself</h2>
+<p>A language model writes one token at a time, where a token is a word or a piece of one. To produce each token, the whole network runs once from input to output. In a typical model, every weight takes part in that pass: it is fetched from memory, used in a multiply and an add, and set aside until the next token, when it is fetched again.</p>
+<p>For one person chatting, that means each weight crosses from memory to processor to do about two arithmetic operations. Modern processors can do arithmetic far faster than memory can deliver numbers, so most of each token is spent waiting for weights to arrive. Generation speed becomes a question of how fast the weights can be streamed, which gives a useful ceiling:</p>
+<pre><code>tokens per second ≤ memory bandwidth ÷ bytes read per token</code></pre>
+<p>In an ordinary <strong>dense</strong> model, where every weight is used for every token, the bytes read per token are roughly the size of the weight file. Mixture-of-experts models, described below, break that rule in a useful way.</p>
+<div class="table-wrap"><table><caption>The ceiling for a 5 GB weight file (arithmetic, not measured speeds)</caption><thead><tr><th>Hardware</th><th>Memory bandwidth</th><th>Ceiling</th></tr></thead><tbody><tr><td>NVIDIA RTX 3090</td><td>936 GB/s</td><td>936 ÷ 5 ≈ 187 tokens/s</td></tr><tr><td>NVIDIA DGX Spark</td><td>273 GB/s</td><td>273 ÷ 5 ≈ 55 tokens/s</td></tr><tr><td>Laptop CPU with two channels of DDR5-5600</td><td>5,600 million transfers/s × 8 bytes × 2 = 89.6 GB/s</td><td>89.6 ÷ 5 ≈ 18 tokens/s</td></tr></tbody></table></div>
+<p>Real speeds land below these ceilings, because no program uses every byte of bandwidth and each token needs some other work. The ceiling is still the most useful single number you can compute before buying anything. <a class="ref" href="#source-nvidia">[1]</a> <a class="ref" href="#source-spark">[2]</a></p>
+
+<h2 id="evidence">Does the ceiling hold? Thirty-two published results say yes</h2>
+<p>The llama.cpp community keeps two public benchmark threads that make an unusually clean test. Both run the same model, Llama 2 7B compressed to 4 bits (a 3.56 GiB, or 3.82 GB, file), with the same benchmark tool. One covers Apple Silicon chips from the M1 to the M4 Max, all measured on one software build from November 2023. The other covers NVIDIA hardware, measured on 2025 builds. <a class="ref" href="#source-apple">[3]</a> <a class="ref" href="#source-cuda">[4]</a></p>
+<figure class="teaching-figure"><figcaption><strong>Generation speed tracks memory bandwidth</strong><span>llama.cpp text-generation speed for Llama 2 7B at 4 bits (Q4_0). Gold circles: 28 Apple Silicon configurations. Teal diamonds: NVIDIA devices. Dashed line: the bandwidth ceiling for this 3.82 GB file.</span></figcaption>
+<div class="chart-wrap"><svg viewBox="0 0 720 450" role="img" aria-labelledby="bw-title bw-desc" class="chart-svg"><title id="bw-title">Generation speed against memory bandwidth</title><desc id="bw-desc">Scatter plot of llama.cpp text-generation speed for Llama 2 7B at 4-bit (Q4_0) on 28 Apple Silicon configurations and four NVIDIA devices. Every point sits below a straight ceiling line equal to bandwidth divided by the 3.82 GB model file. Speed rises with bandwidth; faster devices fall further below the line.</desc><line x1="78.0" y1="28" x2="78.0" y2="378" stroke="#2a3b42" stroke-width="1"/><text x="78.0" y="402" text-anchor="middle" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">0</text><line x1="239.1" y1="28" x2="239.1" y2="378" stroke="#2a3b42" stroke-width="1"/><text x="239.1" y="402" text-anchor="middle" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">500</text><line x1="400.1" y1="28" x2="400.1" y2="378" stroke="#2a3b42" stroke-width="1"/><text x="400.1" y="402" text-anchor="middle" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">1,000</text><line x1="561.2" y1="28" x2="561.2" y2="378" stroke="#2a3b42" stroke-width="1"/><text x="561.2" y="402" text-anchor="middle" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">1,500</text><line x1="78" y1="378.0" x2="690" y2="378.0" stroke="#2a3b42" stroke-width="1"/><text x="68" y="383.0" text-anchor="end" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">0</text><line x1="78" y1="308.0" x2="690" y2="308.0" stroke="#2a3b42" stroke-width="1"/><text x="68" y="313.0" text-anchor="end" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">100</text><line x1="78" y1="238.0" x2="690" y2="238.0" stroke="#2a3b42" stroke-width="1"/><text x="68" y="243.0" text-anchor="end" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">200</text><line x1="78" y1="168.0" x2="690" y2="168.0" stroke="#2a3b42" stroke-width="1"/><text x="68" y="173.0" text-anchor="end" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">300</text><line x1="78" y1="98.0" x2="690" y2="98.0" stroke="#2a3b42" stroke-width="1"/><text x="68" y="103.0" text-anchor="end" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">400</text><line x1="78" y1="28.0" x2="690" y2="28.0" stroke="#2a3b42" stroke-width="1"/><text x="68" y="33.0" text-anchor="end" fill="#aab9c2" font-size="15" font-family="Inter, sans-serif">500</text><text x="384.0" y="438" text-anchor="middle" fill="#d2e0e2" font-size="16" font-family="Inter, sans-serif">Memory bandwidth (GB/s)</text><text x="20" y="203.0" text-anchor="middle" fill="#d2e0e2" font-size="16" font-family="Inter, sans-serif" transform="rotate(-90 20 203.0)">Tokens per second</text><line x1="78.0" y1="378.0" x2="690.0" y2="30.1" stroke="#ff8f8f" stroke-width="2" stroke-dasharray="7 6"/><text x="458.1" y="149.9" fill="#ffb3b3" font-size="15" font-family="Inter, sans-serif" transform="rotate(-29.6 458.1 149.9)">ceiling = bandwidth ÷ 3.82 GB</text><circle cx="99.9" cy="368.1" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="99.9" cy="368.1" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="142.4" cy="353.1" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="142.4" cy="352.5" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="206.8" cy="339.8" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="206.8" cy="335.2" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="335.7" cy="325.5" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="335.7" cy="319.4" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="110.2" cy="362.8" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="110.2" cy="362.7" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="142.4" cy="351.5" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="142.4" cy="350.8" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="206.8" cy="335.3" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="206.8" cy="331.8" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="335.7" cy="316.0" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="335.7" cy="312.0" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="110.2" cy="363.1" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="126.3" cy="356.5" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="126.3" cy="356.5" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="174.6" cy="338.4" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="206.8" cy="331.6" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="335.7" cy="316.1" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="335.7" cy="313.5" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="116.7" cy="361.1" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="165.9" cy="343.3" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="165.9" cy="342.5" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="210.1" cy="329.0" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><circle cx="253.9" cy="319.9" r="5.5" fill="#e5b469" fill-opacity="0.85" stroke="#10272a" stroke-width="1"/><rect x="373.5" y="261.3" width="12" height="12" fill="#7eced2" stroke="#10272a" stroke-width="1" transform="rotate(45 379.5 267.3)"/><rect x="396.7" y="241.7" width="12" height="12" fill="#7eced2" stroke="#10272a" stroke-width="1" transform="rotate(45 402.7 247.7)"/><rect x="649.2" y="169.0" width="12" height="12" fill="#7eced2" stroke="#10272a" stroke-width="1" transform="rotate(45 655.2 175.0)"/><rect x="159.9" y="332.0" width="12" height="12" fill="#7eced2" stroke="#10272a" stroke-width="1" transform="rotate(45 165.9 338.0)"/><text x="109.9" y="390.1" text-anchor="start" fill="#f6f7f9" font-size="15" font-family="Inter, sans-serif">M1</text><text x="335.7" y="296.0" text-anchor="middle" fill="#f6f7f9" font-size="15" font-family="Inter, sans-serif">Ultra chips</text><text x="263.9" y="343.9" text-anchor="start" fill="#f6f7f9" font-size="15" font-family="Inter, sans-serif">M4 Max</text><text x="177.9" y="364.0" text-anchor="start" fill="#f6f7f9" font-size="15" font-family="Inter, sans-serif">DGX Spark</text><text x="367.5" y="273.3" text-anchor="end" fill="#f6f7f9" font-size="15" font-family="Inter, sans-serif">RTX 3090</text><text x="414.7" y="255.7" text-anchor="start" fill="#f6f7f9" font-size="15" font-family="Inter, sans-serif">RTX 4090</text><text x="643.2" y="201.0" text-anchor="end" fill="#f6f7f9" font-size="15" font-family="Inter, sans-serif">RTX 5090</text></svg></div>
+<p class="figure-note">Apple results from llama.cpp discussion #4167 (build 8e672ef, bandwidth as listed there); NVIDIA results from discussion #15013 (2025 builds, flash attention off). The two sets use different software versions.</p></figure>
+<p>Across all 32 results, speed and bandwidth correlate at 0.95. Every point sits under the ceiling, as it must. The slow chips get close to it: an M1 with 68 GB/s reaches 80 percent of its ceiling, and the DGX Spark reaches 80 percent of its own at 57 tokens per second. Among the Apple chips, the fastest fall furthest below the line: the Ultras, listed at 800 GB/s, reach only 36 to 45 percent.</p>
+<details class="deep-note"><summary>Show the data behind the chart</summary><div class="table-wrap"><table><caption>Llama 2 7B, Q4_0, generating 128 tokens (llama.cpp's tg128 test)</caption><thead><tr><th>Device</th><th>Bandwidth (GB/s)</th><th>Tokens/s</th><th>Share of ceiling</th></tr></thead><tbody><tr><td>Apple M1, 7-core GPU</td><td>68</td><td>14.19</td><td>80%</td></tr><tr><td>Apple M1, 8-core GPU</td><td>68</td><td>14.15</td><td>80%</td></tr><tr><td>Apple M1 Pro, 14-core GPU</td><td>200</td><td>35.52</td><td>68%</td></tr><tr><td>Apple M1 Pro, 16-core GPU</td><td>200</td><td>36.41</td><td>70%</td></tr><tr><td>Apple M1 Max, 24-core GPU</td><td>400</td><td>54.61</td><td>52%</td></tr><tr><td>Apple M1 Max, 32-core GPU</td><td>400</td><td>61.19</td><td>58%</td></tr><tr><td>Apple M1 Ultra, 48-core GPU</td><td>800</td><td>74.93</td><td>36%</td></tr><tr><td>Apple M1 Ultra, 64-core GPU</td><td>800</td><td>83.73</td><td>40%</td></tr><tr><td>Apple M2, 8-core GPU</td><td>100</td><td>21.70</td><td>83%</td></tr><tr><td>Apple M2, 10-core GPU</td><td>100</td><td>21.91</td><td>84%</td></tr><tr><td>Apple M2 Pro, 16-core GPU</td><td>200</td><td>37.87</td><td>72%</td></tr><tr><td>Apple M2 Pro, 19-core GPU</td><td>200</td><td>38.86</td><td>74%</td></tr><tr><td>Apple M2 Max, 30-core GPU</td><td>400</td><td>60.99</td><td>58%</td></tr><tr><td>Apple M2 Max, 38-core GPU</td><td>400</td><td>65.95</td><td>63%</td></tr><tr><td>Apple M2 Ultra, 60-core GPU</td><td>800</td><td>88.64</td><td>42%</td></tr><tr><td>Apple M2 Ultra, 76-core GPU</td><td>800</td><td>94.27</td><td>45%</td></tr><tr><td>Apple M3, 10-core GPU</td><td>100</td><td>21.34</td><td>82%</td></tr><tr><td>Apple M3 Pro, 14-core GPU</td><td>150</td><td>30.65</td><td>78%</td></tr><tr><td>Apple M3 Pro, 18-core GPU</td><td>150</td><td>30.74</td><td>78%</td></tr><tr><td>Apple M3 Max, 30-core GPU</td><td>300</td><td>56.58</td><td>72%</td></tr><tr><td>Apple M3 Max, 40-core GPU</td><td>400</td><td>66.31</td><td>63%</td></tr><tr><td>Apple M3 Ultra, 60-core GPU</td><td>800</td><td>88.40</td><td>42%</td></tr><tr><td>Apple M3 Ultra, 80-core GPU</td><td>800</td><td>92.14</td><td>44%</td></tr><tr><td>Apple M4, 10-core GPU</td><td>120</td><td>24.11</td><td>77%</td></tr><tr><td>Apple M4 Pro, 16-core GPU</td><td>273</td><td>49.64</td><td>70%</td></tr><tr><td>Apple M4 Pro, 20-core GPU</td><td>273</td><td>50.74</td><td>71%</td></tr><tr><td>Apple M4 Max, 32-core GPU</td><td>410</td><td>69.95</td><td>65%</td></tr><tr><td>Apple M4 Max, 40-core GPU</td><td>546</td><td>83.06</td><td>58%</td></tr><tr><td>RTX 3090</td><td>936</td><td>158.16</td><td>65%</td></tr><tr><td>RTX 4090</td><td>1,008</td><td>186.21</td><td>71%</td></tr><tr><td>RTX 5090</td><td>1,792</td><td>290.02</td><td>62%</td></tr><tr><td>DGX Spark</td><td>273</td><td>57.21</td><td>80%</td></tr></tbody></table></div></details>
+<p>The same Apple thread also timed an 8-bit file of the same model, and that shows what is happening. On a slow chip, cutting the file from 8 bits to 4 almost doubles the speed: the M1 went from 7.92 to 14.19 tokens per second, 1.79 times faster, close to the 1.87 times that the smaller file allows. On the 76-core M2 Ultra, the same change gave only 1.41 times. On fast chips, other per-token work, probably including unpacking the compressed weights, takes a real share of the time. Software matters too: the thread's later entries show newer llama.cpp builds lifting that M2 Ultra from 94 to 125 tokens per second, from 45 to 60 percent of its ceiling, on the same hardware. <a class="ref" href="#source-apple">[3]</a> The ceiling is the right first estimate everywhere. On the fastest hardware, expect a wider gap.</p>
+
+<h2 id="prompt">Why reading your prompt is so much faster</h2>
+<p>If you have watched a local runner's timing output, you may have noticed that it reads a long prompt at hundreds or thousands of tokens per second, then writes its answer at a few dozen. The same benchmark threads show it plainly: an RTX 3090 processes a 512-token prompt at about 5,175 tokens per second and generates at about 158, a 33-fold difference on the same model and hardware. The DGX Spark reads at about 3,062 and writes at about 57. <a class="ref" href="#source-cuda">[4]</a></p>
+<p>When the model reads your prompt, all of its tokens are already known, so the runtime can push many of them through each layer at once. Each weight fetched from memory now does arithmetic for hundreds of tokens instead of one. The work stops waiting on memory and starts waiting on arithmetic. Engineers call the two phases <strong>prefill</strong> and <strong>decode</strong>, and research on serving systems treats them as different workloads for exactly this reason: prefill is limited by compute, and decode, at the one-request-at-a-time batch sizes typical at home, by memory bandwidth. <a class="ref" href="#source-splitwise">[5]</a> <a class="ref" href="#source-unveiled">[6]</a></p>
+<p>The roofline model, from Williams, Waterman and Patterson, captures this with one ratio: operations performed per byte moved from memory, which they call operational intensity and many engineers call arithmetic intensity. <a class="ref" href="#source-roofline">[7]</a> A chip has a ridge point, its peak operations per second divided by its bandwidth; work below that ratio is limited by memory. The RTX 3090's tensor cores can do 71 to 142 trillion 16-bit operations per second, depending on how they accumulate results, which against 936 GB/s puts its ridge point at roughly 76 to 152 operations per byte. <a class="ref" href="#source-nvidia">[1]</a> Generation does about two operations for each weight it reads: about 1 operation per byte with 16-bit weights, and about 4 with 4-bit weights. Even against the lower ridge point, at most about 5 percent of the chip's arithmetic capacity is in use during single-user generation.</p>
+
+<h2 id="levers">Three ways past the bandwidth limit</h2>
+<p>That gap leaves two kinds of fix: read fewer bytes for each token, or get more tokens from each read. The second finally puts the idle arithmetic to work.</p>
+<h3>1. Read fewer bytes</h3>
+<p>Quantization stores each weight in fewer bits: an 8-bit file is about half the size of a 16-bit one, and a 4-bit file about a quarter. Fewer bytes per token raises the ceiling. As the M2 Ultra showed, it does not guarantee a matching speedup, and speed is not the only thing that changes.</p>
+<p>Shi and Ding measured eleven quantization methods on Llama-2 and CodeLlama models served with TensorRT-LLM, NVIDIA's own serving engine, on H100 GPUs, tracking latency, energy and quality together. No method won on all three. One 4-bit-weight configuration had the best tail latency, meaning the speed of the slowest responses, at moderate load, while some other quantized setups did not reduce latency at all, and compressing the KV cache (the model's stored notes on the conversation) sometimes erased the gains. Quality moved too: one 8-bit integer setup that also compressed the model's intermediate values cut a 13B model's coding pass rate by up to 92 percent. <a class="ref" href="#source-shi">[8]</a> Those results belong to that engine and those GPUs, not to a GGUF file, the format llama.cpp and Ollama use, on your machine. They are a good reason to measure speed and quality together.</p>
+<h3>2. Read only part of the model</h3>
+<p>A <strong>mixture-of-experts</strong> (MoE) model splits many of its layers into specialist blocks and routes each token through only a few of them. Every expert must sit in memory, but only the chosen ones are read for a given token. OpenAI's gpt-oss-120b has about 117 billion parameters and activates about 5.1 billion per token. Qwen3-30B-A3B has 30.5 billion and activates 3.3 billion, 8 of its 128 experts at a time. <a class="ref" href="#source-moe">[9]</a> For the bandwidth ceiling, gpt-oss-120b behaves more like a 5-billion-parameter model than a 117-billion one, while still needing memory for all 117 billion.</p>
+<p>That is why MoE models suit machines with a lot of memory and moderate bandwidth, such as a DGX Spark or a high-memory Mac: the memory holds every expert, and the bandwidth only has to carry the few in use.</p>
+<h3>3. Get more tokens from each read</h3>
+<p>If each pass over the weights produced several tokens instead of one, the idle arithmetic would finally have a job. Two techniques do exactly that.</p>
+<p><strong>Batching</strong> serves several requests at once, so one pass over the weights advances all of them. It is how servers get their throughput, and it helps at home when several agents or users share one model. It raises total output, not the speed of any one chat, and each request needs its own KV cache.</p>
+<p><strong>Speculative decoding</strong> helps a single user. A small, fast draft model guesses the next few tokens. The large model then checks all the guesses in one pass, which costs about the same memory traffic as generating one token, and keeps the guesses up to the first one it rejects. Leviathan, Kalman and Matias designed the acceptance rule so the output follows exactly the same probability distribution as the large model alone, and reported 2 to 3 times faster generation on T5-XXL. <a class="ref" href="#source-spec">[10]</a> A DeepMind team independently reported 2 to 2.5 times on the 70-billion-parameter Chinchilla. <a class="ref" href="#source-specsampling">[11]</a> It works best when the draft guesses well, which is common for predictable text such as code. llama.cpp's server can load a draft model alongside the main one; its option names changed during 2026, so follow the current documentation. <a class="ref" href="#source-llamaserver">[12]</a></p>
+
+<h2 id="capacity">Capacity is the other half of the decision</h2>
+<p>None of this matters if the model does not fit. A 24 GB card with 936 GB/s cannot hold a model whose weights need 40 GB; it can run one only by spilling layers into slower system memory. A DGX Spark with 128 GB of unified memory can load that model, but at 273 GB/s its ceiling for a dense 40 GB file is about 273 ÷ 40 ≈ 7 tokens per second. <a class="ref" href="#source-spark">[2]</a> One machine offers room and the other offers speed. Which one you need depends on the models you actually intend to run, and an MoE model can make the roomy machine the fast one too.</p>
+<p>Two more things lower your speed, and the same formula prices both. The KV cache is read on every token as well. With 16K tokens of conversation, Qwen3-32B's cache adds 4 GiB to its 18.4 GiB of 4-bit weights, which lowers an RTX 3090's ceiling from about 47 to about 39 tokens per second. And if part of a model spills from the graphics card into system memory, those layers are read at system-memory speed: with 10 percent of a 20 GB model in 89.6 GB/s memory, the ceiling falls from about 47 to about 24 tokens per second. Both figures are my arithmetic from the formula, not measurements. <a href="kv-cache-geometry.html">Why a Longer Chat Needs More Memory</a> shows how to calculate the cache for your own model.</p>
+
+<h2 id="measure">Check your own number against the ceiling</h2>
+<p>Ollama's API reports the number of generated tokens (<code>eval_count</code>) and the time spent generating them (<code>eval_duration</code>, in nanoseconds), separately from loading and prompt reading. Generation speed is <code>eval_count ÷ eval_duration × 10⁹</code>, and <code>ollama run</code> with <code>--verbose</code> prints these timings, including the generation rate, after each answer. <a class="ref" href="#source-ollama">[13]</a> Divide your measured speed by the ceiling from your bandwidth and model file. For scale, in the benchmark results above, chips under 550 GB/s reached 52 to 84 percent of their ceilings, the NVIDIA machines 62 to 80 percent, and the 800 GB/s Ultras 36 to 45 percent.</p>
+<ul><li><strong>Far under half, on ordinary hardware:</strong> something else is in the way. Check whether layers are running on the CPU, whether another program is competing for the GPU, and how long the conversation is.</li><li><strong>In the ranges above:</strong> the hardware is doing roughly what it can. Only fewer bytes per token, an MoE model, speculative decoding or more bandwidth will make generation much faster.</li></ul>
+<p><span class="opinion-label">[OPINION]</span> Before buying hardware for local AI, I would write down the models I want to run, check that their weights and a realistic context fit, and then divide bandwidth by weight size. That two-minute calculation beats most spec-sheet comparisons, and it tells you whether to spend on memory size or memory speed.</p>
+
+<h2 id="sources">Sources and further reading</h2>
+<ol class="sources-list">
+<li id="source-nvidia"><a href="https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf">NVIDIA Ampere GA102 GPU architecture whitepaper</a>. RTX 3090 memory bandwidth and tensor throughput.</li>
+<li id="source-spark"><a href="https://docs.nvidia.com/dgx/dgx-spark/hardware.html">NVIDIA DGX Spark hardware overview</a>. 128 GB unified LPDDR5x memory, 273 GB/s. Accessed 24 September 2026.</li>
+<li id="source-apple"><a href="https://github.com/ggml-org/llama.cpp/discussions/4167">llama.cpp discussion #4167: Performance of llama.cpp on Apple Silicon M-series</a>. Benchmark table (build 8e672ef) and later M2 Ultra results.</li>
+<li id="source-cuda"><a href="https://github.com/ggml-org/llama.cpp/discussions/15013">llama.cpp discussion #15013: Performance of llama.cpp on Nvidia CUDA</a>. RTX 3090, 4090 and 5090, and DGX Spark entries from August to October 2025.</li>
+<li id="source-splitwise"><a href="https://arxiv.org/abs/2311.18677">Patel et al.: Splitwise: Efficient Generative LLM Inference Using Phase Splitting</a> (ISCA 2024).</li>
+<li id="source-unveiled"><a href="https://arxiv.org/abs/2402.16363">Yuan et al.: LLM Inference Unveiled: Survey and Roofline Model Insights</a> (2024). Section 2.2.</li>
+<li id="source-roofline"><a href="https://people.eecs.berkeley.edu/~kubitron/cs252/handouts/papers/RooflineVyNoYellow.pdf">Williams, Waterman and Patterson: Roofline: An Insightful Visual Performance Model for Multicore Architectures</a>. <em>Communications of the ACM</em> 52(4), 2009 (authors' copy). Section 3.</li>
+<li id="source-shi"><a href="https://arxiv.org/abs/2508.16712">Shi and Ding: Systematic Characterization of LLM Quantization: A Performance, Energy, and Quality Perspective</a> (2025). Sections 4 to 7.</li>
+<li id="source-moe"><a href="https://arxiv.org/abs/2508.10925">OpenAI: gpt-oss-120b and gpt-oss-20b model card</a> (2025), and the <a href="https://huggingface.co/Qwen/Qwen3-30B-A3B">Qwen3-30B-A3B model card</a>.</li>
+<li id="source-spec"><a href="https://arxiv.org/abs/2211.17192">Leviathan, Kalman and Matias: Fast Inference from Transformers via Speculative Decoding</a> (ICML 2023).</li>
+<li id="source-specsampling"><a href="https://arxiv.org/abs/2302.01318">Chen et al.: Accelerating Large Language Model Decoding with Speculative Sampling</a> (2023).</li>
+<li id="source-llamaserver"><a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md">llama.cpp server documentation</a>. Draft-model options. Accessed 24 September 2026.</li>
+<li id="source-ollama"><a href="https://github.com/ollama/ollama/blob/main/docs/api.md">Ollama API reference</a>. Response timing fields. Accessed 24 September 2026.</li>
+</ol>
+</article>
+</main>
+<section class="related"><h2 class="related-title">Keep reading</h2><div class="related-grid"><a class="related-card" href="kv-cache-geometry.html"><div class="related-name">Why a Longer Chat Needs More Memory</div><p class="related-desc">Price the KV cache per token from a model&#x27;s configuration, and see which design choices and settings shrink it.</p></a><a class="related-card" href="joules-per-token.html"><div class="related-name">Count the Hours Between the Tokens</div><p class="related-desc">Why waiting often dominates a home AI machine&#x27;s energy use, what joules per token really measures, and how to compare setups fairly.</p></a></div></section>
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+<div class="sf-grid">
+<div class="sf-brand-col">
+<div class="sf-brand"><svg aria-hidden="true" height="9" viewbox="0 0 10 10" width="9"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg> LOCAL-AI-MODELS</div>
+<p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+<div class="sf-meta">dataset 2026.08.31 · 132 models · 59 frameworks</div>
+</div>
+<div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+<li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+<li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+<li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+<li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+<li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+<li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+<li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+<li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+<li><a href="guidance.html">Guidance</a></li>
+<li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+<li><a href="best-local-coding-llm.html">Best Coding LLM</a></li>
+<li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+<li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+<li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+<li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+</ul></div>
+</div>
+<div class="sf-bottom">
+<span>Data refreshed August 31, 2026</span>
+<span>Single-file architecture · No accounts, no tracking beyond ads</span>
+</div>
+<p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> · <a href="https://local-ai-models.ai/terms.html">Terms</a> · <a href="https://local-ai-models.ai/cookies.html">Cookies</a> · <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> · <a href="https://local-ai-models.ai/about.html">About</a> · <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script defer="" src="creatures.js"></script>
+<script defer="" src="creatures-v2.js"></script>
+<style>
+.hero{min-height:0!important}.hero-bg,.hero-overlay{display:none!important}.hero-inner{max-width:1000px;padding:64px 24px 36px}.hero-title{font-size:clamp(2.05rem,5vw,3.65rem)!important;line-height:1.12!important}.hero-eyebrow{margin-bottom:22px}.hero-sub{max-width:740px}.hero-byline{margin:22px 0 8px}.container{max-width:1040px;padding:28px 24px 70px}.article-body{max-width:820px;margin:auto;font-size:18px;line-height:1.8;overflow-wrap:anywhere}.article-body>p{margin:0 0 1.35em}.article-body .lede{font-size:1.25rem;max-width:none;margin:0 0 1.6em;color:#e4e7ed}.article-body h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin:2.1em 0 .85em;color:#f6f7f9}.article-body h3{line-height:1.35}.article-body a{color:#9de7ff;text-decoration:underline;text-underline-offset:3px}.article-body code{font-size:.88em;overflow-wrap:anywhere}.article-hero{margin:0 auto 38px;max-width:992px}.article-hero img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #30343a}.article-hero figcaption{font-size:.86rem;line-height:1.55;color:#adb6c5;max-width:820px;margin:12px auto 0}.table-wrap{overflow-x:auto;max-width:100%;margin:28px 0;border:1px solid #333a47;border-radius:8px}.article-body table{width:100%;border-collapse:collapse;min-width:570px;font-size:.86rem;line-height:1.5;background:#10141c}.article-body table a,.article-body table a:visited{color:#f6f7f9}.article-body th,.article-body td{padding:14px 16px;border-bottom:1px solid #333a47;text-align:left;vertical-align:top;color:#e0e6f0}.article-body th{color:#fff;background:#1b2330}.article-body caption{padding:14px 16px;text-align:left;color:#ccd7e5;background:#141c28}.formula-box,.calculation{padding:20px;background:#101a27;border:1px solid #284059;border-radius:8px;margin:25px 0;overflow-x:auto}.formula-box code{white-space:normal;color:#d9efff}.decision-card{padding:24px;border:1px solid #38536a;background:#101c27;border-radius:10px;margin:28px 0}.opinion-label{font-family:var(--font-mono);font-size:.72em;color:#f3c876;font-weight:600}.article-body .sources-list{font-size:.82rem;line-height:1.65;margin:20px 0 0;padding-left:26px}.sources-list li{padding:8px 0}.ref{font-size:.73em;vertical-align:super;margin-left:3px}.related{max-width:1040px;margin:auto;padding:36px 24px 70px}.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.related-card{display:block;border:1px solid #30343a;border-radius:10px;padding:20px}.related-name{font-size:1rem}.related-desc{font-size:.9rem}.updated-line{font-size:.8rem;color:#9faabb}.site-nav-links{min-width:0}.site-nav{max-width:100%}@media(max-width:600px){.hero-inner{padding:36px 20px 20px}.container{padding:20px 18px 45px}.article-body{font-size:17px;line-height:1.75}.article-body .lede{font-size:1.14rem}.article-hero{margin-bottom:28px}.article-hero figcaption{font-size:.8rem}.related-grid{grid-template-columns:1fr}.decision-card{padding:18px}.article-body table{min-width:540px}.hero-title{letter-spacing:-.03em!important}}
+
+.article-body table{min-width:740px}.article-body th,.article-body td{overflow-wrap:normal;word-break:normal}.table-caption{margin:26px 0 8px!important;font-size:.9rem;color:#ced9e7}.table-hint{display:none;font-size:.77rem;color:#aab9cb;margin:0 0 8px!important}.table-caption~.table-wrap{margin-top:8px}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}@media(max-width:780px){.table-hint{display:block}}</style><style>.article-body table th[scope="row"],.article-body table td:nth-child(n+2){white-space:nowrap}.sources-list li::before{content:none!important}.article-body .sources-list li{list-style:decimal!important}</style></body>
+</html>
