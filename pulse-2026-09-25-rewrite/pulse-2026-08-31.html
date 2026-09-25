@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keep Qwen3.8-27B while GLM-5.3 wants 223 GB | Local AI Models</title>
+<meta name="description" content="Sundog Pulse, 31 August 2026: why Qwen3.8-27B still fits a 24 GB card while GLM-5.3 needs 223 GB of memory, the Pulse grades, the reasoning-effort trade-off, and what each license allows.">
+<meta name="keywords" content="Qwen3.8-27B, Qwen3.8-Flash-Next, GLM-5.3, local LLM, 24 GB VRAM, Pulse, Sundog, Qwen Community License, GLM-5.3 License">
+<link rel="canonical" href="https://local-ai-models.ai/pulse-2026-08-31.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Keep Qwen3.8-27B while GLM-5.3 wants 223 GB">
+<meta property="og:description" content="Why Qwen3.8-27B still fits a 24 GB card while GLM-5.3 needs 223 GB of memory, what the reasoning-effort default costs, and what each license allows.">
+<meta property="og:url" content="https://local-ai-models.ai/pulse-2026-08-31.html">
+<meta property="og:site_name" content="Local AI Models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Keep Qwen3.8-27B while GLM-5.3 wants 223 GB">
+<meta name="robots" content="noindex,nofollow,noarchive">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Keep Qwen3.8-27B while GLM-5.3 wants 223 GB",
+  "description": "Sundog Pulse, 31 August 2026: why Qwen3.8-27B still fits a 24 GB card while GLM-5.3 needs 223 GB of memory, the Pulse grades, the reasoning-effort trade-off, and what each license allows.",
+  "datePublished": "2026-08-31",
+  "dateModified": "2026-09-25",
+  "inLanguage": "en",
+  "author": {
+    "@type": "Person",
+    "name": "Sundog"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Local AI Models",
+    "url": "https://local-ai-models.ai"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://local-ai-models.ai/pulse-2026-08-31.html"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Guidance", "item": "https://local-ai-models.ai/guidance.html"},
+    {"@type": "ListItem", "position": 3, "name": "Pulse 31 August 2026", "item": "https://local-ai-models.ai/pulse-2026-08-31.html"}
+  ]
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.hero {
+  position: relative;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background: radial-gradient(900px 380px at 50% -20%, rgba(0,212,255,0.10), transparent 58%), var(--bg);
+}
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 56px 28px 48px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.0rem, 5.2vw, 3.4rem); font-weight: 560; line-height: 1.08; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-byline { font-size: 0.98rem; color: var(--text-2); margin: -4px 0 16px; letter-spacing: 0.01em; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 640px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 40px; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.ref { font-size: 0.66em; vertical-align: super; line-height: 0; color: var(--text-dim); border-bottom: none !important; letter-spacing: 0; }
+.ref:hover { color: var(--accent); }
+
+.decision-card {
+  max-width: 820px;
+  margin: 0 0 36px;
+  padding: 24px 26px;
+  border: 1px solid rgba(0,212,255,0.28);
+  border-radius: 16px;
+  background: rgba(0,212,255,0.05);
+}
+.decision-card h3 { margin-top: 0; }
+.decision-card p:last-child { margin-bottom: 0; }
+
+.grade-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 8px 0 28px;
+}
+@media (max-width: 700px) { .grade-grid { grid-template-columns: 1fr; } }
+.grade-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 20px 22px;
+}
+.grade-card strong { color: var(--text); }
+.grade-kicker { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.grade-letter { font-size: 2.1rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; color: var(--text); }
+.grade-meta { font-size: 0.9rem; color: var(--text-2); margin: 0; }
+
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.94rem; }
+.vram-table caption { caption-side: top; text-align: left; padding: 16px 18px 4px; font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-dim); }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child, .vram-table tbody th { color: var(--text); font-weight: 600; }
+.vram-table a.pick-link,
+.vram-table a.pick-link:visited,
+.vram-table a.pick-link:hover {
+  color: #f6f7f9;
+  -webkit-text-fill-color: #f6f7f9;
+  text-decoration: underline;
+  border-bottom: none;
+}
+
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+.sources-list a { color: var(--accent); }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+/* PREMIUM-PATCH-V2 */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+/* end PREMIUM-PATCH-V2 */
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://local-ai-models.ai/#organization","name":"Local AI Models","legalName":"Lagrangian Strategic Partners LLC","url":"https://local-ai-models.ai","sameAs":["https://github.com/lsp-llc/local-ai-models"]}
+</script>
+<!-- BEGIN site-chrome-css -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+<style id="pulse-rewrite-style">
+.key-idea{margin:34px 0;padding:22px 26px;border:1px solid rgba(0,212,255,.32);border-left:4px solid #00d4ff;border-radius:10px;background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(129,140,248,.05))}
+.key-idea p{margin:0!important;color:#eaf7fc!important;font-size:1.08rem;line-height:1.65}
+.flow.five{grid-template-columns:repeat(5,1fr)}
+.flow.three{grid-template-columns:repeat(3,1fr)}
+.concept-grid.two{grid-template-columns:repeat(2,1fr)}
+.teaching-figure pre{margin:0}
+.plate-grid{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:28px;align-items:center}
+.plate-svg,.chart-svg{width:100%;height:auto;display:block}
+.plate-notes p,.chart-notes p{font-size:.95rem!important;line-height:1.6;color:#d2e0e2!important;margin:0 0 12px!important}
+.plate-notes p:last-child,.chart-notes p:last-child{margin-bottom:0!important}
+.plate-notes b{color:#f1d1a0}
+.chart-wrap{overflow-x:auto}
+.stack-row{margin:18px 0}
+.stack-label{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;margin:0 0 7px;color:#e7f0ef}
+.stack-track{position:relative}
+.stack-bar{display:flex;height:26px;border-radius:4px;overflow:hidden;background:#1d3238}
+.stack-limit{position:absolute;top:-5px;bottom:-5px;width:2px;margin-left:-1px;background:#ff8f8f;box-shadow:0 0 6px rgba(255,120,120,.7)}
+.stack-bar span{display:block;height:100%}
+.stack-bar .w{background:#e5b469}
+.stack-bar .kv{background:#7eced2}
+.stack-bar .over{background:repeating-linear-gradient(45deg,#ec7a7a,#ec7a7a 6px,#b85a5a 6px,#b85a5a 12px)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.85rem;color:#c2d4d6;margin-top:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.article-body blockquote{margin:0 0 24px;padding:14px 20px;border-left:3px solid #647984;background:#182228;border-radius:0 8px 8px 0}
+.article-body blockquote p{margin:0!important}
+@media(max-width:900px){.flow.five{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.plate-grid{grid-template-columns:1fr}.plate-svg{max-width:280px;margin:0 auto}.flow.three{grid-template-columns:1fr}.concept-grid.two{grid-template-columns:1fr}.key-idea{padding:18px 18px}.stack-label{font-size:.84rem}}
+
+.article-body pre{background:#0f1418;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:0 0 22px;line-height:1.55}
+.article-body pre code{background:none;border:none;padding:0;color:#e7ecf2;font-size:.86rem}
+.article-body .call-list{list-style:none;margin:14px 0 0;padding:0}
+.article-body .call-list li{display:grid;grid-template-columns:minmax(150px,210px) 1fr;gap:6px 18px;padding:12px 0;margin:0;border-top:1px solid rgba(255,255,255,.08)}
+.article-body .call-list li::before{display:none}
+.article-body .call-list li:first-child{border-top:none;padding-top:4px}
+.call-name{font-weight:600;color:#f6f7f9}
+.call-verdict{display:block;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:#00d4ff;margin-top:3px}
+.call-verdict.no{color:#ff9f1c}
+.call-why{color:#c9cdd4;line-height:1.6}
+.units-figure{margin:30px 0 34px;padding:22px 24px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:#131416}
+.units-figure figcaption{font-size:.9rem;line-height:1.55;color:#8a8f99;margin-top:14px}
+.units-head{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:1.4px;text-transform:uppercase;color:#8a8f99;margin:0 0 14px}
+.unit-row{margin:0 0 16px}
+.unit-label{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;color:#e7ecf2;margin-bottom:6px}
+.unit-label b{font-weight:600;color:#f6f7f9}
+.unit-label span{color:#8a8f99;font-family:'JetBrains Mono',monospace;font-size:.8rem;white-space:nowrap}
+.units{display:flex;flex-wrap:wrap;gap:4px;--solid:#00d4ff}
+.units.warm{--solid:#ff9f1c}
+.units.violet{--solid:#818cf8}
+.units i{display:block;width:22px;height:14px;border-radius:3px;background:#243240;position:relative;overflow:hidden}
+.units i::before{content:"";position:absolute;top:0;bottom:0;left:0;width:var(--p,0);background:var(--solid);z-index:1}
+.units i::after{content:"";position:absolute;top:0;bottom:0;left:0;width:var(--q,0);background:repeating-linear-gradient(45deg,var(--solid) 0 3px,transparent 3px 6px)}
+.units i.full::before{width:100%}
+.units-key{display:flex;flex-wrap:wrap;gap:16px;font-size:.85rem;color:#c2d4d6;margin-top:6px}
+.units-key i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.layer-figure{margin:30px 0 34px;padding:22px 24px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:#131416}
+.layer-figure figcaption{font-size:.9rem;line-height:1.55;color:#8a8f99;margin-top:14px}
+.layer-strip{display:grid;grid-template-columns:repeat(32,1fr);gap:3px}
+.layer-strip i{display:block;height:22px;border-radius:2px;background:#2d3b4f}
+.layer-strip i.f{background:#00d4ff;box-shadow:0 0 6px rgba(0,212,255,.45)}
+.layer-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.85rem;color:#c2d4d6;margin-top:14px}
+.layer-legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:#2d3b4f}
+.layer-legend i.f{background:#00d4ff}
+.math-line{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:#e7ecf2;background:#0f1418;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 16px;margin:0 0 22px;overflow-x:auto;white-space:nowrap}
+.vram-table tr.hl th,.vram-table tr.hl td{background:rgba(0,212,255,.06)}
+@media(max-width:640px){.article-body .call-list li{grid-template-columns:1fr}.layer-strip{grid-template-columns:repeat(16,1fr)}.units i{width:18px;height:12px}.units-figure,.layer-figure{padding:18px 16px}}
+.opinion-label{font-family:'JetBrains Mono',monospace;font-size:.72em;color:#f3c876;font-weight:600}
+.since-box{margin:34px 0;padding:20px 24px;border:1px solid rgba(129,140,248,.3);border-radius:14px;background:rgba(129,140,248,.06)}
+.since-box p.article-h3{margin-top:0}
+.since-box ul{margin-bottom:0!important}
+.since-box li:last-child{margin-bottom:0}
+.decision-card .article-h3{margin-top:0}
+
+</style>
+</head>
+<body>
+<aside aria-label="Preview status" class="review-notice" style="padding:10px 20px;background:#17222d;color:#cddde8;text-align:center;font:13px/1.6 system-ui;border-bottom:1px solid #314452">Rewrite review, 25 September 2026: Sundog Pulse for 31 August 2026, rewritten for clarity and depth. Grades and dates are unchanged. <a href="https://local-ai-models.ai/pulse-2026-08-31.html" style="color:#9de7ff;text-decoration:underline">Compare the live version</a></aside>
+
+<!-- BEGIN site-nav -->
+<nav class="site-nav" aria-label="Site">
+  <div class="site-nav-inner">
+    <a href="https://local-ai-models.ai/" class="site-nav-brand" aria-label="Local AI Models home"><svg class="brand-dot" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+    <div class="site-nav-links">
+      <a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+      <a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+      <a href="https://local-ai-models.ai/model-builder.html">PC Builder</a>
+      <a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+      <a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+      <a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+      <a href="https://local-ai-models.ai/sentiment.html">Community</a>
+      <a href="https://local-ai-models.ai/guidance.html">Guidance</a>
+      <a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
+      <a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+      <a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+      <a href="https://local-ai-models.ai/updates.html">Updates</a>
+    </div>
+  </div>
+</nav>
+<!-- END site-nav -->
+
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span class="sep">/</span><a href="https://local-ai-models.ai/guidance.html">Guidance</a><span class="sep">/</span><span>Pulse 31 Aug</span></div>
+    <div class="hero-eyebrow">Pulse</div>
+    <h1 class="hero-title">Keep Qwen3.8-27B while GLM-5.3 wants 223 GB</h1>
+    <p class="hero-byline">By Sundog. Pulse desk.</p>
+    <div class="updated-line">31 August 2026 · Revised 25 September 2026</div>
+    <p class="hero-sub">GLM-5.3 is now open-weight, and even its smallest version needs 223 GB of memory. Here is the arithmetic that keeps Qwen3.8-27B on a 24 GB card, what its reasoning setting costs, and what each license allows.</p>
+  </div>
+</section>
+
+<div class="container" id="main-content" role="main" tabindex="-1">
+  <article class="article-body">
+<p class="lede">GLM-5.3's weights went public on 28 August, and even its smallest version needs 223 GB of memory. <a class="ref" href="#source-glm-repo">[1]</a> <a class="ref" href="#source-unsloth-glm">[2]</a> <a href="https://local-ai-models.ai/local-ai-models.html#qwen3-8-27b" class="pick-link">Qwen3.8-27B</a> needs 16 to 19 GB at 4 bits, and with a 4-bit cache it can hold a 256K-token conversation on one 24 GB graphics card for text work. <a class="ref" href="#source-unsloth-qwen">[3]</a> <a class="ref" href="#source-piszczek">[4]</a> If that card is your machine, the call has not changed: keep the 27B. The arithmetic behind these numbers applies to every large release.</p>
+
+<div class="decision-card reveal">
+  <p class="article-h3">The call for 31 August</p>
+  <ul class="call-list">
+    <li><div><span class="call-name">Qwen3.8-27B</span><span class="call-verdict">Keep</span></div><div class="call-why">A 4-bit version needs 16 to 19 GB, so one 24 GB card runs it with room for the conversation. Apache-2.0. Pulse grade B− (71).</div></li>
+    <li><div><span class="call-name">Qwen3.8-Flash-Next</span><span class="call-verdict no">75 GB or more</span></div><div class="call-why">Unsloth's smallest version needs 75 GB of memory, and Unsloth recommends a 96 GB machine. Qwen Community License 1.0. Pulse grade C+ (65), launch week.</div></li>
+    <li><div><span class="call-name">GLM-5.3</span><span class="call-verdict no">223 GB or more</span></div><div class="call-why">Needs 223 GB of memory even as a "1-bit" file. Z.AI's own license. No Pulse grade yet.</div></li>
+  </ul>
+</div>
+
+<h2 class="section-h2 article-h2 reveal">The Pulse grades</h2>
+<p>Pulse grades practitioner signals, not Hub likes. An Artificial Analysis score of 52 for the 27B, which drew 381 points on Hacker News, is downweighted as a quality signal. <a class="ref" href="#source-pack">[5]</a> <a class="ref" href="#source-aa">[6]</a> GLM-5.3 has no public grade yet.</p>
+
+<div class="grade-grid reveal">
+  <div class="grade-card">
+    <div class="grade-kicker">Named call</div>
+    <div class="grade-letter">B−</div>
+    <p class="grade-meta"><a href="https://local-ai-models.ai/local-ai-models.html#qwen3-8-27b">Qwen3.8-27B</a>. Composite 71. Confidence 0.78. n=7. INSUFFICIENT / static.</p>
+  </div>
+  <div class="grade-card">
+    <div class="grade-kicker">Launch-week</div>
+    <div class="grade-letter">C+</div>
+    <p class="grade-meta">Qwen3.8-Flash-Next. Composite 65. Confidence 0.55. n=5. Launch-week / prior-heavy. Not calibrated.</p>
+  </div>
+</div>
+
+<p>The labels are the pack's own shorthand, so here is only what the numbers show. The 27B's grade has n=7 and confidence 0.78 and carries the label INSUFFICIENT / static; all nine of its dimension scores match the 27 August pack. Flash-Next's grade has n=5 and confidence 0.55 and is labeled launch-week, prior-heavy and not calibrated; the model was five days old on 31 August. <a class="ref" href="#source-pack">[5]</a> <a class="ref" href="#source-flash-card">[7]</a></p>
+
+<div class="table-wrap reveal">
+  <table class="vram-table">
+    <caption>Nine dimensions, each scored from 1 to 7 (midpoint 4). Unchanged from 27 August.</caption>
+    <thead>
+      <tr><th scope="col">Dimension</th><th scope="col"><a class="pick-link" href="https://local-ai-models.ai/local-ai-models.html#qwen3-8-27b">Qwen3.8-27B</a></th><th scope="col">Qwen3.8-Flash-Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Autonomy</th><td>6</td><td>5</td></tr>
+      <tr><th scope="row">Competence</th><td>6</td><td>5</td></tr>
+      <tr class="hl"><th scope="row">Flow</th><td>4</td><td>4</td></tr>
+      <tr><th scope="row">Cognitive</th><td>5</td><td>5</td></tr>
+      <tr class="hl"><th scope="row">Value</th><td>6.5</td><td>4</td></tr>
+      <tr><th scope="row">Technical</th><td>5</td><td>5</td></tr>
+      <tr><th scope="row">Social</th><td>6</td><td>6</td></tr>
+      <tr><th scope="row">Immersion</th><td>5.5</td><td>5</td></tr>
+      <tr><th scope="row">Emotional</th><td>6</td><td>5</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>The widest gap is Value, 6.5 against 4. The pack's reasoning: the 27B is Apache-2.0 on hardware many readers already own, while Flash-Next asks for a much bigger machine and a different license. Flow sits at 4 for both, and the pack puts that down to the <code>xhigh</code> reasoning default, covered below. <a class="ref" href="#source-pack">[5]</a></p>
+
+<h2 class="section-h2 article-h2 reveal">Count in 24 GB cards</h2>
+<p>A model file is mostly its weights, and its size is roughly the number of parameters times the bits stored for each, divided by eight to get bytes. Qwen3.8-27B stores 27.78 billion parameters, a small vision encoder and draft head included. <a class="ref" href="#source-qwen-repo">[8]</a> At the 16 bits it ships in, that is about 56 GB. A 4-bit file averages more than 4 bits per weight, because each block of weights also stores scales and the quantizer keeps some tensors at higher precision. <a class="ref" href="#source-ggml">[9]</a> For this model, 4-bit files run from about 15 GB to 19 GB depending on who made them; the Q4_K_M that Quesma tested was 17.0 GB. <a class="ref" href="#source-qwen-gguf">[10]</a> <a class="ref" href="#source-quesma">[11]</a> Unsloth's guide asks for 16 to 19 GB of memory for its 4-bit versions, which leaves room on a 24 GB card for the conversation. <a class="ref" href="#source-unsloth-qwen">[3]</a></p>
+<p>GLM-5.3 is built differently. It is a mixture-of-experts model: in 75 of its 78 layers, a router sends each token through 8 of 256 specialist blocks, called experts, plus one shared expert. <a class="ref" href="#source-glm-repo">[1]</a> Unsloth lists it as 744 billion parameters with 40 billion active per token, the figures Z.AI published for GLM-5, which has the same dimensions. <a class="ref" href="#source-unsloth-glm">[2]</a> The Hugging Face checkpoint stores 753.3 billion, because it also carries a 10-billion-parameter layer that drafts upcoming tokens to speed up generation. <a class="ref" href="#source-glm-repo">[1]</a> The active count sets how much work each token takes. The total sets how much memory you need: any expert can be chosen for the next token, so all of them must be loaded. The <a href="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html">bandwidth guide</a> works through what that means for speed.</p>
+
+<figure class="units-figure reveal">
+  <p class="units-head">Memory needed, one block per 24 GB card</p>
+  <div class="unit-row"><div class="unit-label"><b>Qwen3.8-27B, 4-bit</b><span>16–19 GB</span></div><div class="units cool" aria-hidden="true"><i style="--p:62%;--q:74%"></i></div></div>
+  <div class="unit-row"><div class="unit-label"><b>Qwen3.8-Flash-Next, 1-bit to 4-bit</b><span>75–112 GB</span></div><div class="units violet" aria-hidden="true"><i class="full"></i><i class="full"></i><i style="--p:91%;--q:100%"></i><i style="--q:100%"></i><i style="--q:35%"></i></div></div>
+  <div class="unit-row"><div class="unit-label"><b>GLM-5.3, 1-bit</b><span>223 GB</span></div><div class="units warm" aria-hidden="true"><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i style="--p:65%"></i></div></div>
+  <div class="unit-row"><div class="unit-label"><b>GLM-5.3, 8-bit</b><span>810 GB</span></div><div class="units warm" aria-hidden="true"><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i style="--p:43%"></i></div></div>
+  <div class="units-key"><span><i style="background:#c9cdd4"></i>Solid: the lower figure</span><span><i style="background:repeating-linear-gradient(45deg,#c9cdd4 0 3px,transparent 3px 6px)"></i>Hatched: up to the higher figure</span></div>
+  <figcaption>Each block is one 24 GB graphics card, such as an RTX 3090 or 4090 (24 GiB, about 25.8 GB). Figures are Unsloth's memory guidance at the end of August, which counts GPU memory plus system RAM, or unified memory: memory shared by the CPU and GPU, as on Macs and the DGX Spark. <a class="ref" href="#source-unsloth-qwen">[3]</a> <a class="ref" href="#source-unsloth-flash">[12]</a> <a class="ref" href="#source-unsloth-glm">[2]</a></figcaption>
+</figure>
+
+<p>At its smallest, GLM-5.3 needs the memory of almost nine such cards. The smallest setup Unsloth describes as working well is its 2-bit UD-IQ2_M file, 238.6 GB, on a machine with 256 GB of memory, such as two linked DGX Sparks or a Mac Studio. <a class="ref" href="#source-unsloth-glm">[2]</a></p>
+
+<h2 class="section-h2 article-h2 reveal">A "1-bit" file that averages 2.3 bits</h2>
+<p>Unsloth's smallest GLM-5.3 file, UD-IQ1_S, is labeled 1-bit and weighs 216.7 GB. <a class="ref" href="#source-unsloth-gguf">[13]</a> Divide by the parameter count and the average comes out much higher:</p>
+<pre><code>216,715,365,893 bytes × 8
+  ÷ 753,329,940,480 parameters
+  = 2.30 bits per weight</code></pre>
+<p>The file's own headers show where the extra bits went. Only 45 percent of the weights use IQ1_S, llama.cpp's 1.56-bit format. About 30 percent use a 3-bit format, 19 percent a 2-bit format, and the last 6 percent a mix of other formats, up to full 32-bit precision. <a class="ref" href="#source-unsloth-gguf">[13]</a> <a class="ref" href="#source-ggml">[9]</a></p>
+<p>The mix is deliberate. When Unsloth introduced the method on DeepSeek-R1, it kept the small parts that every token passes through (attention, the shared expert, the first three dense layers, the embeddings) at 4 to 6 bits, left the router and normalization layers at full 32-bit precision, and pushed most of the routed experts, about 88 percent of that model, down to about 1.58 bits. <a class="ref" href="#source-unsloth-r1">[14]</a> Squeezing everything evenly broke the model. The uniform version repeated itself endlessly, and on Unsloth's Flappy Bird coding test a uniform file of about the same size scored 0 out of 10 where the dynamic one scored 6.92. <a class="ref" href="#source-unsloth-r1">[14]</a></p>
+<p>The same division checks any file. GLM-5.3's 8-bit file is 801.4 GB, which works out to 8.51 bits per weight, almost exactly what llama.cpp's Q8_0 format costs: every block of 32 one-byte weights carries a two-byte scale, so 8.5 bits each. <a class="ref" href="#source-unsloth-gguf">[13]</a> <a class="ref" href="#source-ggml">[9]</a> Unsloth's memory figures, 223 GB at 1 bit and 810 GB at 8 bits, sit 6 to 9 GB above these file sizes. When you plan hardware, work from the file size and the memory guidance, not the label.</p>
+
+<h2 class="section-h2 article-h2 reveal">How the 27B holds a 256K-token conversation</h2>
+<p>Besides the weights, a model needs memory for its KV cache: the keys and values that attention layers store for every earlier token, so each new token can look back at them. It grows with every token, and the <a href="https://local-ai-models.ai/kv-cache-geometry.html">KV cache guide</a> shows how to price it from a model's <code>config.json</code>. In a conventional model, the cache is what stops long context from fitting. Qwen3-32B, an all-attention model from 2025, stores 256 KiB per token; if it could hold 262,144 tokens, its cache alone would be 64 GiB. <a class="ref" href="#source-qwen3-32b">[15]</a></p>
+<p>Qwen3.8-27B's configuration describes something else. Of its 64 layers, only 16, every fourth one, are full-attention layers with a KV cache. The other 48 are Gated DeltaNet layers, a kind of linear attention that keeps a fixed-size memory instead of a growing record. <a class="ref" href="#source-qwen-repo">[8]</a> <a class="ref" href="#source-gdn">[16]</a></p>
+
+<figure class="layer-figure reveal">
+  <div class="layer-strip" aria-hidden="true"><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i><i></i><i></i><i></i><i class="f"></i></div>
+  <div class="layer-legend"><span><i></i>Gated DeltaNet: fixed-size memory</span><span><i class="f"></i>Full attention: KV cache grows with every token</span></div>
+  <figcaption>Qwen3.8-27B's 64 layers in order, from its <code>config.json</code>: sixteen repeats of three Gated DeltaNet layers and one full-attention layer.</figcaption>
+</figure>
+
+<pre><code>KV per token = 2 (key and value)
+             × 16 layers × 4 KV heads
+             × 256 values × 2 bytes
+             = 65,536 bytes = 64 KiB
+
+At 262,144 tokens:
+  16 GiB   at 16 bits
+  8.5 GiB  as q8_0
+  4.5 GiB  as q4_0</code></pre>
+<p><code>q8_0</code> and <code>q4_0</code> are llama.cpp's 8-bit and 4-bit cache formats; counting their scales, they store 8.5 and 4.5 bits per value. <a class="ref" href="#source-ggml">[9]</a> The Gated DeltaNet layers add a fixed 144 MiB per conversation, whether it is ten tokens long or 262,144: 48 layers, each holding 48 matrices of 128 × 128 values at 4 bytes. <a class="ref" href="#source-qwen-repo">[8]</a> The same attention shapes in every layer would need 64 GiB at full context; the hybrid needs a quarter of that. The rest comes down to the cache's precision. Next to a 17 GB 4-bit file, each halving of cache precision buys a doubling of context in about the same memory:</p>
+
+<div class="table-wrap reveal">
+  <table class="vram-table">
+    <caption>Qwen3.8-27B on a 24 GB card: 4-bit weights plus cache</caption>
+    <thead><tr><th scope="col">Context</th><th scope="col">Cache format</th><th scope="col">KV cache</th><th scope="col">Weights plus cache</th></tr></thead>
+    <tbody>
+      <tr><td>65,536 tokens</td><td>16-bit</td><td>4.0 GiB</td><td>19.8 GiB</td></tr>
+      <tr><td>131,072 tokens</td><td><code>q8_0</code></td><td>4.25 GiB</td><td>20.1 GiB</td></tr>
+      <tr><td>262,144 tokens</td><td><code>q4_0</code></td><td>4.5 GiB</td><td>20.3 GiB</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>A 17 GB file is 15.8 GiB, and a card sold as 24 GB holds 24 GiB. The DeltaNet memory and the runtime's working buffers come out of what remains; in the one real full-context run described next, only 515 MiB was left. Lower-precision caches also cost some accuracy, which the KV guide covers.</p>
+<p>That is how a post on Hacker News could report "Qwen3.8 27B at 256K: 50 TPS on a 24 GB GPU." It used a custom mixed file averaging 5 bits per weight, mostly in NVIDIA's 4-bit NVFP4 format (16,321 MiB), a 4-bit cache, a patched llama.cpp build and a second GPU for the vision component, and it used 23,952 of the card's 24,467 MiB. <a class="ref" href="#source-piszczek">[4]</a> The author also cut llama.cpp's saved copies of the DeltaNet memory from the default 32 to 4 (<code>--ctx-checkpoints 4</code>) to free space. The 50 tokens per second was the average of ten runs on the author's production workload, with the model's own draft head proposing several tokens at a time. With the 256K context actually full, generation ran at 12.6 tokens per second, because each new token also has to attend over the whole cache. <a class="ref" href="#source-piszczek">[4]</a></p>
+<p>The numbers pass the bandwidth test. The card moves 432 GB/s at peak, and producing one token without drafting means reading the 17.1 GB file once, a ceiling of about 25 tokens per second. The author measured 21.2 without drafting and 59.5 with it in a head-to-head run. <a class="ref" href="#source-piszczek">[4]</a> Drafting gets past that ceiling because one pass over the weights checks several proposed tokens at once; the <a href="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html">bandwidth guide</a> explains how. The author also did not stop at a successful load, and filled the context with a 261,500-token input before generating from it.</p>
+
+<h3 class="article-h3">Why not make every layer linear?</h3>
+<p>Because a fixed-size memory has to compress, and compression loses exact details. Katharopoulos and colleagues showed in 2020 that linear attention can run like a recurrent network, carrying a fixed-size summary from token to token, so its memory stays flat however long the text gets. <a class="ref" href="#source-katharopoulos">[17]</a> The cost showed up when researchers measured recall. The Zoology study traced 82 percent of the quality gap between attention and gated-convolution models, an earlier family of efficient designs, to recalling something that appeared earlier in the text, although such tokens were only 6.4 percent of the training text. <a class="ref" href="#source-zoology">[18]</a> The Based paper proved that exact recall over inputs of any length needs memory that grows with the input. <a class="ref" href="#source-based">[19]</a> Gated DeltaNet uses its fixed memory more selectively, overwriting a single stored association or clearing the memory quickly when the topic changes, but its authors still got their best recall from hybrids that mixed attention back in. <a class="ref" href="#source-gdn">[16]</a></p>
+<p>Qwen's report on the Flash-Next architecture, which uses the same three-to-one layout, gives that reason for it: the DeltaNet layers compress everything read so far into a fixed-size state, and one full-attention layer in four keeps the direct token-by-token lookup that no fixed-size memory reproduces exactly. In a controlled comparison on 25-billion-parameter mixture-of-experts test models (3 billion active), the DeltaNet hybrid beat an all-attention model on 8 of 9 benchmarks, averaging 53.81 against 49.87. The authors note that this does not show which component caused each gain. <a class="ref" href="#source-qwen-report">[20]</a></p>
+<p><span class="opinion-label">[OPINION]</span> For long-context work, I would compare config files before parameter counts. Two models of similar size can need 16 GiB or 64 GiB for the same conversation, and only the config tells you which. If your work depends on pulling exact details out of very long documents, test that on your own files, since exact recall is what a compressed memory gives up first.</p>
+
+<h2 class="section-h2 article-h2 reveal">Reasoning effort: the default trades time for accuracy</h2>
+<p>Both Qwen3.8 models think before they answer: they write out working, which most chat apps fold away, and then the reply. A setting called reasoning effort controls how much, with three levels: <code>low</code>, <code>medium</code> and <code>xhigh</code>, the default. <a class="ref" href="#source-qwen-repo">[8]</a> The levels are instructions, not a limit on thinking length. Qwen's chat template adds a short instruction to the system prompt at <code>xhigh</code>, asking the model to think carefully, check key assumptions and weigh alternatives; a different one at <code>low</code>, asking it to keep its thinking brief; and nothing at <code>medium</code>. <a class="ref" href="#source-qwen-repo">[8]</a> Qwen3.8 also keeps earlier turns' reasoning in the conversation by default, so over a long session the thinking takes up KV cache as well as time. <a class="ref" href="#source-qwen-repo">[8]</a></p>
+<p>The complaints about <code>xhigh</code> are mostly about time, and partly about the model doing more than it was asked. Simon Willison's review called the 27B excellent but said it "defaults to wildly overthinking things." <a class="ref" href="#source-willison">[21]</a> His first attempt at a test drawing, an SVG of a pelican riding a bicycle, took 21 minutes and 22,276 tokens of reasoning; with reasoning off, the same prompt took 137 seconds. The thinking also used up LM Studio's default 8,192-token context on ordinary questions until Willison raised the limit. <a class="ref" href="#source-willison">[21]</a> A later post shared a modified chat template that makes <code>medium</code> the default. <a class="ref" href="#source-hn-medium">[22]</a></p>
+<p>Piotr Migdał of Quesma measured what the time buys, running a 17 GB 4-bit file at each level. On GPQA Diamond, 198 graduate-level science questions, it scored 90.4 percent at <code>xhigh</code> and 83.3 percent at <code>medium</code>. On IFBench, which checks whether a model follows precise instructions, it scored 81.0 percent at <code>xhigh</code> and 62.7 percent at <code>medium</code>. The full-precision model showed similar drops, and Quesma's 95 percent confidence ranges overlap for GPQA but not for IFBench. <a class="ref" href="#source-quesma">[11]</a> Qwen's model card adds a warning for agents: lower effort can make a multi-turn task slower overall, because thin analysis can lead to more failures and retries. <a class="ref" href="#source-qwen-repo">[8]</a></p>
+<p>Research on reasoning models explains why the default still feels wasteful. Chen and colleagues asked models what 2 plus 3 is. GPT-4o answered in 7 tokens. QwQ-32B-Preview, an earlier Qwen reasoning model, used 901: it solved the problem 13 times, though its first attempt had the answer after 39 tokens. Across two math test sets, when these models got a problem right, their first attempt already held the answer 89 to 97 percent of the time. <a class="ref" href="#source-chen">[23]</a> A study of coding agents found the other side of the trade on real GitHub issues: OpenAI's o1 solved 29.1 percent at high effort and 21.0 percent at low effort, and high effort cost 3.5 times as much. <a class="ref" href="#source-cuadron">[24]</a> Taken together, these results show the extra thinking paying off on hard science questions, strict instructions and real coding work, and mostly re-checking finished answers on simple arithmetic.</p>
+<p>You can set the level per request. In llama.cpp's server (builds from 14 August on) and in vLLM, send <code>"reasoning_effort": "medium"</code> with the request; Qwen's model card shows the same field for SGLang. In Ollama, send <code>"think": "medium"</code>. <a class="ref" href="#source-effort-runtimes">[25]</a> <a class="ref" href="#source-qwen-repo">[8]</a> To turn thinking off, send <code>"reasoning_effort": "none"</code> to llama.cpp or vLLM, or <code>"think": false</code> to Ollama. <a class="ref" href="#source-effort-runtimes">[25]</a> To change the default for a whole llama.cpp server:</p>
+<pre><code>llama-server -m Qwen3.8-27B-UD-Q4_K_M.gguf \
+  --chat-template-kwargs '{"reasoning_effort":"medium"}'</code></pre>
+<p>On Windows, PowerShell 7.3 and later accept that single-quoted form unchanged. The older Windows PowerShell 5.1 needs <code>'{\"reasoning_effort\":\"medium\"}'</code>, and Command Prompt needs <code>"{\"reasoning_effort\":\"medium\"}"</code>. <a class="ref" href="#source-ms-parsing">[26]</a> Qwen's own template accepts only the three levels, so <code>"high"</code> fails with an error in vLLM and with ggml-org's llama.cpp files, while Unsloth's files and Ollama quietly treat it as <code>xhigh</code>. <a class="ref" href="#source-qwen-repo">[8]</a> <a class="ref" href="#source-qwen-gguf">[10]</a> <a class="ref" href="#source-effort-runtimes">[25]</a></p>
+<p>GLM-5.3 goes further in the same direction. Its levels are <code>low</code>, <code>high</code> and <code>max</code>, it defaults to <code>max</code>, and according to Unsloth and Z.AI its thinking cannot be switched off. <a class="ref" href="#source-glm-repo">[1]</a> <a class="ref" href="#source-unsloth-glm">[2]</a> <a class="ref" href="#source-zai-blog">[27]</a></p>
+<p><span class="opinion-label">[OPINION]</span> I would keep <code>xhigh</code> for work that is hard to check, such as a subtle bug or a strict output format, and use <code>medium</code> or <code>low</code> for quick questions whose answers I will read anyway. Quesma's instruction-following drop at <code>medium</code> is why I would not make it the blanket default, as the community template does.</p>
+
+<h2 class="section-h2 article-h2 reveal">What each license lets you do</h2>
+<p>Open weights mean you can download the files. The license says what you may do with them, and the four models in this bulletin come with four different sets of terms. What follows is my reading of each license, not legal advice.</p>
+<div class="table-wrap reveal">
+  <table class="vram-table">
+    <caption>Licenses as of 31 August 2026</caption>
+    <thead><tr><th scope="col">Model</th><th scope="col">License</th><th scope="col">In short</th></tr></thead>
+    <tbody>
+      <tr><td><a class="pick-link" href="https://local-ai-models.ai/local-ai-models.html#qwen3-8-27b">Qwen3.8-27B</a></td><td>Apache-2.0</td><td>Use, change, sell and host it, commercially or not. Keep the license and notices, and mark files you change. <a class="ref" href="#source-qwen-repo">[8]</a></td></tr>
+      <tr><td>Qwen3.8-Flash-Next</td><td>Qwen Community License 1.0</td><td>Broad use, commercial included, with two conditions. Keep the copyright and license notice, and any commercial product with more than 100 million monthly active users or US$20 million in monthly revenue must show the model's name prominently in its interface. If you or any affiliate runs a model-as-a-service or AI work-assistant business, you need a separate license from Qwen before any commercial use of the model, whatever your size. <a class="ref" href="#source-qcl">[28]</a></td></tr>
+      <tr><td>GLM-5.3</td><td>GLM-5.3 License (Z.AI)</td><td>An MIT-style grant (keep the notices, follow applicable law) with one added condition: if the licensee or an affiliate runs a model-as-a-service business and the group's revenue tops US$10 billion in any 12 months, it must pass Z.AI's security review before any commercial use. <a class="ref" href="#source-glm-license">[29]</a></td></tr>
+      <tr><td>GLM-5.3-Flash</td><td>MIT</td><td>Use it for anything; keep the copyright and license notice. <a class="ref" href="#source-glm-flash-card">[30]</a></td></tr>
+    </tbody>
+  </table>
+</div>
+<p>The two custom licenses define a model-as-a-service business almost the same way: giving other people inference or fine-tuning access, such as an API, in which they meaningfully control the inputs, settings or training data. Neither counts passing requests on to a model someone else hosts. GLM-5.3's license also excludes end-user products where the model only powers specific features; the Qwen license has no such exclusion. <a class="ref" href="#source-qcl">[28]</a> <a class="ref" href="#source-glm-license">[29]</a> Qwen's "AI work assistant" means a standalone product mainly for AI-assisted coding or office work; single-purpose tools, assistants for other fields and AI features inside other products are excluded. Purely internal use is exempt from the whole condition, as long as neither the model nor its outputs reach anyone outside the company. <a class="ref" href="#source-qcl">[28]</a> The separate-license condition is the one most likely to catch a small team, because it applies at any size.</p>
+<p>The GLM-5.3 license is also a change from its predecessor. Z.AI describes GLM-5.3 as the same base model as GLM-5.2, improved by further training, and GLM-5.2 was released under plain MIT. <a class="ref" href="#source-zai-blog">[27]</a> <a class="ref" href="#source-glm52">[31]</a> The new clause reaches only groups with more than US$10 billion in revenue that also run a model-as-a-service business.</p>
+
+<h2 class="section-h2 article-h2 reveal">Where each model runs</h2>
+<p><strong>Qwen3.8-27B</strong> runs in llama.cpp builds from mid-August onward; Quesma found that earlier builds did not work. <a class="ref" href="#source-quesma">[11]</a> Ollama lists it as <code>qwen3.8</code> (version 0.32.12 or later), with a 4-bit default tag that includes the model's draft head, and vLLM has a recipe for it. <a class="ref" href="#source-ollama">[32]</a> <a class="ref" href="#source-vllm">[33]</a> For code, stay at 4 bits or above. Quesma ran Terminal-Bench 2.1, an agentic coding benchmark of 89 tasks carried out in a terminal: the 17 GB 4-bit file solved 63, the same as the full model, and the 10.7 GB 2-bit file solved 57. The smallest 1-bit file scored below the 25 percent that guessing earns on GPQA Diamond's four-option questions, and returned an empty answer about half the time or more. <a class="ref" href="#source-quesma">[11]</a> On a Mac Studio with an M3 Ultra, one report measured 14 tokens per second from Ollama's 4-bit build. <a class="ref" href="#source-terminalbytes">[34]</a></p>
+<p><strong>Qwen3.8-Flash-Next</strong> uses the same three-to-one hybrid as the 27B, with 36 DeltaNet layers and 12 sparse-attention layers (attention that reads only a selected subset of earlier tokens), and 125 billion parameters of which 6 billion are active per token. It also carries a 51-billion-parameter lookup table for common two- and three-token sequences, which runtimes can keep in system memory. <a class="ref" href="#source-flash-card">[7]</a> <a class="ref" href="#source-sglang">[35]</a> It launched on 26 August with same-day SGLang support and a vLLM recipe, and llama.cpp added it the next day, in release b10660. <a class="ref" href="#source-sglang">[35]</a> <a class="ref" href="#source-vllm">[33]</a> <a class="ref" href="#source-llamacpp-27742">[36]</a> Unsloth's GGUF files, the format llama.cpp and Ollama load, are community conversions, not Qwen's own. <a class="ref" href="#source-unsloth-flash">[12]</a></p>
+<p><strong>GLM-5.3</strong> shipped with a vLLM recipe (version 0.28.0 or later; its 8-bit FP8 weights need eight H200-class GPUs) and an SGLang guide, and mainline llama.cpp already supported its architecture, so Unsloth's GGUF files run on a current build. <a class="ref" href="#source-glm-repo">[1]</a> <a class="ref" href="#source-vllm">[33]</a> <a class="ref" href="#source-unsloth-glm">[2]</a></p>
+<p><strong>GLM-5.3-Flash</strong>, a sibling with 320 billion parameters (18 billion active), is MIT-licensed. Unsloth's smallest version needs 100 GB of memory, and on 31 August mainline llama.cpp did not support it. <a class="ref" href="#source-glm-flash-card">[30]</a> <a class="ref" href="#source-glm-flash-runtime">[37]</a></p>
+
+<div class="since-box reveal">
+  <p class="article-h3">Since 31 August</p>
+  <ul>
+    <li>Qwen's architecture report is now on arXiv as 2608.30320, submitted on 31 August. <a class="ref" href="#source-qwen-report">[20]</a></li>
+    <li>Artificial Analysis re-versioned its Intelligence Index on 4 and 7 September. The 27B now shows 34 on version 4.3.2, against 52 on version 4.1.1; the two numbers come from different test suites. <a class="ref" href="#source-aa">[6]</a></li>
+    <li>Unsloth revised its Flash-Next memory table: the 4-bit row, 112 GB in the 28 August version, now reads 96 to 114 GB. <a class="ref" href="#source-unsloth-flash">[12]</a></li>
+    <li>Ollama now lists Flash-Next too, with a 120 GB 4-bit tag. <a class="ref" href="#source-ollama">[32]</a></li>
+    <li>GLM-5.3-Flash gained SGLang support on 18 September. Mainline llama.cpp still lacks it, so llama.cpp users need Unsloth's fork. <a class="ref" href="#source-glm-flash-runtime">[37]</a></li>
+    <li>Neither Qwen model repository has changed, so the <code>xhigh</code> default stands, and the GLM-5.3 license is unchanged. <a class="ref" href="#source-qwen-repo">[8]</a> <a class="ref" href="#source-glm-license">[29]</a></li>
+  </ul>
+</div>
+
+<h2 class="section-h2 article-h2 reveal">FAQ</h2>
+
+<h3 class="article-h3">Can I run GLM-5.3 on a 24 GB card with a lot of system RAM?</h3>
+<p>Only if the two add up to about 223 GB, because Unsloth's figure counts GPU memory and system RAM together. <a class="ref" href="#source-unsloth-glm">[2]</a> Expect it to be slow. Each token uses about 40 billion parameters, but not at the file's 2.3-bit average: the parts every token passes through (attention, the shared expert, the router) are stored at about 6 bits or more, so each token reads about 21 GB of the 1-bit file. <a class="ref" href="#source-unsloth-gguf">[13]</a> If all of that comes from two-channel DDR5 at about 90 GB/s, which is a best case, the ceiling is about 4 tokens per second. Keeping those always-used parts, about 15 GB, on the 24 GB card leaves roughly 6 GB of experts per token to stream from RAM, which raises the ceiling to roughly 12 tokens per second before real-world losses. The <a href="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html">bandwidth guide</a> explains the method.</p>
+
+<h3 class="article-h3">Should I switch from the 27B to Flash-Next?</h3>
+<p>Not on this evidence. Flash-Next scores the same as or lower than the 27B on all nine Pulse dimensions, needs at least 75 GB of memory (Unsloth recommends a 96 GB machine), and your use must fit the Qwen Community License. Its grade is a launch-week grade, so check a later Pulse. <a class="ref" href="#source-pack">[5]</a> <a class="ref" href="#source-unsloth-flash">[12]</a> <a class="ref" href="#source-qcl">[28]</a></p>
+
+<h3 class="article-h3">Why is the 27B only a B− if it is the pick?</h3>
+<p>The composite comes from nine dimensions, not just fit. The 27B scores highest on Value (6.5); Flow sits at 4, which the pack puts down to the <code>xhigh</code> default, a setting you can change per request. <a class="ref" href="#source-pack">[5]</a></p>
+
+<h3 class="article-h3">Is GLM-5.3 MIT-licensed, like GLM-5.3-Flash and GLM-5.2?</h3>
+<p>No. It has its own license: an MIT-style grant plus a security-review condition for groups with more than US$10 billion in revenue that run a model-as-a-service business. Everyone else may use it commercially, keeping the notices. <a class="ref" href="#source-glm-license">[29]</a></p>
+
+<h3 class="article-h3">Will a smaller version of the 27B work on a 16 GB card?</h3>
+<p>Unsloth's 3-bit versions need 12 to 14 GB, so they fit. <a class="ref" href="#source-unsloth-qwen">[3]</a> Quesma's tests found the 2-bit file usable but noticeably weaker at coding: its 10.7 GB file solved 57 of 89 Terminal-Bench 2.1 tasks, against 63 for the 4-bit and full versions. Below that, quality collapsed, and Unsloth itself advises against 1-bit files for agents and tool calling. <a class="ref" href="#source-quesma">[11]</a> <a class="ref" href="#source-unsloth-qwen">[3]</a></p>
+
+<h2 class="section-h2 article-h2 reveal">Sources</h2>
+<ol class="sources-list">
+<li id="source-glm-repo">Hugging Face repository <a href="https://huggingface.co/zai-org/GLM-5.3" rel="nofollow">zai-org/GLM-5.3</a>: model card (release date 28 August 2026; license <code>other</code> / <code>glm-5.3</code>; <code>reasoning_effort</code> <code>low</code>, <code>high</code>, <code>max</code>, default <code>max</code>; "Serve GLM-5.3 Locally" runtime list) and <code>config.json</code> (78 layers, 3 dense and 75 mixture-of-experts; 256 routed experts, 8 per token, plus 1 shared; one draft layer). Hub total 753,329,940,480 parameters: 743.38B in the main model plus 9.95B in the draft layer, summed from the shard headers.</li>
+<li id="source-unsloth-glm">Unsloth, <a href="https://unsloth.ai/docs/models/glm-5.3" rel="nofollow">"GLM-5.3: How to Run Locally"</a>: 744B parameters with 40B active (the figures in Z.AI's GLM-5 technical report, <a href="https://arxiv.org/abs/2602.15763" rel="nofollow">arXiv 2602.15763</a>, Table 10); memory table from 223 GB at 1-bit to 810 GB at 8-bit, counting RAM plus VRAM or unified memory; UD-IQ2_M on 256 GB devices such as two DGX Sparks or a Mac Studio; thinking cannot be disabled. Same figures in archived copies from 30 August and 1 September.</li>
+<li id="source-unsloth-qwen">Unsloth, <a href="https://unsloth.ai/docs/models/qwen3.8" rel="nofollow">"Qwen3.8: How to Run Locally"</a> (memory table: 3-bit 12–14 GB, 4-bit 16–19 GB, BF16 56 GB; <code>xhigh</code> default) and <a href="https://unsloth.ai/docs/basics/dynamic-3.0-ggufs" rel="nofollow">"Unsloth Dynamic 3.0 GGUFs"</a> (1-bit files should not be used for agentic use or tool calling).</li>
+<li id="source-piszczek">Michał Piszczek, <a href="https://piszczek.pl/blog/qwen38-27b-256k-50-tps-24gb-gpu" rel="nofollow">"Qwen3.8 27B at 256K: 50 TPS on a 24 GB GPU"</a>, 17 August 2026, updated 18 August (Hacker News item 49331607). Hardware, model file, runtime settings and measurements.</li>
+<li id="source-pack">Pulse GameCritic pack dated 31 August 2026. Grades: Qwen3.8-27B composite 71, B−, confidence 0.78, n=7, INSUFFICIENT / static; Qwen3.8-Flash-Next composite 65, C+, confidence 0.55, n=5, launch-week / prior-heavy, not calibrated. Nine public Likert dimensions, scale 1–4–7, unchanged from 27 August. No public grade for GLM-5.3. Pulse grades practitioner signals, not Hub likes; the Artificial Analysis thread is downweighted as a Pulse quality signal.</li>
+<li id="source-aa">Artificial Analysis, <a href="https://artificialanalysis.ai/models/qwen3-8-27b" rel="nofollow">Qwen3.8 27B</a>: 52 on Intelligence Index v4.1.1 in archived copies from 17 and 27 August; 34 on v4.3.2 when checked on 25 September, after the v4.2 (4 September) and v4.3 (7 September) revisions. Discussed on Hacker News as item <a href="https://news.ycombinator.com/item?id=49334544" rel="nofollow">49334544</a> (381 points when checked on 25 September).</li>
+<li id="source-flash-card">Hugging Face repository <a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next" rel="nofollow">Qwen/Qwen3.8-Flash-Next</a>: license <code>other</code> / <code>qwen-community-1.0</code>; weights uploaded 26 August 2026; 125B parameters with 6B active, plus a 51B n-gram embedding and a 4B draft layer (Hub total 180.0B); 36 Gated DeltaNet and 12 Qwen Sparse Attention layers; no memory requirement printed.</li>
+<li id="source-qwen-repo">Hugging Face repository <a href="https://huggingface.co/Qwen/Qwen3.8-27B" rel="nofollow">Qwen/Qwen3.8-27B</a>: model card (Apache-2.0; <code>reasoning_effort</code> levels; <code>preserve_thinking</code> on by default; the note on lower effort in multi-turn agent tasks; the Chat Completions example), <code>config.json</code> (64 layers as three <code>linear_attention</code> and one <code>full_attention</code>, repeated 16 times; 4 KV heads; <code>head_dim</code> 256; 48 DeltaNet value heads with key and value size 128; state kept in float32; 262,144-token native context) and <code>chat_template.jinja</code> (default <code>xhigh</code>; accepted levels <code>xhigh</code>, <code>medium</code>, <code>low</code>; instruction text per level). Hub total 27,781,427,952 parameters, including a 0.46B vision encoder and a 0.42B draft head. Last modified 14 August 2026; unchanged when checked on 25 September.</li>
+<li id="source-ggml">llama.cpp source at commit <a href="https://github.com/ggml-org/llama.cpp/tree/a25c9865fe03c954c93fd755b5d79ae86ba99750" rel="nofollow">a25c986</a>: block formats in <code>ggml/src/ggml-common.h</code> (Q8_0 and Q4_0 carry one 2-byte scale per 32 values: 8.5 and 4.5 bits; Q4_K 4.5 bits; IQ1_S 1.5625 bits) and whole-file averages in <code>tools/quantize/README.md</code> (Llama-3.1-8B: Q4_K_M 4.89 bits per weight, IQ1_S 2.00).</li>
+<li id="source-qwen-gguf">4-bit GGUF files on Hugging Face: <a href="https://huggingface.co/unsloth/Qwen3.8-27B-GGUF" rel="nofollow">unsloth/Qwen3.8-27B-GGUF</a> (UD-Q4_K_S 15.36 GB, UD-Q4_K_M 16.46 GB, UD-Q4_K_XL 17.56 GB; its embedded chat template maps <code>high</code> to <code>xhigh</code>) and <a href="https://huggingface.co/ggml-org/Qwen3.8-27B-GGUF" rel="nofollow">ggml-org/Qwen3.8-27B-GGUF</a> (Q4_K_M 18.97 GB).</li>
+<li id="source-quesma">Piotr Migdał, <a href="https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/" rel="nofollow">"Benchmarking Qwen3.8 27B quantizations: 4-bit holds up, 1-bit collapses"</a>, Quesma, 26 August 2026 (Hacker News item 49452656). Figures from the post's charts: GPQA Diamond and IFBench (strict) by quantization and reasoning effort, with Wilson 95 percent intervals; Terminal-Bench 2.1 at <code>xhigh</code>; file sizes; and the llama.cpp build requirement.</li>
+<li id="source-unsloth-flash">Unsloth, <a href="https://unsloth.ai/docs/models/qwen3.8-next" rel="nofollow">"Qwen3.8-Flash-Next: How to Run Locally"</a>: at least 75 GB of RAM or unified memory, with a 96 GB device recommended; 4-bit row 112 GB in the 28 August version and 96–114 GB from 2 September. Unsloth's GGUF repository, <a href="https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF" rel="nofollow">unsloth/Qwen3.8-Flash-Next-GGUF</a>, is a community conversion.</li>
+<li id="source-unsloth-gguf"><a href="https://huggingface.co/unsloth/GLM-5.3-GGUF" rel="nofollow">unsloth/GLM-5.3-GGUF</a> on Hugging Face: file sizes (UD-IQ1_S 216,715,365,893 bytes; UD-IQ2_M 238.58 GB; Q8_0 801,357,677,216 bytes) and per-tensor types and sizes read from the GGUF headers. In UD-IQ1_S: 341.45B weights in IQ1_S, 228.71B in IQ3_XXS and 141.73B in IQ2_XXS; attention stored at 6.45 bits per weight on average, the shared expert at 5.87, the router at 32; about 14.8 GB of always-used weights and 6.2 GB of routed experts per token. Unchanged since 29 August.</li>
+<li id="source-unsloth-r1">Unsloth, <a href="https://unsloth.ai/blog/deepseekr1-dynamic" rel="nofollow">"Run DeepSeek-R1 Dynamic 1.58-bit"</a>, 27 January 2025: which layers stay at higher precision, and the uniform against dynamic comparison (Flappy Bird test, pass@3).</li>
+<li id="source-qwen3-32b"><a href="https://huggingface.co/Qwen/Qwen3-32B/blob/main/config.json" rel="nofollow">Qwen/Qwen3-32B <code>config.json</code></a>: 64 layers, 8 KV heads, <code>head_dim</code> 128.</li>
+<li id="source-gdn">Songlin Yang, Jan Kautz and Ali Hatamizadeh, <a href="https://arxiv.org/abs/2412.06464" rel="nofollow">"Gated Delta Networks: Improving Mamba2 with Delta Rule"</a>, ICLR 2025. The gated delta rule (section 3.1, equation 10) and the hybrid models with attention (section 3.3, Table 4).</li>
+<li id="source-katharopoulos">Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas and François Fleuret, <a href="https://arxiv.org/abs/2006.16236" rel="nofollow">"Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention"</a>, ICML 2020. Sections 3.3 and 3.4.</li>
+<li id="source-zoology">Simran Arora, Sabri Eyuboglu and colleagues, <a href="https://arxiv.org/abs/2312.04927" rel="nofollow">"Zoology: Measuring and Improving Recall in Efficient Language Models"</a>, 2023. Abstract and Table 1: 82 percent of the gap on associative-recall tokens, 6.4 percent of Pile tokens.</li>
+<li id="source-based">Simran Arora, Sabri Eyuboglu, Michael Zhang and colleagues, <a href="https://arxiv.org/abs/2402.18668" rel="nofollow">"Simple linear attention language models balance the recall-throughput tradeoff"</a>, ICML 2024. Theorem 3.1.</li>
+<li id="source-qwen-report">Qwen Team, <a href="https://github.com/QwenLM/Qwen3.8-Flash-Next/blob/main/tech_report.pdf" rel="nofollow">"On the Design of Qwen3.8-Next Architecture: Evaluation, Efficiency, and Training Stability"</a>, 26 August 2026; on arXiv as <a href="https://arxiv.org/abs/2608.30320" rel="nofollow">2608.30320</a> since 31 August. Section 2.1.1 and Table 1 (28-layer 25B-A3B test models).</li>
+<li id="source-willison">Simon Willison, <a href="https://simonwillison.net/2026/Aug/16/qwen-38-27b/" rel="nofollow">"Qwen 3.8 27B is excellent, but it defaults to wildly overthinking things"</a>, 16 August 2026. Discussed on Hacker News as item <a href="https://news.ycombinator.com/item?id=49324985" rel="nofollow">49324985</a> (802 points when checked on 25 September).</li>
+<li id="source-hn-medium">Hacker News item <a href="https://news.ycombinator.com/item?id=49355510" rel="nofollow">49355510</a>, "Qwen3.8-27B make medium the default effort level instead of xhigh," 19 August 2026, linking a modified chat template in a personal llama.cpp fork.</li>
+<li id="source-chen">Xingyu Chen and colleagues, <a href="https://arxiv.org/abs/2412.21187" rel="nofollow">"Do NOT Think That Much for 2+3=? On the Overthinking of o1-Like LLMs"</a>, 2024. Figure 1(a), Figure 2 and Figure 5.</li>
+<li id="source-cuadron">Alejandro Cuadron and colleagues, <a href="https://arxiv.org/abs/2502.08235" rel="nofollow">"The Danger of Overthinking: Examining the Reasoning-Action Dilemma in Agentic Tasks"</a>, 2025. Sections 1 and 5.6: o1 at high and low effort on SWE-bench Verified.</li>
+<li id="source-effort-runtimes">How runtimes pass the setting: llama.cpp commit <a href="https://github.com/ggml-org/llama.cpp/commit/7e4c0a96" rel="nofollow">7e4c0a96</a>, "chat : pass reasoning_effort to template" (14 August 2026), where <code>none</code> turns thinking off; vLLM's Chat Completions <code>reasoning_effort</code> field, forwarded to the chat template (<code>none</code> turns thinking off); Ollama's Qwen3.8 renderer, <a href="https://github.com/ollama/ollama/blob/main/model/renderers/qwen35.go" rel="nofollow"><code>model/renderers/qwen35.go</code></a>, which accepts <code>low</code>, <code>medium</code> and <code>xhigh</code> for <code>think</code>, turns thinking off for <code>false</code>, and falls back to <code>xhigh</code> for any other string.</li>
+<li id="source-ms-parsing">Microsoft, <a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parsing" rel="nofollow">"about_Parsing"</a>: PowerShell 7.3 changed how arguments with quote characters are passed to native programs, a breaking change from Windows PowerShell 5.1. Each form was also checked on 25 September 2026 with PowerShell 7.6 and Windows PowerShell 5.1.</li>
+<li id="source-zai-blog">Z.AI, <a href="https://z.ai/blog/glm-5.3" rel="nofollow">"GLM-5.3: Frontier Coding with Emergent Cyber Capabilities"</a>, 14 August 2026: same base model as GLM-5.2, with the gains from post-training; <code>reasoning_effort</code> default <code>max</code>, and thinking cannot be disabled; weights promised within two weeks.</li>
+<li id="source-qcl">Qwen Community License 1.0, from the <a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next/raw/main/LICENSE" rel="nofollow">Qwen/Qwen3.8-Flash-Next repository</a>: the grant, the notice and attribution conditions, the separate license for model-as-a-service and AI work-assistant businesses, the internal-use exemption, and the definitions.</li>
+<li id="source-glm-license">GLM-5.3 License, Copyright (c) 2026 Z.AI, from the <a href="https://huggingface.co/zai-org/GLM-5.3/raw/main/LICENSE" rel="nofollow">zai-org/GLM-5.3 repository</a>: the grant, clause 1 (notices and applicable law), clause 2 and its definitions. Unchanged since 28 August.</li>
+<li id="source-glm-flash-card">Hugging Face repository <a href="https://huggingface.co/zai-org/GLM-5.3-Flash" rel="nofollow">zai-org/GLM-5.3-Flash</a>: MIT License; 320B total parameters, 18B active; 321,323,031,390 parameters stored.</li>
+<li id="source-glm52">Hugging Face repository <a href="https://huggingface.co/zai-org/GLM-5.2" rel="nofollow">zai-org/GLM-5.2</a>: MIT License, same parameter count as GLM-5.3.</li>
+<li id="source-ollama">Ollama library: <a href="https://ollama.com/library/qwen3.8" rel="nofollow">qwen3.8</a> (requires Ollama 0.32.12; the default tag is 4-bit with the draft head) and <a href="https://ollama.com/library/qwen3.8-flash-next" rel="nofollow">qwen3.8-flash-next</a> (4-bit tag 120 GB when checked on 25 September).</li>
+<li id="source-vllm">vLLM recipes: <a href="https://recipes.vllm.ai/Qwen/Qwen3.8-27B" rel="nofollow">Qwen3.8-27B</a>, <a href="https://recipes.vllm.ai/Qwen/Qwen3.8-Flash-Next" rel="nofollow">Qwen3.8-Flash-Next</a> (added 26 August) and <a href="https://github.com/vllm-project/recipes/blob/main/models/zai-org/GLM-5.3.yaml" rel="nofollow">GLM-5.3</a> (added 28 August; vLLM 0.28.0 or later on 31 August; FP8 on eight H200 or H20 GPUs).</li>
+<li id="source-terminalbytes">terminalbytes, <a href="https://terminalbytes.com/run-qwen-3-8-27b-locally/" rel="nofollow">"Run Qwen3.8 27B locally: real numbers from my Mac Studio"</a>, 27 August 2026 (Hacker News item 49479951): Ollama's 4-bit build on an M3 Ultra, 14.0 tokens per second over five runs.</li>
+<li id="source-sglang">SGLang Team, <a href="https://www.lmsys.org/blog/2026-08-26-qwen-flash-next/" rel="nofollow">"Qwen3.8-Flash-Next: Day-0 Support in SGLang"</a>, 26 August 2026, including the n-gram table kept in host memory.</li>
+<li id="source-llamacpp-27742">llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/27742" rel="nofollow">27742</a>, "model: add Qwen3.8-Flash-Next (qwen4exp)," merged 27 August 2026 (release b10660).</li>
+<li id="source-glm-flash-runtime">GLM-5.3-Flash runtime status: Unsloth's <a href="https://unsloth.ai/docs/models/glm-5.3-flash" rel="nofollow">GLM-5.3-Flash guide</a> (smallest version needs 100 GB of memory; points llama.cpp users to Unsloth's own fork); llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/27754" rel="nofollow">27754</a>, still open on 25 September; SGLang release v0.5.20 (18 September) added the model.</li>
+</ol>
+</article>
+</div>
+
+<section class="related">
+  <div class="related-title reveal">Related</div>
+  <div class="related-grid reveal">
+    <a href="https://local-ai-models.ai/local-ai-models.html#qwen3-8-27b" class="related-card">
+      <div class="related-eyebrow">Catalog</div>
+      <div class="related-name">Qwen3.8 (27B)</div>
+      <div class="related-desc">Apache-2.0, 262,144-token native context, thinking on by default.</div>
+    </a>
+    <a href="https://local-ai-models.ai/kv-cache-geometry.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">Why a Longer Chat Needs More Memory</div>
+      <div class="related-desc">Work out a model&#x27;s KV cache per token from its configuration file.</div>
+    </a>
+    <a href="https://local-ai-models.ai/memory-bandwidth-tokens-per-second.html" class="related-card">
+      <div class="related-eyebrow">Guide</div>
+      <div class="related-name">Why a Model Can Fit and Still Feel Slow</div>
+      <div class="related-desc">Estimate generation speed from memory bandwidth, and see what MoE models change.</div>
+    </a>
+  </div>
+</section>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+  <div class="sf-grid">
+    <div class="sf-brand-col">
+      <div class="sf-brand"><svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#00d4ff"/></svg> LOCAL-AI-MODELS</div>
+      <p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+      <div class="sf-meta">dataset 2026.09.21 &middot; 132 models &middot; 59 frameworks</div>
+    </div>
+    <div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+      <li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+      <li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+      <li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+      <li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+      <li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+      <li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+      <li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+    </ul></div>
+    <div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+      <li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+      <li><a href="https://local-ai-models.ai/guidance.html">Guidance</a></li>
+      <li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+      <li><a href="https://local-ai-models.ai/best-local-coding-llm.html">Best Coding LLM</a></li>
+      <li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+      <li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+      <li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+      <li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+    </ul></div>
+  </div>
+  <div class="sf-bottom">
+    <span>Data refreshed August 31, 2026</span>
+    <span>Single-file architecture &middot; No accounts, no tracking beyond ads</span>
+  </div>
+  <p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> &middot; <a href="https://local-ai-models.ai/terms.html">Terms</a> &middot; <a href="https://local-ai-models.ai/cookies.html">Cookies</a> &middot; <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> &middot; <a href="https://local-ai-models.ai/about.html">About</a> &middot; <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+
+<script>
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script src="creatures.js" defer></script>
+<script src="creatures-v2.js" defer></script>
+</body>
+</html>
