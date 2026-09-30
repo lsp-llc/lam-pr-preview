@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>When Yesterday’s Wrong Answer Becomes Today’s Evidence | Local AI Models</title>
+<meta content="Follow how an early guess can survive later corrections, then separate the current facts from the conversation that accumulated around them." name="description"/>
+
+<meta content="article" property="og:type"/>
+<meta content="When Yesterday’s Wrong Answer Becomes Today’s Evidence" property="og:title"/>
+<meta content="Follow how an early guess can survive later corrections, then separate the current facts from the conversation that accumulated around them." property="og:description"/>
+<meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/wrong-answer-in-context.html" property="og:url"/>
+<meta content="Local AI Models" property="og:site_name"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="When Yesterday’s Wrong Answer Becomes Today’s Evidence" name="twitter:title"/>
+<meta content="noindex,nofollow,noarchive" name="robots"/>
+<style>
+:root {
+  --bg: #06070a; --bg-2: #0a0b10; --surface: #131416; --surface-2: #1c1d20;
+  --border: rgba(255,255,255,0.07); --border-bright: rgba(255,255,255,0.14);
+  --text: #f6f7f9; --text-2: #c9cdd4; --text-dim: #8a8f99; --text-muted: #828791;
+  --accent: #00d4ff; --indigo: #818cf8; --purple: #a78bfa; --pink: #ec4899; --green: #22c55e; --orange: #ff9f1c;
+  --accent-dim: rgba(0,212,255,0.10);
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #818cf8 50%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  --font: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 17px; line-height: 1.6; letter-spacing: -0.012em; min-height: 100vh; -webkit-font-smoothing: antialiased; font-feature-settings: "cv02","cv03","cv04","cv11"; }
+::selection { background: rgba(0,212,255,0.25); color: #fff; }
+
+.site-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(6,7,10,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border); }
+.site-nav-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; color: var(--accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.site-nav-brand::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+.site-nav-brand .b-light { color: var(--text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav-links a { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); text-decoration: none; padding: 12px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; transition: all 200ms var(--ease); text-transform: uppercase; letter-spacing: 0.8px; }
+.site-nav-links a:hover { color: var(--accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.12); }
+@media (max-width: 900px) { .site-nav-links { display: none; } }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; background: none center/cover no-repeat; opacity: 0.55; will-change: transform; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,7,10,0.45) 0%, rgba(6,7,10,0.92) 100%); }
+.hero-inner { position: relative; z-index: 1; max-width: 880px; padding: 60px 28px; text-align: center; }
+.breadcrumb { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 22px; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); margin: 0 8px; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; padding: 8px 16px; background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25); border-radius: 100px; margin-bottom: 24px; }
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.hero-title { font-family: var(--font); font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 560; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 18px; }
+.hero-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-byline { font-size: 0.98rem; color: var(--text-2); margin: -4px 0 16px; letter-spacing: 0.01em; }
+.hero-sub { font-size: clamp(1.0rem, 2vw, 1.2rem); color: var(--text-2); max-width: 640px; margin: 0 auto; line-height: 1.55; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 104px 28px; }
+.lede { font-size: 1.18rem; line-height: 1.65; color: var(--text-2); max-width: 720px; margin-bottom: 56px; }
+.lede em { font-family: var(--font-serif); font-style: italic; color: var(--text); font-size: 1.1em; }
+
+.section-eyebrow { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 12px; }
+.section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+.section-h2 { font-family: var(--font); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 560; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+.section-h2 .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-sub { font-size: 1.02rem; color: var(--text-dim); margin-bottom: 48px; max-width: 640px; }
+
+.related { padding: 64px 28px 128px; max-width: 1300px; margin: 0 auto; }
+.related-title { font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 28px; padding-top: 36px; border-top: 1px solid var(--border); }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .related-grid { grid-template-columns: 1fr; } }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 300ms var(--ease); display: block; }
+.related-card:hover { transform: translateY(-3px); border-color: rgba(0,212,255,0.3); box-shadow: 0 18px 36px -12px rgba(0,212,255,0.15); }
+.related-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.related-name { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.related-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+
+footer { padding: 56px 28px 28px; border-top: 1px solid var(--border); background: linear-gradient(180deg, transparent, rgba(0,212,255,0.025)); }
+.foot-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+@media (max-width: 800px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-brand { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.foot-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; max-width: 320px; margin-bottom: 16px; }
+.foot-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-col-title { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 14px; }
+.foot-col ul { list-style: none; padding: 0; }
+.foot-col li { margin-bottom: 8px; }
+.foot-col a { font-size: 0.88rem; color: var(--text-2); text-decoration: none; transition: all 200ms var(--ease); display: inline-block; }
+.foot-col a:hover { color: var(--accent); transform: translateX(2px); }
+.foot-bottom { max-width: 1300px; margin: 36px auto 0; padding: 18px 0 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.foot-pulse { display: inline-flex; align-items: center; gap: 8px; color: var(--green); }
+.foot-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 800ms var(--ease), transform 800ms var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } .reveal { opacity: 1; transform: none; } }
+
+/* PREMIUM-PATCH-V1 */
+h1, h2, .section-heading, .section-title, .hero-title, .step-title, .tool-name { font-weight: 600 !important; letter-spacing: -0.025em; }
+:root { --text-dim-fixed: #a3a8b3; --text-muted-fixed: #828791; }
+.text-dim, .text-muted, .header-meta, .header-subtitle, .breadcrumb, .foot-meta, [class*="-meta"], [class*="-sub"], [class*="-dim"], [class*="-muted"] { color: var(--text-dim-fixed); }
+nav a, .nav-links a, .jump-nav a, .site-nav-links a, .btn, .back-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; display: inline-flex; align-items: center; justify-content: center; }
+*:focus-visible { outline: 2px solid rgba(0,212,255,0.85); outline-offset: 2px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(0,212,255,0.18); }
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+/* end PREMIUM-PATCH-V1 */
+
+/* PREMIUM-PATCH-V2 */
+.related-desc, .foot-tagline, .hero-sub, .lede { font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.6; }
+.related { padding-top: 96px !important; padding-bottom: 96px !important; }
+@media (max-width: 700px) { .related { padding-top: 56px !important; padding-bottom: 56px !important; } }
+.section-eyebrow, .breadcrumb, .foot-col-title, .hero-eyebrow, [class*='-eyebrow'] { letter-spacing: 1px !important; }
+/* end PREMIUM-PATCH-V2 */
+</style>
+<!-- ARTICLE-ONLY: long-form body, tables, sources list -->
+<style>
+.article-body { max-width: 820px; }
+.article-body p { color: var(--text-2); margin-bottom: 22px; }
+.article-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.35); }
+.article-body a:hover { border-bottom-color: var(--accent); }
+.article-body strong { color: var(--text); font-weight: 600; }
+.article-body code { font-family: var(--font-mono); font-size: 0.88em; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--accent); }
+.article-h2 { margin-top: 72px; margin-bottom: 20px; }
+.article-h2:first-of-type { margin-top: 0; }
+.article-h3 { font-family: var(--font); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em; color: var(--text); margin: 44px 0 14px; }
+.article-body ul { list-style: none; margin: 0 0 26px; padding: 0; }
+.article-body li { position: relative; color: var(--text-2); padding-left: 22px; margin-bottom: 14px; }
+.article-body li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.65; }
+.updated-line { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; margin: 0 0 28px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.vram-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 0.94rem; }
+.vram-table th, .vram-table td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
+.vram-table thead th { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border-bright); white-space: nowrap; }
+.vram-table tbody tr:last-child td { border-bottom: none; }
+.vram-table tbody td:first-child { color: var(--text); font-weight: 600; }
+.sources-list { list-style: none; counter-reset: src; margin: 0; padding: 0; max-width: 820px; }
+.sources-list li { counter-increment: src; position: relative; padding-left: 34px; margin-bottom: 16px; font-size: 0.92rem; line-height: 1.55; color: var(--text-dim); }
+.sources-list li::before { content: counter(src); position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+.plate-header, .metaphor-bends {
+  max-width: 820px;
+  margin: 0 0 48px;
+  padding: 22px 24px;
+  border: 1px solid rgba(167,139,250,0.28);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(167,139,250,0.08), rgba(6,7,10,0.2));
+}
+.plate-kicker, .metaphor-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+.plate-title, .metaphor-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.45rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+.plate-header p, .metaphor-bends p { color: var(--text-2); margin: 0; font-size: 0.98rem; }
+.plate-block {
+  max-width: 820px;
+  margin: 0 0 48px;
+}
+.plate-block img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.plate-block figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
+
+.decision-card {
+  max-width: 820px;
+  margin: 0 0 36px;
+  padding: 24px 26px;
+  border: 1px solid rgba(0,212,255,0.28);
+  border-radius: 16px;
+  background: rgba(0,212,255,0.05);
+}
+.decision-card h3 { margin-top: 0; }
+.decision-card p:last-child { margin-bottom: 0; }
+
+.checklist-card {
+  max-width: 820px;
+  margin: 8px 0 36px;
+  padding: 26px 26px 18px;
+  border: 1px solid var(--border-bright);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.checklist-card h3 { margin-top: 0; }
+.checklist-card .check-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+.checklist-card ol { list-style: none; margin: 0; padding: 0; counter-reset: chk; }
+.checklist-card li {
+  position: relative;
+  padding: 12px 0 12px 36px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+}
+.checklist-card li:first-of-type { border-top: none; }
+.checklist-card li::before { content: none; }
+.checklist-card input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 1.05em;
+  width: 18px;
+  height: 18px;
+  accent-color: #00d4ff;
+}
+.checklist-card label { cursor: pointer; display: block; }
+.checklist-foot {
+  margin-top: 16px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.ev-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.ev-primary { color: var(--green); border: 1px solid rgba(34,197,94,0.35); background: rgba(34,197,94,0.08); }
+.ev-prac { color: var(--orange); border: 1px solid rgba(255,159,28,0.35); background: rgba(255,159,28,0.08); }
+.ev-site { color: var(--purple); border: 1px solid rgba(167,139,250,0.35); background: rgba(167,139,250,0.08); }
+</style>
+<!-- BEGIN site-chrome-css -->
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<style>
+/* Canonical site chrome (DESIGN-BRIEF.md section 4/6). Stamped at the END of <head>
+   so equal-specificity rules here win over per-page family styles. Inter trio is
+   canonical (brief Amendment A1); DM Sans retired. */
+:root {
+  --sc-bg: #06070a; --sc-surface: #131416;
+  --sc-border: rgba(255,255,255,0.07);
+  --sc-text: #f6f7f9; --sc-text-2: #c9cdd4; --sc-text-dim: #8a8f99;
+  --sc-accent: #00d4ff;
+  --sc-font: 'Inter', -apple-system, sans-serif;
+  --sc-mono: 'JetBrains Mono', monospace;
+}
+body { font-family: var(--sc-font); }
+/* Pages without a global reset (the legal family) need the chrome subtree normalized */
+.site-nav, .site-nav *, .site-footer, .site-footer * { box-sizing: border-box; }
+.site-nav { margin: 0; }
+
+/* ---- Nav ---- */
+.site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,7,10,0.82); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--sc-border); padding: 0; display: block; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; box-sizing: border-box; }
+.site-nav-inner { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; }
+.site-nav-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.84rem; color: var(--sc-accent); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; min-height: 44px; }
+.site-nav-brand .brand-dot { filter: drop-shadow(0 0 6px var(--sc-accent)); flex: none; }
+.site-nav-brand::before { content: none; } /* legacy per-page CSS drew its own dot */
+.site-nav-brand .brand-light { color: var(--sc-text); font-weight: 500; }
+.site-nav-links { display: flex; gap: 2px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.site-nav-links::-webkit-scrollbar { display: none; }
+.site-nav-links a { font-family: var(--sc-mono); font-size: 0.72rem; color: var(--sc-text-dim); text-decoration: none; padding: 12px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; transition: color 200ms, background 200ms; }
+.site-nav-links a:hover { color: var(--sc-accent); background: rgba(0,212,255,0.08); }
+.site-nav-links a.active { color: var(--sc-accent); background: rgba(0,212,255,0.12); }
+.site-nav-links a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+/* Mobile: horizontal scroll rail, brief-mandated collapse (no 271px wrap, no hidden links) */
+@media (max-width: 900px) {
+  .site-nav-inner { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 14px; }
+  .site-nav-links { display: flex; margin: 0 -14px; padding: 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 24px), transparent); }
+}
+
+/* ---- Footer ---- */
+.site-footer { border-top: 1px solid var(--sc-border); background: var(--sc-bg); padding: 56px 24px 28px; margin-top: 72px; font-family: var(--sc-font); color: var(--sc-text-2); position: relative; z-index: 5; }
+/* Legacy pages inject .premium-footer styling at runtime (later in cascade);
+   this compound selector out-specifies it so the stamped footer keeps its
+   paint (L1 BQR finding: transparent footer, particles through link text). */
+footer.site-footer.premium-footer { background: var(--sc-bg); border-top: 1px solid var(--sc-border); padding: 56px 24px 28px; margin-top: 72px; opacity: 1; backdrop-filter: none; }
+/* Shared interactive floor for page-level controls (brief section 5, 44px) */
+.intent-chip, .laim-consent button, .laim-consent-manage { min-height: 44px; }
+.site-footer .sf-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px 28px; }
+.site-footer .sf-brand { font-family: var(--sc-mono); font-weight: 600; font-size: 0.8rem; letter-spacing: 1px; color: var(--sc-accent); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.site-footer .sf-tagline { font-size: 0.86rem; line-height: 1.55; color: var(--sc-text-dim); max-width: 420px; margin: 0 0 12px; }
+.site-footer .sf-meta { font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.6px; }
+.site-footer .sf-col-title { font-family: var(--sc-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--sc-text-dim); margin-bottom: 12px; }
+.site-footer .sf-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.site-footer .sf-col a { color: var(--sc-text-2); text-decoration: none; font-size: 0.86rem; transition: color 150ms; }
+.site-footer .sf-col a:hover { color: var(--sc-accent); }
+.site-footer .sf-col a:focus-visible, .site-footer .sf-policy a:focus-visible { outline: 3px solid #67e8f9; outline-offset: 2px; }
+.site-footer .sf-bottom { max-width: 1300px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid var(--sc-border); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--sc-mono); font-size: 0.7rem; color: var(--sc-text-dim); letter-spacing: 0.5px; }
+.site-footer .sf-policy { max-width: 1300px; margin: 14px auto 0; font-size: 0.75rem; color: var(--sc-text-dim); }
+.site-footer .sf-policy a { color: var(--sc-text-dim); text-decoration: none; }
+.site-footer .sf-policy a:hover { color: var(--sc-accent); }
+@media (max-width: 800px) { .site-footer .sf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .site-footer .sf-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-links a, .site-footer a { transition: none; }
+}
+</style>
+<!-- END site-chrome-css -->
+<style id="sundog-teaching-style">
+.reader-level{font:600 .78rem/1.5 system-ui;letter-spacing:.06em;color:#d9b98a;text-transform:uppercase;margin:0 0 20px}
+.teaching-figure{margin:28px 0 36px;padding:25px;border:1px solid #476163;border-radius:12px;background:linear-gradient(135deg,#10272a,#17212b);color:#e7f0ef}
+.teaching-figure figcaption{font-size:1.1rem;line-height:1.4;margin:0 0 23px}.teaching-figure figcaption span{display:block;font-size:.86rem;font-weight:400;color:#c2ced1;margin-top:6px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0!important;margin:0!important;list-style:none!important;counter-reset:flow}
+.flow li{padding:16px!important;border:1px solid #527178;border-radius:8px;background:#172f35;margin:0!important;counter-increment:flow}.flow li::before{content:counter(flow) " /"!important;position:static!important;background:none!important;color:#ddb77c!important;display:block;width:auto!important;height:auto!important;margin-bottom:8px;font:700 .8rem system-ui}
+.flow b,.flow span{display:block}.flow span{font-size:.85rem;line-height:1.45;color:#c2d4d6;margin-top:9px}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.concept-grid>div{padding:18px;border:1px solid #506671;border-radius:8px;background:#152d34}.concept-grid b{font-size:1.05rem;color:#f1d1a0}.concept-grid p{margin:10px 0 0!important;font-size:.88rem;line-height:1.55;color:#d2e0e2!important}
+.article-body pre{background:#101a22;border:1px solid #3a505d;border-radius:8px;padding:20px;overflow:auto;max-width:100%;font:14px/1.6 Consolas,monospace;white-space:pre}.article-body pre code{border:0;background:none;padding:0;font:inherit;white-space:pre;color:#e2ecf2}
+.deep-note{border:1px solid #465357;border-radius:9px;padding:18px 22px;margin:30px 0;background:#171f22}.deep-note summary{cursor:pointer;color:#f2cf98;font-weight:600;line-height:1.5}.deep-note[open] summary{margin-bottom:22px}.deep-note h3{font-size:1.15rem;margin:20px 0 12px}
+.next-action{border-left:3px solid #d9b075;background:#1c2524;padding:2px 23px 12px;margin:35px 0}.next-action h2{font-size:1.3rem;margin-top:22px}.next-action p{font-size:1rem}
+.energy-row{margin:20px 0}.energy-label{display:flex;justify-content:space-between;gap:15px;font-size:.94rem;margin:0 0 8px}.energy-bar{height:28px;border-radius:4px;background:#263d45;overflow:hidden}.energy-bar span{display:block;height:100%;background:#e5b469}.energy-row.idle .energy-bar span{background:#7eced2}.figure-note{font-size:.86rem!important;color:#c4d1d5!important;margin:18px 0 0!important}
+.article-body .sources-list{overflow-wrap:anywhere}.article-body ul,.article-body ol{padding-left:24px}.article-body li{margin:10px 0}.article-body .inline-note{font-size:.88rem;color:#becbd0;padding:14px 18px;border-left:2px solid #647984;background:#182228}
+@media(max-width:640px){.flow{grid-template-columns:1fr 1fr}.concept-grid{grid-template-columns:1fr}.teaching-figure{padding:20px 17px}.flow li{padding:13px!important}.article-body pre{font-size:12.5px;padding:16px}.deep-note{padding:17px}.energy-label{font-size:.85rem}.teaching-figure figcaption{font-size:1rem}}
+</style><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/heroes/sundog-context-2026-09-29.png" property="og:image"/><meta content="Sundog redirects a glowing evidence route away from a looping old answer and toward a current data shard in a future transit concourse." property="og:image:alt"/><meta content="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/heroes/sundog-context-2026-09-29.png" name="twitter:image"/><meta content="Sundog redirects a glowing evidence route away from a looping old answer and toward a current data shard in a future transit concourse." name="twitter:image:alt"/><link href="https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/wrong-answer-in-context.html" rel="canonical"/><meta content="Follow how an early guess can survive later corrections, then separate the current facts from the conversation that accumulated around them." name="twitter:description"/><meta content="2026-09-29" property="article:published_time"/><meta content="2026-09-29" property="article:modified_time"/><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "@id": "https://local-ai-models.ai/#organization", "name": "Local AI Models", "legalName": "Lagrangian Strategic Partners LLC", "url": "https://local-ai-models.ai/", "sameAs": ["https://github.com/lsp-llc/local-ai-models"]}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "@id": "https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/wrong-answer-in-context.html#article", "url": "https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/wrong-answer-in-context.html", "headline": "When Yesterday’s Wrong Answer Becomes Today’s Evidence", "description": "Follow how an early guess can survive later corrections, then separate the current facts from the conversation that accumulated around them.", "datePublished": "2026-09-29", "dateModified": "2026-09-29", "inLanguage": "en", "author": {"@type": "Person", "name": "Sundog"}, "publisher": {"@id": "https://local-ai-models.ai/#organization"}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/wrong-answer-in-context.html"}, "image": {"@type": "ImageObject", "url": "https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/heroes/sundog-context-2026-09-29.png", "caption": "Fictional cyberpunk scene: an old answer loops back into the evidence path. The separate teaching example shows how to test that contamination.", "width": 1672, "height": 941}, "proficiencyLevel": "Start here", "articleSection": "Context and conflicting evidence", "wordCount": 1223, "timeRequired": "PT6M", "citation": ["https://arxiv.org/abs/2605.30251", "https://arxiv.org/abs/2604.11209", "https://www.youtube.com/watch?v=xBNWzpWNSiQ&t=33s"]}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://local-ai-models.ai/"}, {"@type": "ListItem", "position": 2, "name": "Ten New Sundog Guides", "item": "https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/index.html"}, {"@type": "ListItem", "position": 3, "name": "When Yesterday’s Wrong Answer Becomes Today’s Evidence", "item": "https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/wrong-answer-in-context.html"}]}</script></head>
+<body><aside aria-label="Preview status" class="review-notice" style="padding:10px 20px;background:#17222d;color:#cddde8;text-align:center;font:13px/1.6 system-ui;border-bottom:1px solid #314452">Editorial preview · Ten new Sundog guides · 29 September 2026. <a href="index.html" style="color:#9de7ff;text-decoration:underline">Open the collection</a></aside>
+<!-- BEGIN site-nav -->
+<nav aria-label="Site" class="site-nav">
+<div class="site-nav-inner">
+<a aria-label="Local AI Models home" class="site-nav-brand" href="https://local-ai-models.ai/"><svg aria-hidden="true" class="brand-dot" height="10" viewbox="0 0 10 10" width="10"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg>LOCAL-AI<span class="brand-light">-MODELS</span></a>
+<div class="site-nav-links">
+<a href="https://local-ai-models.ai/local-ai-models.html">Models</a>
+<a href="https://local-ai-models.ai/builder.html">Stack Builder</a>
+<a href="https://local-ai-models.ai/model-builder.html">PC Builder</a>
+<a href="https://local-ai-models.ai/recommend.html">Recommender</a>
+<a href="https://local-ai-models.ai/token-simulator.html">Token Sim</a>
+<a href="https://local-ai-models.ai/claws.html">CLAWS</a>
+<a href="https://local-ai-models.ai/sentiment.html">Community</a>
+<a href="index.html">Guidance</a>
+<a href="https://local-ai-models.ai/getting-started.html">Get Started</a>
+<a href="https://local-ai-models.ai/quantization.html">Quantization</a>
+<a href="https://local-ai-models.ai/stacks.html">Stacks</a>
+<a href="https://local-ai-models.ai/updates.html">Updates</a>
+</div>
+</div>
+</nav>
+<!-- END site-nav -->
+<section class="hero">
+
+
+<div class="hero-inner">
+<div aria-label="Breadcrumb" class="breadcrumb"><a href="https://local-ai-models.ai/">Home</a><span aria-hidden="true" class="sep">/</span><a href="index.html">Ten New Sundog Guides</a><span aria-hidden="true" class="sep">/</span><span aria-current="page">When Yesterday’s Wrong Answer Becomes Today’s Evidence</span></div>
+<div class="hero-eyebrow">Context and conflicting evidence</div>
+<h1 class="hero-title">When Yesterday’s Wrong Answer Becomes Today’s Evidence</h1><p class="hero-sub">Follow how an early guess can survive later corrections, then separate the current facts from the conversation that accumulated around them.</p>
+<p class="hero-byline">By Sundog</p>
+<div class="updated-line"><time datetime="2026-09-29">29 September 2026</time> · 6 min read · Start here</div>
+</div>
+</section>
+<main class="container">
+<figure class="article-hero"><a aria-label="Open full-size illustration: Sundog redirects a glowing evidence route away from a looping old answer and toward a current data shard in a future transit concourse." href="heroes/sundog-context-2026-09-29.png" title="Open full-size illustration"><img alt="Sundog redirects a glowing evidence route away from a looping old answer and toward a current data shard in a future transit concourse." decoding="async" fetchpriority="high" height="941" src="heroes/sundog-context-2026-09-29.png" width="1672"/></a><figcaption>Fictional cyberpunk scene: an old answer loops back into the evidence path. The separate teaching example shows how to test that contamination.</figcaption></figure><article class="article-body">
+<p>You correct an assistant’s answer. A few messages later, the old answer turns up again, now woven into an explanation of the correction. The conversation contains the right information, but it also contains a convincing account of the wrong information.</p>
+<p>That distinction matters when you use a local model for a running project, a document analysis, or a long technical conversation. Supplying a fact and getting the model to use it are different achievements. Recent research gives us a way to examine that gap without treating every failure as a shortage of model size.</p>
+<p>I would start by asking what the model is carrying forward. A transcript preserves what people said. A dependable working record needs to preserve what is currently true, what remains uncertain, and which earlier statements have been replaced.</p>
+<h2>The history contains more than the user’s facts</h2>
+<p>Consider this original example. Three replacement parts cost £48 each. Shipping was first quoted at £24, then corrected to £12. The current total is <strong>3 × £48 + £12 = £156</strong>. An earlier assistant response calculated £168 using the first quote.</p>
+<p>A long chat now contains both numbers, two shipping charges, and an assistant’s explanation of the obsolete total. A fresh prompt containing only the current quantities is a different input from that transcript, even though both contain all the facts needed to calculate £156.</p>
+<div class="teaching-panel">
+<h3>Separate evidence from an earlier conclusion</h3>
+<div aria-label="Context and conflicting evidence table" class="table-wrap" role="region" tabindex="0"><table><thead><tr><th>Item in the conversation</th><th>Status for the current question</th></tr></thead><tbody>
+<tr><td>Three parts at £48 each</td><td>Current input</td></tr>
+<tr><td>Shipping originally quoted at £24</td><td>Superseded input</td></tr>
+<tr><td>Shipping corrected to £12</td><td>Current input</td></tr>
+<tr><td>Assistant’s earlier total of £168</td><td>Derived from a superseded input</td></tr>
+</tbody></table></div>
+<p class="figure-note">Illustrative example, not a model run. The answer follows directly from the current inputs.</p>
+</div>
+<p>The language model produces an answer conditioned on the available text, including its previous answers. We can write that as <code>P(answer | current facts, history)</code>. This notation does not tell us which sentence controls the output. It reminds us that history is part of the input, rather than a trustworthy record that the model has already reconciled.</p>
+<h2>A wrong earlier answer can contaminate a later one</h2>
+<p><em>Same Evidence, Different Answers</em> studies incomplete conversations and contamination from earlier replies. Its Table 2 reports a Qwen3-8B math evaluation on 103 problems: 90.3% accuracy with a clean prompt, 33.0% after an assistant-side wrong solution, and 63.1% with a user-side wrong-answer hint. The latter prompts differed in wording as well as speaker, so the gap does not isolate a pure role effect. <a href="#source-1">[1]</a></p>
+<p>The first difference is 57.3 <em>percentage points</em>: 90.3 − 33.0. That measures a change in accuracy for the tested conditions. It is neither a universal chance of failure nor proof that an assistant message always matters more than a user message. For that comparison, the wording would need to be held constant.</p>
+<p>The authors’ training method, CCOPD, aligns a student receiving conversation history with a frozen teacher receiving complete evidence. It is a trained intervention, not an instruction you can reproduce by telling a stock model to forget. The practical lesson here is to test history contamination separately from whether the model can solve the clean task. <a href="#source-1">[1]</a></p>
+<h2>A neat data structure can carry the wrong fact too</h2>
+<p>Earlier answers are one source of contamination. Conflicting retrieved material is another. A paragraph may say a device was released in 2024 while a compact structured record says 2023. Both can look authoritative; the compact one can be especially easy to reuse.</p>
+<p>ConflictQA pairs textual passages with knowledge-graph evidence and introduces conflicts. On its 802-question non-complementary evaluation, Qwen3-8B exact match falls from 76.28% to 7.61% when the triples conflict with correct text, and to 52.44% when the text conflicts with correct triples. Those are benchmark-specific outcomes; evidence length, source type and format are not isolated from one another. <a href="#source-2">[2]</a></p>
+<p>The study also finds prompt and order sensitivity. Its proposed explanation-based approach is not uniformly helpful: Qwen3-8B improves under conflicting triples but worsens under conflicting text. A longer explanation cannot be assumed to resolve the conflict. <a href="#source-2">[2]</a></p>
+<p>That gives us two related questions, with different mechanisms: did the assistant inherit its own old conclusion, and did it favor the wrong external source? Combining the papers makes the engineering problem more visible. It does not establish that both failures have the same internal cause.</p>
+<h2>Compare a conversation with a current-state prompt</h2>
+<p>You can explore this on the local model you already use. The following is an original diagnostic design, not a reproduction of either paper. It needs two fresh chats and a problem whose answer you can determine independently.</p>
+<p>In the first chat, provide only the current facts:</p>
+<pre><code>Three parts cost £48 each. The current shipping charge is £12.
+Calculate the total. End with FINAL: followed by the amount.</code></pre>
+<p>In the second, first ask the same question with shipping at £24, then supply the correction:</p>
+<pre><code>The shipping charge has been corrected to £12.
+The quantities and unit prices are unchanged.
+Calculate the current total from those inputs.
+End with FINAL: followed by the amount.</code></pre>
+<p>The first condition checks basic arithmetic. The second checks whether an answer survives a changed premise. If the clean prompt fails, you have not isolated a history problem. If the clean prompt succeeds while the correction fails, examine whether the model used the obsolete shipping charge, misread the update, or calculated incorrectly despite identifying the correct inputs.</p>
+<p>To test the effect of an earlier wrong answer more directly, use a chat application that lets you edit or supply conversation messages. Insert the same obsolete sentence once as a user message and once as an assistant message. Keep the wording, facts and final question identical. Merely quoting an “assistant answer” inside a user message is a separate condition; it does not change that message’s actual role.</p>
+<p>Keep your model, precision, chat template, output allowance and sampling settings fixed. Repeat on several independently checkable problems. A handful of examples can expose a failure and improve your workflow; it cannot establish the published error rate on your hardware.</p>
+<h2>Build a record the next answer can use</h2>
+<p>My proposed repair is to give the model a compact, explicit current-state record when a task has accumulated corrections. In the parts example, that record would contain quantities, current shipping, the superseded shipping value, and the rule that totals must be recalculated. It would not treat £168 as another independent piece of evidence.</p>
+<p>There is a tradeoff. A fresh record can remove useful history along with the stale material. Preserve unresolved questions, important constraints and source identifiers. For a document conflict, include the revision or effective date that makes one source applicable; do not ask the model to choose merely because one entry is newer or more concise.</p>
+<p>When the sources genuinely disagree and no authority rule resolves them, the useful answer may be conditional: “The total is £156 if the corrected quote applies; otherwise it is £168.” That is a different outcome from averaging the totals or picking whichever number appeared last.</p>
+<p><strong>[OPINION]</strong> I would rather spend a few lines making the current facts explicit than spend another thousand tokens asking an assistant to reconsider a transcript full of its own confident mistakes. The record should earn its place by changing the answer reliably. If it does not, the next step is a better fact-handling mechanism, not a more elaborate reminder.</p>
+<h2 id="sources">Sources and further reading</h2>
+<ol class="sources-list">
+<li id="source-1"><a href="https://arxiv.org/abs/2605.30251">Same Evidence, Different Answers: Canonical-Context On-Policy Distillation for Multi-Turn Language Models</a> (2026). Table 2 and Appendix D for contamination; the training intervention should not be confused with an ordinary prompt edit.</li>
+<li id="source-2"><a href="https://arxiv.org/abs/2604.11209">Exploring Knowledge Conflicts for Faithful LLM Reasoning: Benchmark and Method</a> (2026). Tables 2 and 5 for conflicting evidence and condition-dependent prompting outcomes.</li>
+<li data-video-discussion="true" id="source-3"><a href="https://www.youtube.com/watch?v=xBNWzpWNSiQ&amp;t=33s">Discover AI / Code for AI: The Hidden Reason LLMs Fail in Conversations: CCOPD</a> (00:33). Video discussion of the research; technical claims in this article use the primary papers above.</li>
+</ol>
+</article>
+</main>
+
+<!-- BEGIN site-footer -->
+<footer class="site-footer premium-footer">
+<div class="sf-grid">
+<div class="sf-brand-col">
+<div class="sf-brand"><svg aria-hidden="true" height="9" viewbox="0 0 10 10" width="9"><circle cx="5" cy="5" fill="#00d4ff" r="4"></circle></svg> LOCAL-AI-MODELS</div>
+<p class="sf-tagline">Reference for engineers running AI locally: VRAM, quantization, hardware tradeoffs, and the agent ecosystem orbiting open models.</p>
+<div class="sf-meta">dataset 2026.08.31 · 132 models · 59 frameworks</div>
+</div>
+<div class="sf-col"><div class="sf-col-title">Catalog</div><ul>
+<li><a href="https://local-ai-models.ai/local-ai-models.html">Models</a></li>
+<li><a href="https://local-ai-models.ai/sentiment.html">Community Data</a></li>
+<li><a href="https://local-ai-models.ai/claws.html">Agent Frameworks</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Tools</div><ul>
+<li><a href="https://local-ai-models.ai/builder.html">Stack Builder</a></li>
+<li><a href="https://local-ai-models.ai/model-builder.html">PC Builder</a></li>
+<li><a href="https://local-ai-models.ai/recommend.html">Recommender</a></li>
+<li><a href="https://local-ai-models.ai/token-simulator.html">Token Simulator</a></li>
+</ul></div>
+<div class="sf-col"><div class="sf-col-title">Learn</div><ul>
+<li><a href="https://local-ai-models.ai/getting-started.html">Get Started</a></li>
+<li><a href="index.html">Guidance</a></li>
+<li><a href="https://local-ai-models.ai/vram-guide.html">VRAM Guide</a></li>
+<li><a href="https://local-ai-models.ai/best-local-coding-llm.html">Best Coding LLM</a></li>
+<li><a href="https://local-ai-models.ai/quantization.html">Quantization</a></li>
+<li><a href="https://local-ai-models.ai/stacks.html">Stacks</a></li>
+<li><a href="https://local-ai-models.ai/local-ai-server-guide.html">Server Guide</a></li>
+<li><a href="https://local-ai-models.ai/updates.html">Updates</a></li>
+</ul></div>
+</div>
+<div class="sf-bottom">
+<span>Data refreshed August 31, 2026</span>
+<span>Single-file architecture · No accounts, no tracking beyond ads</span>
+</div>
+<p class="sf-policy"><a href="https://local-ai-models.ai/privacy.html">Privacy</a> · <a href="https://local-ai-models.ai/terms.html">Terms</a> · <a href="https://local-ai-models.ai/cookies.html">Cookies</a> · <a href="https://local-ai-models.ai/accessibility.html">Accessibility</a> · <a href="https://local-ai-models.ai/about.html">About</a> · <a href="https://local-ai-models.ai/contact.html">Contact</a></p>
+</footer>
+<!-- END site-footer -->
+<script>
+(function(){
+  var bg = document.querySelector('.hero-bg');
+  if (!bg || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){ bg.style.transform = 'translate3d(0,' + (window.scrollY * 0.20) + 'px,0) scale(1.06)'; ticking = false; });
+  }, { passive: true });
+})();
+
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+<style>.iv-ripple{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9996;animation:iv-ripple-out 700ms cubic-bezier(0.16,1,0.3,1) forwards;will-change:transform,opacity}@keyframes iv-ripple-out{to{transform:translate3d(var(--rdx,0),var(--rdy,0),0) scale(0);opacity:0}}@media(prefers-reduced-motion:reduce){.iv-ripple{display:none}}
+.hero-title { line-height: 1.08 !important; padding-bottom: 0.12em; overflow: visible; }
+.hero-title .accent { display: inline-block; padding: 0 0.12em 0.08em 0; margin-right: -0.06em; overflow: visible; }
+.section-h2 { line-height: 1.1 !important; padding-bottom: 0.1em; overflow: visible; }
+</style>
+<script>(function(){if(window.matchMedia("(prefers-reduced-motion:reduce)").matches)return;var colors=["#00d4ff","#818cf8","#a78bfa","#ec4899"];document.addEventListener("click",function(e){if(e.target.closest("input,select,textarea"))return;for(var i=0;i<6;i++){var b=document.createElement("div");b.className="iv-ripple";var a=Math.PI*2*i/6+Math.random()*0.4;var d=32+Math.random()*24;b.style.setProperty("--rdx",Math.cos(a)*d+"px");b.style.setProperty("--rdy",Math.sin(a)*d+"px");b.style.left=(e.clientX-3)+"px";b.style.top=(e.clientY-3)+"px";b.style.background=colors[i%colors.length];b.style.boxShadow="0 0 8px "+b.style.background;document.body.appendChild(b);setTimeout(function(el){return function(){el.remove()}}(b),720)}})})();</script>
+<script defer="" src="creatures.js"></script>
+<script defer="" src="creatures-v2.js"></script>
+<style>
+.hero{min-height:0!important}.hero-bg,.hero-overlay{display:none!important}.hero-inner{max-width:1000px;padding:64px 24px 36px}.hero-title{font-size:clamp(2.05rem,5vw,3.65rem)!important;line-height:1.12!important}.hero-eyebrow{margin-bottom:22px}.hero-sub{max-width:740px}.hero-byline{margin:22px 0 8px}.container{max-width:1040px;padding:28px 24px 70px}.article-body{max-width:820px;margin:auto;font-size:18px;line-height:1.8;overflow-wrap:anywhere}.article-body>p{margin:0 0 1.35em}.article-body .lede{font-size:1.25rem;max-width:none;margin:0 0 1.6em;color:#e4e7ed}.article-body h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin:2.1em 0 .85em;color:#f6f7f9}.article-body h3{line-height:1.35}.article-body a{color:#9de7ff;text-decoration:underline;text-underline-offset:3px}.article-body code{font-size:.88em;overflow-wrap:anywhere}.article-hero{margin:0 auto 38px;max-width:992px}.article-hero img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #30343a}.article-hero figcaption{font-size:.86rem;line-height:1.55;color:#adb6c5;max-width:820px;margin:12px auto 0}.table-wrap{overflow-x:auto;max-width:100%;margin:28px 0;border:1px solid #333a47;border-radius:8px}.article-body table{width:100%;border-collapse:collapse;min-width:570px;font-size:.86rem;line-height:1.5;background:#10141c}.article-body table a,.article-body table a:visited{color:#f6f7f9}.article-body th,.article-body td{padding:14px 16px;border-bottom:1px solid #333a47;text-align:left;vertical-align:top;color:#e0e6f0}.article-body th{color:#fff;background:#1b2330}.article-body caption{padding:14px 16px;text-align:left;color:#ccd7e5;background:#141c28}.formula-box,.calculation{padding:20px;background:#101a27;border:1px solid #284059;border-radius:8px;margin:25px 0;overflow-x:auto}.formula-box code{white-space:normal;color:#d9efff}.decision-card{padding:24px;border:1px solid #38536a;background:#101c27;border-radius:10px;margin:28px 0}.opinion-label{font-family:var(--font-mono);font-size:.72em;color:#f3c876;font-weight:600}.article-body .sources-list{font-size:.82rem;line-height:1.65;margin:20px 0 0;padding-left:26px}.sources-list li{padding:8px 0}.ref{font-size:.73em;vertical-align:super;margin-left:3px}.related{max-width:1040px;margin:auto;padding:36px 24px 70px}.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.related-card{display:block;border:1px solid #30343a;border-radius:10px;padding:20px}.related-name{font-size:1rem}.related-desc{font-size:.9rem}.updated-line{font-size:.8rem;color:#9faabb}.site-nav-links{min-width:0}.site-nav{max-width:100%}@media(max-width:600px){.hero-inner{padding:36px 20px 20px}.container{padding:20px 18px 45px}.article-body{font-size:17px;line-height:1.75}.article-body .lede{font-size:1.14rem}.article-hero{margin-bottom:28px}.article-hero figcaption{font-size:.8rem}.related-grid{grid-template-columns:1fr}.decision-card{padding:18px}.article-body table{min-width:540px}.hero-title{letter-spacing:-.03em!important}}
+
+.article-body table{min-width:740px}.article-body th,.article-body td{overflow-wrap:normal;word-break:normal}.table-caption{margin:26px 0 8px!important;font-size:.9rem;color:#ced9e7}.table-hint{display:none;font-size:.77rem;color:#aab9cb;margin:0 0 8px!important}.table-caption~.table-wrap{margin-top:8px}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}@media(max-width:780px){.table-hint{display:block}}</style><style>.article-body table th[scope="row"],.article-body table td:nth-child(n+2){white-space:nowrap}.sources-list li::before{content:none!important}.article-body .sources-list li{list-style:decimal!important}</style><style id="new-collection-layout">
+.article-body .table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.article-body table th,.article-body table td{white-space:normal!important}
+.article-body .table-wrap:focus-visible{outline:2px solid #9de7ff;outline-offset:3px}
+</style></body>
+</html>
+

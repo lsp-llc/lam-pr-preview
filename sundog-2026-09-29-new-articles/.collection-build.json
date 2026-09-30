@@ -1,0 +1,129 @@
+{
+  "owner": "sundog-new-articles-2026-09-29/build_collection.py:v1",
+  "route": "sundog-2026-09-29-new-articles",
+  "preview_url": "https://lsp-llc.github.io/lam-pr-preview/sundog-2026-09-29-new-articles/",
+  "baseline": "sundog-2026-09-13-revised-all",
+  "date": "2026-09-29",
+  "metadata_sha256": "6ee66c3f0c57e7ab82a68635b5621f37ba71ad0ee51647c62a178c13f21a20cc",
+  "articles": [
+    {
+      "file": "wrong-answer-in-context.html",
+      "hero": "heroes/sundog-context-2026-09-29.png",
+      "fragment_sha256": "87e9c96a9b8b363f8b8fd892b484ccb9c38852dc2364944a128f03effccd5762",
+      "hero_sha256": "1b3a7e6834d5846c4e3cc0bf3d1aedda04d657a7ecbec2b4f8bc86651f9d484e",
+      "word_count": 1223,
+      "read_minutes": 6
+    },
+    {
+      "file": "where-procedures-belong.html",
+      "hero": "heroes/sundog-procedures-2026-09-29.png",
+      "fragment_sha256": "081c989ab63da57b2c1a9ac23fec6227885f0037967416b593aacb86dff21708",
+      "hero_sha256": "95de1396b6b32f639b8daa8b2a25f76eb789e382fb58bc89e9c3d10566d0686a",
+      "word_count": 1293,
+      "read_minutes": 6
+    },
+    {
+      "file": "when-to-turn-thinking-off.html",
+      "hero": "heroes/sundog-thinking-2026-09-29.png",
+      "fragment_sha256": "b6102125d5900bc9122efc15d41c7b0ae2d33fba2029fc098d59fc4657bebcd4",
+      "hero_sha256": "8438bee675adc1efc5a1de7b2a966542556080f3579fce2f1e79bdb4c5aa6cb3",
+      "word_count": 1095,
+      "read_minutes": 5
+    },
+    {
+      "file": "when-more-agents-make-answers-worse.html",
+      "hero": "heroes/sundog-debate-2026-09-29.png",
+      "fragment_sha256": "856eab55817f2d0bbb6371b34d0a5ffba83a0bd6b3ea9a1fa6f8da435de56ec6",
+      "hero_sha256": "a114a766774e820d412981a13eb229e4d4657a71127106a1b2bd612650864755",
+      "word_count": 1147,
+      "read_minutes": 6
+    },
+    {
+      "file": "missing-premise-more-thinking.html",
+      "hero": "heroes/sundog-missing-premise-2026-09-29.png",
+      "fragment_sha256": "74753316b7f962cdfcdde5308129a5cb4d451887eac3ea4a3322e775d57c8b19",
+      "hero_sha256": "346720e64b130c66ea12e508f56257354d5730ea92a80e9f93bd35686743b8a4",
+      "word_count": 1016,
+      "read_minutes": 5
+    },
+    {
+      "file": "math-tune-general-assistant.html",
+      "hero": "heroes/sundog-transfer-2026-09-29.png",
+      "fragment_sha256": "07e5cdf125915f4f471e1c20f307d4256841dc2266dd976d5a1fade0a482559f",
+      "hero_sha256": "4e28adbfe3c2fd4d6de9f1cc3e189efece099b803d5a54533b7f25e1bd60a509",
+      "word_count": 1055,
+      "read_minutes": 5
+    },
+    {
+      "file": "verify-before-another-answer.html",
+      "hero": "heroes/sundog-verification-2026-09-29.png",
+      "fragment_sha256": "382c2b0a8515c854ed3e90e40dc39620a4aa6ec091ebebc01e9e2f69e7d4a398",
+      "hero_sha256": "dfe866f2091f8dcf6f7df996ce7de30a57f78eb523f579ce7a5a195c0ef0b7c7",
+      "word_count": 1312,
+      "read_minutes": 6
+    },
+    {
+      "file": "agent-loses-track-of-world.html",
+      "hero": "heroes/sundog-world-state-2026-09-29.png",
+      "fragment_sha256": "d68eb867553f420a257e691ae273815779731cd7f654e9aab72f04adfd574b21",
+      "hero_sha256": "23fd7c172c3e5b1ad35c40cf0ea5dd8716fb9bc9800828f7dee4acc2fd5c33fa",
+      "word_count": 1379,
+      "read_minutes": 7
+    },
+    {
+      "file": "before-optimizing-a-prompt.html",
+      "hero": "heroes/sundog-prompt-search-2026-09-29.png",
+      "fragment_sha256": "f27de0c3ecf692c087a0c9f6c7017100bd30c2960b8d1f0c2a087c01ef60f852",
+      "hero_sha256": "7ac56026c295ae5cfa24c0bdcffd5b58f681a6db74819eeb8998f50503a282c5",
+      "word_count": 1306,
+      "read_minutes": 6
+    },
+    {
+      "file": "vision-image-or-caption.html",
+      "hero": "heroes/sundog-vision-2026-09-29.png",
+      "fragment_sha256": "b5e740241e225d56fb29c291468719f8db732e10933b383382fe1d4e86705971",
+      "hero_sha256": "5862b946c3f11300bddf8a5d8138284958aaae47f7831e4a0349ba015e815889",
+      "word_count": 1268,
+      "read_minutes": 6
+    }
+  ],
+  "dependencies": [
+    "creatures-v2.js",
+    "creatures.js",
+    "favicon.svg"
+  ],
+  "qa": {
+    "articles": 10,
+    "index_cards": 10,
+    "local_references": "resolved",
+    "preview_metadata": "valid",
+    "schemas": "rebuilt",
+    "hero_anchors": "full-size"
+  },
+  "owned_files": {
+    "agent-loses-track-of-world.html": "49f007a41d38ff36234ef9153b727d08c79d55344f066a5f3b58d747da20a094",
+    "before-optimizing-a-prompt.html": "ffdf774feae63d6b3d72e423d0dcf07322ea4b31c8d9da18ae2069135095dd2f",
+    "creatures-v2.js": "08661562810b3907650124b516a804f9aba26490da5b51ce9170460be52599ff",
+    "creatures.js": "972d0c842d3dfd746087f115d7e57ae254954dc3a4a5d0e2598cb7ef9ec445a1",
+    "favicon.svg": "8cfdf759c5fd88595b3f6e9bf309aeb9ef0082183ffb93a807abba2173d1446b",
+    "heroes/sundog-context-2026-09-29.png": "1b3a7e6834d5846c4e3cc0bf3d1aedda04d657a7ecbec2b4f8bc86651f9d484e",
+    "heroes/sundog-debate-2026-09-29.png": "a114a766774e820d412981a13eb229e4d4657a71127106a1b2bd612650864755",
+    "heroes/sundog-missing-premise-2026-09-29.png": "346720e64b130c66ea12e508f56257354d5730ea92a80e9f93bd35686743b8a4",
+    "heroes/sundog-procedures-2026-09-29.png": "95de1396b6b32f639b8daa8b2a25f76eb789e382fb58bc89e9c3d10566d0686a",
+    "heroes/sundog-prompt-search-2026-09-29.png": "7ac56026c295ae5cfa24c0bdcffd5b58f681a6db74819eeb8998f50503a282c5",
+    "heroes/sundog-thinking-2026-09-29.png": "8438bee675adc1efc5a1de7b2a966542556080f3579fce2f1e79bdb4c5aa6cb3",
+    "heroes/sundog-transfer-2026-09-29.png": "4e28adbfe3c2fd4d6de9f1cc3e189efece099b803d5a54533b7f25e1bd60a509",
+    "heroes/sundog-verification-2026-09-29.png": "dfe866f2091f8dcf6f7df996ce7de30a57f78eb523f579ce7a5a195c0ef0b7c7",
+    "heroes/sundog-vision-2026-09-29.png": "5862b946c3f11300bddf8a5d8138284958aaae47f7831e4a0349ba015e815889",
+    "heroes/sundog-world-state-2026-09-29.png": "23fd7c172c3e5b1ad35c40cf0ea5dd8716fb9bc9800828f7dee4acc2fd5c33fa",
+    "index.html": "ccd040e8b33e357c16abe11b40c3b5312d02667239b48a45d9662eb01c3e5738",
+    "math-tune-general-assistant.html": "034a36aed404dc431acd3c98d5b4447d52e689582b932329a18345243f0235da",
+    "missing-premise-more-thinking.html": "b5b0ce5873a36d7fbbf7d76efc6181431d1c9d89ff303fa77939cc0da0f2c118",
+    "verify-before-another-answer.html": "e7112fa419cc7359169d19bcf5a48b52dc019757f1793958d98895f29823a95c",
+    "vision-image-or-caption.html": "7956c8fbc2e37ab2c2f9a51e0228c393ec0eb4164ac7ae7d1fa3b6ae01734c15",
+    "when-more-agents-make-answers-worse.html": "78b6140d0d19fb455154b520fa1210dedbc8aaeec73c9b79a81ab5a171ad8456",
+    "when-to-turn-thinking-off.html": "a81d7777ac5ae5b7fe177570382f2ede95d30e56b877fa3a12534a3bffa2522f",
+    "where-procedures-belong.html": "ac8ec83995ea977fea1dfd2d4fc9726b5138cda9135ea50f5071e55d5c561b53",
+    "wrong-answer-in-context.html": "df888936fd57ec5bf6f20f13ed299241945f9a0a3ee56438f2b5612a0649d4e4"
+  }
+}
